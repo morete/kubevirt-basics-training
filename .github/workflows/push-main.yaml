@@ -65,7 +65,7 @@ jobs:
             TRAINING_HUGO_ENV=timkoko
           push: true
           tags: |
-            ghcr.io/acend/cilium-basics-training:latest-techlab
+            ghcr.io/acend/kubevirt-basics-training:latest-timkoko
       -
         name: 'Install Helm'
         uses: azure/setup-helm@v4
