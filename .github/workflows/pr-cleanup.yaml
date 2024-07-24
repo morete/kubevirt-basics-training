@@ -1,0 +1,72 @@
+# changeme 
+# Change the following parts to your current installation
+# - Helm Target Namespace
+# - Repository: you might need to change the name of your repository, depending on the choosen name
+# - Secrets
+#   - QUAYIO_API_TOKEN is needed for house keeping and removing old tagged images
+#   - KUBECONFIG_TEST content of the Kubeconfig File, Account must have access to the k8s namespace. It's used in the helm steps
+name: PRCleanup
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  pr-cleanup:
+    runs-on: 'ubuntu-latest'
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      -
+        name: 'Install Helm'
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.6.2
+      -
+        name: Install Kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: v1.21.2
+      -
+        name: Create KUBECONFIG
+        env:
+          KUBE_CONFIG: '${{ secrets.KUBECONFIG_K8S_ACEND_TEST }}'
+        run: |
+          mkdir -p $HOME/.kube
+          echo "$KUBE_CONFIG" > $HOME/.kube/config
+      -
+        name: Remove PR Environment Helm Release
+        env:
+          TRAINING_HELM_RELEASE: 'pr-${{ github.event.pull_request.number }}'
+          TRAINING_NAMESPACE: 'acend-kubevirt-basics-training-test'
+          TRAINING_VERSION: '${{ github.sha }}'
+        run: |
+          helm uninstall $TRAINING_HELM_RELEASE --kubeconfig $HOME/.kube/config  --namespace=$TRAINING_NAMESPACE
+      -
+        name: Delete PR Tag on ghcr.io
+        env:
+          PR_NUMBER: '${{ github.event.pull_request.number }}'
+          REPOSITORY: '${{ github.repository }}'
+        run : |
+          ORG=$(echo $REPOSITORY | cut -d "/" -f1)
+          REPO=$(echo $REPOSITORY | cut -d "/" -f2)
+          for PACKAGE_VERSION_ID in $(curl -s -H "Authorization: Bearer ${{ secrets.GH_PAT_DELETE_PACKAGES }}" https://api.github.com/orgs/${ORG}/packages/container/${REPO}/versions | jq --arg PR pr-$PR_NUMBER '.[] | select (.metadata.container.tags[] | contains ($PR)) | .id')
+          do
+              echo "Delete package with id ${PACKAGE_VERSION_ID}"
+              curl -X DELETE -H "Authorization: Bearer ${{ secrets.GH_PAT_DELETE_PACKAGES }}" https://api.github.com/orgs/${ORG}/packages/container/${REPO}/versions/${PACKAGE_VERSION_ID}
+          done
+      -
+        name: Delete untagged on ghcr.io
+        env:
+          PR_NUMBER: '${{ github.event.pull_request.number }}'
+          REPOSITORY: '${{ github.repository }}'
+        run : |
+          ORG=$(echo $REPOSITORY | cut -d "/" -f1)
+          REPO=$(echo $REPOSITORY | cut -d "/" -f2)
+          for PACKAGE_VERSION_ID in $(curl -s -H "Authorization: Bearer ${{ secrets.GH_PAT_DELETE_PACKAGES }}" https://api.github.com/orgs/${ORG}/packages/container/${REPO}/versions | jq '.[] | select( (.metadata.container.tags | length) == 0) | .id')
+          do
+              echo "Delete untagged package with id ${PACKAGE_VERSION_ID}"
+              curl -X DELETE -H "Authorization: Bearer ${{ secrets.GH_PAT_DELETE_PACKAGES }}" https://api.github.com/orgs/${ORG}/packages/container/${REPO}/versions/${PACKAGE_VERSION_ID}
+          done
