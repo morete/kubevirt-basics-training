@@ -25,10 +25,10 @@ RUN wkhtmltopdf --enable-internal-links --enable-local-file-access \
 
 FROM docker.io/nginxinc/nginx-unprivileged:1.27-alpine
 
-LABEL maintainer acend.ch
+LABEL maintainer tim-koko.ch
 LABEL org.opencontainers.image.title "acend.ch's KubeVirt Basics Training"
 LABEL org.opencontainers.image.description "Container with acend.ch's KubeVirt Training content"
-LABEL org.opencontainers.image.authors acend.ch
+LABEL org.opencontainers.image.authors tim-koko.ch
 LABEL org.opencontainers.image.source https://github.com/acend/kubevirt-basics-training/
 LABEL org.opencontainers.image.licenses CC-BY-SA-4.0
 
