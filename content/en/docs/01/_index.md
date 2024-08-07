@@ -123,4 +123,15 @@ status: {}
 ```
 {{% /details %}}
 
+
+### Highlighting important things
+
+We will use the following styling to highlight various things.
+
+{{% alert title="Node" color="info" %}} This is an information providing some additional help or information {{% /alert %}}
+
+{{% alert title="Important" color="warning" %}} This is an important note which you should read and follow.  {{% /alert %}}
+
+{{% alert title="Alert" color="danger" %}} This is an alert or important warning. You should carefully read and follow the details. {{% /alert %}}
+
 [^1]: [Eclipse Theia IDE Project](https://theia-ide.org/)

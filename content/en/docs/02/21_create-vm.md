@@ -41,7 +41,7 @@ You may also use `spec.domain.memory.guest` or `spec.domain.memory.hugepages.siz
 Do you see any problems with the specification above? Try to answer the following questions:
 
 * What happens when you run this vm?
-* What is required to successfully boot machine?
+* What is required to successfully boot a machine?
 
 {{% details title="Task Hint" %}}
 Our created manifest does not contain any bootable devices. Our vm is able to start, but it will just hang as there are
@@ -125,12 +125,12 @@ spec:
 Since you have completed the yaml configuration for the VM it's now time to create it our VM in the kubernetes cluster.
 
 ```shell
-kubectl create -f testvm.yaml {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm.yaml
+kubectl create -f {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm.yaml
 ```
 
 The output should be:
 
 ```shell
-virtualmachine.kubevirt.io/lab02-firstvm created
+virtualmachine.kubevirt.io/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}} created
 ```
 

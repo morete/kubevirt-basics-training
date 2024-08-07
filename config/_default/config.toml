@@ -81,7 +81,15 @@ labsfoldername = "labs"
 labsubfolderprefix = "lab"
 maxlabnumber = 7
 
+end-of-lab-title = "Cleaning up resources"
+end-of-lab-text = "You have reached the end of this lab. Please stop your running VirtualMachines to safe resources on the kubernetes cluster."
+
+
 cirrosContainerDiskImage = "quay.io/kubevirt/cirros-container-disk-demo"
+cirrosContainerDiskDownload = "https://download.cirros-cloud.net/0.6.2/cirros-0.6.2-x86_64-disk.img"
+alpineContainerDiskDownload = "https://dl-cdn.alpinelinux.org/alpine/v3.20/releases/cloud/nocloud_alpine-3.20.2-x86_64-bios-cloudinit-r0.qcow2"
+
+dummypwd = "changeme"
 
 [params.ui]
 # Enable to show the side bar menu in its compact state.

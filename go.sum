@@ -18,6 +18,10 @@ github.com/tim-koko/docsy-timkoko v0.0.0-20240724122557-476bb05bf47f h1:qZA3PPGO
 github.com/tim-koko/docsy-timkoko v0.0.0-20240724122557-476bb05bf47f/go.mod h1:5AwKpHpnfHQpAHCktDM0pLoni38c7tn+XrbbeABWrd4=
 github.com/tim-koko/docsy-timkoko v0.0.0-20240724123954-5d414473245d h1:dtEU6PrF31st/VML5ToIVesvuGsLxSh9gifbeXT1VOQ=
 github.com/tim-koko/docsy-timkoko v0.0.0-20240724123954-5d414473245d/go.mod h1:5AwKpHpnfHQpAHCktDM0pLoni38c7tn+XrbbeABWrd4=
+github.com/tim-koko/docsy-timkoko v0.0.0-20240807080954-2aaba9ec86c2 h1:6Canqm+YgGHFi0gtXZoj09mld6B31Ehy7XfMAGrQmbY=
+github.com/tim-koko/docsy-timkoko v0.0.0-20240807080954-2aaba9ec86c2/go.mod h1:5AwKpHpnfHQpAHCktDM0pLoni38c7tn+XrbbeABWrd4=
+github.com/tim-koko/docsy-timkoko v0.0.0-20240807081824-5ba1dd15ceca h1:9tcAuOGE638EbmwfKL3075wBF/rXaae2GPtPyTSHF48=
+github.com/tim-koko/docsy-timkoko v0.0.0-20240807081824-5ba1dd15ceca/go.mod h1:5AwKpHpnfHQpAHCktDM0pLoni38c7tn+XrbbeABWrd4=
 github.com/twbs/bootstrap v5.2.3+incompatible/go.mod h1:fZTSrkpSf0/HkL0IIJzvVspTt1r9zuf7XlZau8kpcY0=
 github.com/twbs/bootstrap v5.3.3+incompatible h1:goFoqinzdHfkeegpFP7pvhbd0g+A3O2hbU3XCjuNrEQ=
 github.com/twbs/bootstrap v5.3.3+incompatible/go.mod h1:fZTSrkpSf0/HkL0IIJzvVspTt1r9zuf7XlZau8kpcY0=
