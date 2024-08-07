@@ -34,7 +34,7 @@ In kubernetes the resource `VirtualMachine` has a shortname `vm`. Therefore, the
 kubectl get vm
 ```
 
-From now on we will use the shortname `vm`. 
+From now on we will use the shortname `vm`.
 
 You can list all shortnames with:
 
@@ -46,13 +46,13 @@ kubectl api-resources
 
 ## {{% task %}} Start your VirtualMachine
 
-There are two ways of starting your VirtualMachine. You can patch your VirtualMachine resource with `kubectl` or use `virtctl` to 
+There are two ways of starting your VirtualMachine. You can patch your VirtualMachine resource with `kubectl` or use `virtctl` to
 start the VM. Try starting and stopping your VM with both methods.
 
 
 ### Using Kubectl
 
-Your VirtualMachine resource contains a field `spec.running` which indicated the desired state of the VM. You can check 
+Your VirtualMachine resource contains a field `spec.running` which indicated the desired state of the VM. You can check
 the resource with:
 
 ```shell
@@ -66,7 +66,7 @@ kubectl get vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}
 ```
 
 {{% alert title="Note" color="info" %}}
-With `kubectl` all you have to do to start and stop your VM is patching the field `spec.running`. 
+With `kubectl` all you have to do to start and stop your VM is patching the field `spec.running`.
 {{% /alert %}}
 
 Use the following command to start your vm:
@@ -105,9 +105,10 @@ The output should again be:
 virtualmachine.kubevirt.io/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm patched
 ```
 
+
 ### Using virtctl
 
-The binary `virtctl` provides an easier way of interacting with KubeVirt VMs. 
+The binary `virtctl` provides an easier way of interacting with KubeVirt VMs.
 
 Start your VM with:
 ```shell
@@ -133,7 +134,7 @@ NAME            AGE   STATUS    READY
 {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm   11m   Running   True
 ```
 
-For stopping your VM simply use 
+For stopping your VM simply use
 ```shell
 virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm
 ```
@@ -147,7 +148,7 @@ VM lab02-firstvm was scheduled to stop
 
 ### Involved Components
 
-When your VM is in a `running` state you may have noticed that there is an additional pod running. Make sure your VM is 
+When your VM is in a `running` state you may have noticed that there is an additional pod running. Make sure your VM is
 running and issue the following command:
 
 ```shell
@@ -161,11 +162,11 @@ $USER-webshell-885dbc579-lwhtd      2/2     Running   0          1d
 virt-launcher-lab02-firstvm-mfxrs   3/3     Running   0          90s
 ```
 
-For each running VM there is a `virt-launcher` pod which is responsible to start the effective VM process in the 
+For each running VM there is a `virt-launcher` pod which is responsible to start the effective VM process in the
 container and observes the VM state.
 
-Beside the existence of the `virt-launcher` pod a new custom resource `VirtualMachineInstance` is present. This resource is 
-created under the hood by the `virt-controller` and will only be available as long as the VM is running. It represents a 
+Beside the existence of the `virt-launcher` pod a new custom resource `VirtualMachineInstance` is present. This resource is
+created under the hood by the `virt-controller` and will only be available as long as the VM is running. It represents a
 single running virtual machine instance.
 
 You may see your `VirtualMachineInstance` with the following command:
@@ -177,5 +178,4 @@ kubectl get vmi
 {{% alert title="Note" color="info" %}}
 Remember that `vmi` is the shortname for `VirtualMachineInstance` just like `vm` for `VirtualMachine`.
 {{% /alert %}}
-
 

@@ -8,12 +8,13 @@ description: >
 ---
 
 
-## Goals of this lab 
+## Goals of this lab
 
-- Get familiar with the lab environment
-- Create our first VM using KubeVirt
-- Start and Stop a VM using virtctl or kubectl
-- Connect to the console of the VM
+* Get familiar with the lab environment
+* Create our first VM using KubeVirt
+* Start and Stop a VM using virtctl or kubectl
+* Connect to the console of the VM
+
 
 ## Folder structure
 

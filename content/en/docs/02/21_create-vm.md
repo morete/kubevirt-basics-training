@@ -35,29 +35,31 @@ A VirtualMachine yaml requires a memory resource specification. Therefore, we al
 You may also use `spec.domain.memory.guest` or `spec.domain.memory.hugepages.size` as a resource specification.
 {{% /alert %}}
 
+
 ### {{% task %}} Review VirtualMachine manifest
 
 Do you see any problems with the specification above? Try to answer the following questions:
 
-- What happens when you run this vm?
-- What is required to successfully boot machine?
+* What happens when you run this vm?
+* What is required to successfully boot machine?
 
 {{% details title="Task Hint" %}}
-Our created manifest does not contain any bootable devices. Our vm is able to start, but it will just hang as there are 
-no bootable devices available. 
+Our created manifest does not contain any bootable devices. Our vm is able to start, but it will just hang as there are
+no bootable devices available.
 
 ![No bootable device](../no-bootable-device.png)
 
-Having a bootable disk within your yaml specification is all you need to start the vm. However, as there is no network 
-interface specified which is connected to the underlying network our system would not be capable of interacting with the 
+Having a bootable disk within your yaml specification is all you need to start the vm. However, as there is no network
+interface specified which is connected to the underlying network our system would not be capable of interacting with the
 outside world.
 {{% /details %}}
 
+
 ### {{% task %}} Write your own VirtualMachine manifest
 
-Create a file `vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm.yaml` with the content yaml 
-content from above. Starting from the basic manifest you need to add a bootable disk for your vm and a network and 
-interface specification. The easiest way is to use an ephemeral `containerDisk` mountable as a volume. Regarding the 
+Create a file `vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm.yaml` with the content yaml
+content from above. Starting from the basic manifest you need to add a bootable disk for your vm and a network and
+interface specification. The easiest way is to use an ephemeral `containerDisk` mountable as a volume. Regarding the
 network we connect our VM to the underlying kubernetes default network.
 
 ```yaml
@@ -117,6 +119,7 @@ spec:
 ```
 {{% /details %}}
 
+
 ### {{% task %}} Create the VirtualMachine
 
 Since you have completed the yaml configuration for the VM it's now time to create it our VM in the kubernetes cluster.
@@ -130,6 +133,4 @@ The output should be:
 ```shell
 virtualmachine.kubevirt.io/lab02-firstvm created
 ```
-
-
 

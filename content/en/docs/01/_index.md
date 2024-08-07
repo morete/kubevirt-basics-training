@@ -17,11 +17,11 @@ The provided lab environment contains an _Eclipse Theia IDE_[^1]. Your IDE will 
 
 ![Eclipse Theia IDE](theia.png)
 
-- On the left side you can open the file explorer
-- The Terminal is accessible using `Ctrl+Shit+^` or using the Menubar `Terminal > New Terminal`
+* On the left side you can open the file explorer
+* The Terminal is accessible using `Ctrl+Shit+^` or using the Menubar `Terminal > New Terminal`
 
-The available environment in the webshell contains all the needed tools like `kubectl` and `virtctl` as well as 
-the configuration needed to access the kubernetes cluster. If you have a terminal running you can interact with the 
+The available environment in the webshell contains all the needed tools like `kubectl` and `virtctl` as well as
+the configuration needed to access the kubernetes cluster. If you have a terminal running you can interact with the
 kubernetes cluster. For example, you can list your context or get the pods of the current namespace:
 
 ```shell
@@ -37,9 +37,10 @@ user4-webshell-885dbc579-lwhtd   2/2     Running   0          11d
 You can create files within your webshell or using the file explorer. Using the shell they will show up in the file
 explorer and vice versa. Your workplace is persistent and is available for the whole training duration.
 
+
 ### Exiting a console of a virtual machine
 
-In various labs we will connect to the console of a virtual machine using the `virtctl console `. Your terminal will look like this:
+In various labs we will connect to the console of a virtual machine using the `virtctl console`. Your terminal will look like this:
 
 ```shell
 virtctl console kubevirtvm
@@ -52,15 +53,15 @@ Successfully connected to kubevirtvm console. The escape sequence is ^
 
 This simple escape sequence `^` does not work within the webshell terminal. You have the following options to exit the console:
 
-- Press `Ctrl+AltGr+]]` (yes, press `]` twice)
-- Close the webshell terminal and open a new one with `Ctrl+Shift+^`
+* Press `Ctrl+AltGr+]]` (yes, press `]` twice)
+* Close the webshell terminal and open a new one with `Ctrl+Shift+^`
 
 
 ## Namespace
 
 We're going to use the following Namespace for the labs
 
-- `<user>` where we deploy our Virtual Machines.
+* `<user>` where we deploy our Virtual Machines.
 
 Alternatively there is a namespace `<user>-dev` available.
 
@@ -88,13 +89,14 @@ Some prefer to explicitly select the Namespace for each `kubectl` command by add
 
 ## General Lab Notes
 
+
 ### Placeholders
 
 In this lab we will use the following placeholders or naming conventions
 
 Placeholders:
 
-- `$USER` your username (for example `user4`)
+* `$USER` your username (for example `user4`)
 
 
 ### Hints
