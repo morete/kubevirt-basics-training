@@ -1,6 +1,7 @@
 ---
 title: "1. Lab Environment"
 weight: 1
+labfoldernumber: "01"
 sectionnumber: 1
 ---
 
@@ -12,7 +13,29 @@ sectionnumber: 1
 
 ## Webshell
 
-The provided lab environment contains an Eclipse Theia IDE webshell. Within this webshell you can open a terminal with `Terminal > New Terminal` or `Ctrl+Shift+^`. The available environment contains the needed tools like `kubectl` and `virtctl` as well as the configuration needed to access the kubernetes cluster.
+The provided lab environment contains an _Eclipse Theia IDE_[^1]. Your IDE will look something like this:
+
+![Eclipse Theia IDE](theia.png)
+
+- On the left side you can open the file explorer
+- The Terminal is accessible using `Ctrl+Shit+^` or using the Menubar `Terminal > New Terminal`
+
+The available environment in the webshell contains all the needed tools like `kubectl` and `virtctl` as well as 
+the configuration needed to access the kubernetes cluster. If you have a terminal running you can interact with the 
+kubernetes cluster. For example, you can list your context or get the pods of the current namespace:
+
+```shell
+theia(user4) /home/project $ kubectl config get-contexts
+CURRENT   NAME    CLUSTER   AUTHINFO   NAMESPACE
+          local   local     local      user4
+          
+theia(user4) /home/project $ kubectl get pods
+NAME                             READY   STATUS    RESTARTS   AGE
+user4-webshell-885dbc579-lwhtd   2/2     Running   0          11d
+```
+
+You can create files within your webshell or using the file explorer. Using the shell they will show up in the file
+explorer and vice versa. Your workplace is persistent and is available for the whole training duration.
 
 ### Exiting a console of a virtual machine
 
@@ -62,7 +85,17 @@ kubectl config use-context local
 Some prefer to explicitly select the Namespace for each `kubectl` command by adding `--namespace <namespace>` or `-n <namespace>`.
 {{% /alert %}}
 
+
 ## General Lab Notes
+
+### Placeholders
+
+In this lab we will use the following placeholders or naming conventions
+
+Placeholders:
+
+- `$USER` your username (for example `user4`)
+
 
 ### Hints
 
@@ -72,7 +105,6 @@ We usually provide help for a task you have to complete. For example if you have
 Your yaml should look like this:
 
 ```yaml
-apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
   name: kubevirtvm
@@ -81,23 +113,12 @@ spec:
   template:
     spec:
       domain:
-        devices:
-          disks:
-            - name: containerdisk
-              disk:
-                bus: virtio
-          interfaces:
-            - name: default
-              masquerade: {}
-        resources:
-          requests:
-            memory: 64M
-      networks:
-        - name: default
-          pod: {}
-      volumes:
-        - name: containerdisk
-          containerDisk:
-            image: quay.io/kubevirt/cirros-container-disk-demo
+        devices: {}
+        memory:
+          guest: 64Mi
+        resources: {}
+status: {}
 ```
 {{% /details %}}
+
+[^1]: [Eclipse Theia IDE Project](https://theia-ide.org/)
