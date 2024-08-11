@@ -37,7 +37,7 @@ Since you created the VirtualMachine in the previous section you may verify the 
 kubectl get virtualmachine
 ```
 
-The output should be as follows:
+You should see your virtual machines listed as following:
 
 ```shell
 NAME            AGE   STATUS    READY

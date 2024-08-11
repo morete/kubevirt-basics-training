@@ -1,8 +1,8 @@
 ---
-title: "2.4 Changing files"
-weight: 240
+title: "2.5 Changing files"
+weight: 250
 labfoldernumber: "02"
-sectionnumber: 2.4
+sectionnumber: 2.5
 description: >
   Changing files in your running VM.
 ---

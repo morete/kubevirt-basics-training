@@ -11,9 +11,11 @@ description: >
 ## Goals of this lab
 
 * Get familiar with the lab environment
-* Create our first VM using KubeVirt
-* Start and Stop a VM using virtctl or kubectl
+* Create your first VM using KubeVirt
+* Start and Stop a VM using `virtctl` or `kubectl`
 * Connect to the console of the VM
+* Expose and access ports of your VM
+* Making file changes to you VM and observe behaviour
 
 
 ## Folder structure

@@ -21,6 +21,10 @@ metadata:
 spec:
   running: false
   template:
+    metadata:
+      labels:
+        kubevirt.io/size: small
+        kubevirt.io/domain: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm
     spec:
       domain:
         devices: {}
@@ -96,6 +100,10 @@ metadata:
 spec:
   running: false
   template:
+    metadata:
+      labels:
+        kubevirt.io/size: small
+        kubevirt.io/domain: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm
     spec:
       domain:
         devices:
