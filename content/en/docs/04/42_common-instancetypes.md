@@ -1,0 +1,324 @@
+---
+title: "4.2 Common Instancetypes"
+weight: 420
+labfoldernumber: "04"
+sectionnumber: 4.2
+description: >
+  Discover and user Common Instancetypes and Preferences provided by KubeVirt.
+---
+
+The KubeVirt project [Common Instancetypes and Preferences](https://github.com/kubevirt/common-instancetypes) provides a set of instancetypes and preferences.
+
+
+## Deployment of Common Instancetypes and Preferences
+
+The common instancetypes and preferences are not available by default. They have to be deployed manually or using a
+feature gate of the KubeVirt operator.
+
+You can check the configuration on the KubeVirt CustomResource:
+```shell
+kubectl get kubevirt kubevirt -n kubevirt -o jsonpath={.spec.configuration.developerConfiguration.featureGates}
+```
+
+The relevant section on the CustomResource is the following:
+```yaml
+apiVersion: kubevirt.io/v1
+kind: KubeVirt
+metadata:
+  name: kubevirt
+spec:
+  configuration:
+    developerConfiguration:
+      featureGates:
+        - CommonInstancetypesDeploymentGate
+...
+```
+
+With the feature gate enabled, the operator itself takes care of deploying the cluster wide common instance types and preferences.
+
+
+### Manually deploy the Common Instancetypes and Preferences
+
+If you want to deploy the instance types and preferences manually, simply apply them using the kustomize flag `-k`:
+
+```shell
+kubectl apply -k https://github.com/kubevirt/common-instancetypes.git
+```
+
+
+## Listing and inspect Instancetypes
+
+Be aware that the common instancetypes and preferences are cluster wide. Therefore, the CustomResources are
+`VirtualMachineClusterInstancetype` and `VirtualMachineClusterPreference`.
+
+You can list the available instance types using:
+```shell
+kubectl get virtualmachineclusterinstancetype
+```
+
+Shortened output of the command above:
+```shell
+NAME          AGE
+cx1.2xlarge   31m
+...
+gn1.2xlarge   31m
+...
+m1.2xlarge    31m
+...
+n1.2xlarge    31m
+...
+o1.2xlarge    31m
+...
+u1.2xlarge    31m
+u1.4xlarge    31m
+u1.8xlarge    31m
+u1.large      31m
+u1.medium     31m
+u1.micro      31m
+u1.nano       31m
+u1.small      31m
+u1.xlarge     31m
+```
+
+As you see the instancetypes follow the naming schema:
+
+```shell
+instanceTypeName = seriesName , "." , size;
+
+seriesName = ( class | vendorClass ) , version;
+
+class = "u" | "o" | "cx" | "g" | "m" | "n" | "rt";
+vendorClass = "g" , vendorHint;
+vendorHint = "n" | "i" | "a";
+version = "1";
+
+size = "nano" | "micro" | "small" | "medium" | "large" | [( "2" | "4" | "8" )] , "xlarge";
+```
+
+The class `u`, `o`, `cx`, `g`, `m`, `n` and  `rt` mean the following:
+
+* **U** (universal) - Provides resources for general purpose applications. VMs will share CPU cores on a time-slice basis.
+* **O** (overcommitted) - Based on `u` with the only difference that memory will be overcommitted. Allows higher workload density.
+* **CX** (compute exclusive) - Provides exclusive compute resources for compute intensive applications.
+* **GN** (gpu nvidia) - Instance type for VMs which consume attached NVIDIA GPUs.
+* **M** (memory) - Provides resources for memory intensive applications.
+* **N** (network) - Provide resources for network intensive DPDK[^1] applications like Virtual Network Functions.
+* **RT** (realtime) - Provide resources for realtime intensive applications.
+
+We therefore can say that the classes `u` and `o` are agnostic to the workload. The other classes are optimized for
+specific workload.
+
+You may see the details of an instancetype by describing the resource
+```shell
+kubectl describe virtualmachineclusterinstancetype o1.nano
+```
+
+As an example you'll see that the instancetype `o1.nano` has 1 CPU, 512Mi of memory and overcommittes memory by 50%. The following output is shortened:
+```shell
+Name:         o1.nano
+Namespace:    
+Labels:       app.kubernetes.io/component=kubevirt
+              app.kubernetes.io/managed-by=virt-operator
+              instancetype.kubevirt.io/class=overcommitted
+              instancetype.kubevirt.io/common-instancetypes-version=v1.0.1
+              instancetype.kubevirt.io/cpu=1
+              instancetype.kubevirt.io/icon-pf=pficon-virtual-machine
+              instancetype.kubevirt.io/memory=512Mi
+              instancetype.kubevirt.io/vendor=kubevirt.io
+              instancetype.kubevirt.io/version=1
+Annotations:  instancetype.kubevirt.io/description:
+                The O Series is based on the U Series, with the only difference
+                being that memory is overcommitted.
+                
+                *O* is the abbreviation for "Overcommitted".
+              instancetype.kubevirt.io/displayName: Overcommitted
+              ...
+API Version:  instancetype.kubevirt.io/v1beta1
+Kind:         VirtualMachineClusterInstancetype
+Metadata:
+  ...
+Spec:
+  Cpu:
+    Guest:  1
+  Memory:
+    Guest:               512Mi
+    Overcommit Percent:  50
+```
+
+
+## Listing and inspect Preferences
+
+```shell
+kubectl get virtualmachineclusterpreference
+```
+
+Shortened output of the command above:
+```shell
+NAME                     AGE
+alpine                   101m
+centos.7                 101m
+...
+```
+
+You may see the details of a preference by describing the resource:
+```shell
+kubectl describe virtualmachineclusterpreference windows.10
+```
+
+As an example you'll see that the instancetype `cirros` has the requirements of 1 CPU, 256Mi memory. The following output is shortened:
+
+```shell
+Name:         cirros
+Namespace:    
+Labels:       app.kubernetes.io/component=kubevirt
+              app.kubernetes.io/managed-by=virt-operator
+              instancetype.kubevirt.io/common-instancetypes-version=v1.0.1
+              instancetype.kubevirt.io/os-type=linux
+              instancetype.kubevirt.io/vendor=kubevirt.io
+Annotations:  iconClass: icon-cirros
+              tags: hidden,kubevirt,cirros
+API Version:  instancetype.kubevirt.io/v1beta1
+Kind:         VirtualMachineClusterPreference
+Metadata:
+  ...
+Spec:
+  Devices:
+    Preferred Disk Bus:         virtio
+    Preferred Interface Model:  virtio
+  Requirements:
+    Cpu:
+      Guest:  1
+    Memory:
+      Guest:  256Mi
+```
+
+
+## Querying for specific instancetypes and preferences with labels
+
+
+### Instancetypes
+
+These instancetypes are labeled according to their specification. You can use labels to find the correct instancetype.
+
+Instancetypes are known to use the following labels:
+```properties
+instancetype.kubevirt.io/common-instancetypes-version: The version of the common-instancetypes project used to generate these resources.
+instancetype.kubevirt.io/vendor: The vendor of the resource, this is always kubevirt.io upstream and should be changed by downstream vendors consuming the project.
+instancetype.kubevirt.io/icon-pf: The suggested patternfly icon to use when displaying the resource.
+instancetype.kubevirt.io/deprecated: If the resource has been deprecated ahead of removal in a future release of the common-instancetypes project.
+instancetype.kubevirt.io/version: The version of instance type class the resources has been generated from.
+instancetype.kubevirt.io/class: The class of the instance type.
+instancetype.kubevirt.io/cpu: The number of vCPUs provided by the instance type.
+instancetype.kubevirt.io/memory: The amount of memory provided by the instance type.
+instancetype.kubevirt.io/numa: If NUMA guestmappingpassthrough is enabled by the instance type.
+instancetype.kubevirt.io/dedicatedCPUPlacement: If dedicatedCPUPlacement is enabled by the instance type.
+instancetype.kubevirt.io/isolateEmulatorThread: If isolateEmulatorThread is enabled by the instance type.
+instancetype.kubevirt.io/hugepages: If hugepages are requested by the instance type.
+instancetype.kubevirt.io/gpus: If GPUs are requested by the instance type.
+```
+
+As an example you can query for 4 CPUs:
+```shell
+kubectl get virtualmachineclusterinstancetype --selector instancetype.kubevirt.io/cpu=4
+```
+
+Output will list all instancetypes with 4 CPUs:
+```shell
+NAME         AGE
+cx1.xlarge   98m
+gn1.xlarge   98m
+m1.xlarge    98m
+n1.large     98m
+n1.medium    98m
+o1.xlarge    98m
+u1.xlarge    98m
+```
+
+
+### Preferences
+
+Just like instancetypes the preferences are labeled with the following labels:
+```properties
+instancetype.kubevirt.io/common-instancetypes-version: The version of the common-instancetypes project used to generate these resources.
+instancetype.kubevirt.io/vendor: The vendor of the resource, this is always kubevirt.io upstream and should be changed by downstream vendors consuming the project.
+instancetype.kubevirt.io/icon-pf: The suggested patternfly icon to use when displaying the resource.
+instancetype.kubevirt.io/deprecated: If the resource has been deprecated ahead of removal in a future release of the common-instancetypes project.
+instancetype.kubevirt.io/os-type: The underlying type of the workload supported by the preference, current values are linux or windows.
+instancetype.kubevirt.io/arch: The underlying architecture of the workload supported by the preference, current values are `arm64` or `amd64`.
+```
+
+We can use these labels to query preferences:
+```shell
+kubectl get virtualmachineclusterpreference --selector instancetype.kubevirt.io/os-type=linux
+```
+
+Output will list all preferences targeting the operating system linux (output shortened):
+```shell
+alpine                   101m
+centos.7                 101m
+...
+cirros                   101m
+fedora                   101m
+....
+rhel.9.dpdk              100m
+ubuntu                   100m
+```
+
+
+## {{% task %}} Find matching Instancetype and preference
+
+You want to find the optimal configuration of instancetype and preference for a Windows 10 64-bit installation.
+According to Microsoft the Windows 10 system requirements[^2] are the following:
+
+```text
+Processor: 1 gigahertz (GHz) or faster processor or SoC
+RAM: 2 GB for 64-bit
+Hard disk space: 20 GB for 64-bit OS
+```
+
+Try to find the best matching instancetype and preference for a Windows 10 minimal installation using label selectors.
+
+{{% details title="Task Hint" %}}
+You can query instance types as follows:
+```shell
+kubectl get virtualmachineclusterinstancetype \
+   --selector instancetype.kubevirt.io/cpu=1,instancetype.kubevirt.io/memory=2Gi
+
+NAME         AGE
+cx1.medium   153m
+o1.small     153m
+u1.small     152m
+```
+
+You would most likely pick `o1.small` or `u1.small` as your instancetype.
+
+
+For preferences, you can use the following query:
+```shell
+kubectl get virtualmachineclusterpreference --selector instancetype.kubevirt.io/os-type=windows
+
+NAME                  AGE
+windows.10            153m
+windows.10.virtio     153m
+windows.11            153m
+windows.11.virtio     153m
+windows.2k12          153m
+windows.2k12.virtio   153m
+windows.2k16          153m
+windows.2k16.virtio   153m
+windows.2k19          153m
+windows.2k19.virtio   153m
+windows.2k22          153m
+windows.2k22.virtio   153m
+```
+
+The preferences `windows.10` or `windows.10.virtio` are the best matching.
+
+{{% alert title="Note" color="info" %}}
+Of course this applies only to the minimal requirements. In a production environment you would most likely size your instance bigger than the minimal requirements.
+{{% /alert %}}
+
+{{% /details %}}
+
+[^1]: [Data Plane Development Kit (DPDK)](https://www.dpdk.org/about/)
+[^2]: [Windows 10 system requirements](https://support.microsoft.com/en-us/windows/windows-10-system-requirements-6d4e9a79-66bf-7950-467c-795cf0386715)

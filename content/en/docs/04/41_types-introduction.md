@@ -4,16 +4,19 @@ weight: 410
 labfoldernumber: "04"
 sectionnumber: 4.1
 description: >
-  Introduction to virtual machine Instancetypes Preferences
+  Create your own Instancetype
 ---
 
 Even if KubeVirt provides advanced options and a lot of configuration options for different VMs we usually have a common
 set of VM specifications which we will use for most of our VMs. Therefore, it may make sense of defining such
-specifications as Instancetypes and or Preferences. To achieve this, KubeVirt provides multiple Custom Resource
-Definitions like `VirtualMachineInstancetype`, `VirtualMachineClusterInstancetype` or `VirtualMachinePreference`. KubeVirt
-provides common defaults[^1] for Instancetypes and Preferences.
+specifications as Instancetypes and or Preferences.
+
+To achieve this, KubeVirt provides multiple Custom Resource
+Definitions like `VirtualMachineInstancetype`, `VirtualMachineClusterInstancetype` or `VirtualMachinePreference`.
+
 
 ## VM Instancetype
+
 For an Instancetype we have the option of using the cluster wide `VirtualMachineClusterInstancetype` or the namespaced
 `VirtualMachineInstancetype`.
 
@@ -43,6 +46,7 @@ Not like the characteristics from an Instancetype the preferences only defined t
 in the VirtualMachine specification. The specification from the VirtualMachine has priority.
 {{% /alert %}}
 
+
 ## Using Instancetype or Preference in a virtual machine
 
 A sample virtual machine referencing an Instancetype and Preference can look like this:
@@ -60,5 +64,3 @@ spec:
     kind: VirtualMachinePreference
     name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-example-preference
 ```
-
-[^1]: [Common Instancetypes](https://github.com/kubevirt/common-instancetypes)

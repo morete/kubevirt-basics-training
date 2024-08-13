@@ -8,12 +8,13 @@ description: >
 ---
 
 In the previous section we accessed our VM console using the `virtctl` tool. In this section we will expose the SSH port
-of our VM and access it directly. 
+of our VM and access it directly.
 
 {{% alert title="Note" color="info" %}}
 This can be done for any port you want to use. For example if your virtual machine provides a webserver you can expose
-the webserver port. 
+the webserver port.
 {{% /alert %}}
+
 
 ## Checking available Services
 
@@ -28,7 +29,9 @@ NAME             TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
 $USER-webshell   ClusterIP   10.43.248.212   <none>        3000/TCP   1d
 ```
 
+
 ## Exposing port 22(ssh) on the kubernetes pod network
+
 To access the SSH port from the kubernetes default pod network we have to create a simple service.
 For this we use a Service of type `ClusterIP`.
 
@@ -74,7 +77,9 @@ virtctl expose vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber"
 We will use this approach in the next section.
 {{% /alert %}}
 
+
 ## Exposting SSH port for external use
+
 Our exposed Service with type `ClusterIP` is only reachable from within the kubernetes cluster. On our kubernetes
 cluster we can expose the port 22(ssh) as a `NodePort` service to access it from the outside of the cluster.
 
@@ -118,7 +123,7 @@ kubectl get nodes -o wide
 ```
 {{% /alert %}}
 
-Since the NodePort Service is accessible on any worker node you can simply pick one IP and issue the following command 
+Since the NodePort Service is accessible on any worker node you can simply pick one IP and issue the following command
 from within your webshell (make sure you replace the IP and the assigned NodPort to match your details):
 ```shell
 ssh cirros@188.245.73.202 -p 32664
