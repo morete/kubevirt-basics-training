@@ -46,7 +46,7 @@ kubectl apply -k https://github.com/kubevirt/common-instancetypes.git
 ```
 
 
-## Listing and inspect Instancetypes
+## List and inspect Instancetypes
 
 Be aware that the common instancetypes and preferences are cluster wide. Therefore, the CustomResources are
 `VirtualMachineClusterInstancetype` and `VirtualMachineClusterPreference`.
@@ -146,7 +146,7 @@ Spec:
 ```
 
 
-## Listing and inspect Preferences
+## List and inspect Preferences
 
 ```shell
 kubectl get virtualmachineclusterpreference
@@ -319,6 +319,192 @@ Of course this applies only to the minimal requirements. In a production environ
 {{% /alert %}}
 
 {{% /details %}}
+
+
+## {{% task %}} Deploy two Cirros VMs with minimal requirements
+
+Deploy two VMs with different instance types:
+
+* Deploy a cirros VM using an `u` class instancetype and a matching preference.
+  * Write the VM specification in `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros.yaml`
+* Deploy a cirros VM using an `o` class instancetype and the same preference.
+  * rite the VM specification in `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros.yaml`
+
+{{% details title="Task Hint" %}}
+`vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros.yaml` specification:
+```yaml
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: lab04-u1-cirros
+spec:
+  running: false
+  instancetype:
+    kind: VirtualMachineClusterInstancetype
+    name: u1.nano
+  preference:
+    kind: VirtualMachineClusterPreference
+    name: cirros
+  template:
+    metadata:
+      labels:
+        kubevirt.io/size: nano
+        kubevirt.io/domain: lab04-u1-cirros
+    spec:
+      domain:
+        devices:
+          disks:
+            - name: containerdisk
+            - name: cloudinitdisk
+          interfaces:
+            - name: default
+              masquerade: {}
+      networks:
+        - name: default
+          pod: {}
+      volumes:
+        - name: containerdisk
+          containerDisk:
+            image: quay.io/kubevirt/cirros-container-disk-demo
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+            userDataBase64: SGkuXG4=
+```
+
+`vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros.yaml` specification:
+```yaml
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: lab04-o1-cirros
+spec:
+  running: false
+  instancetype:
+    kind: VirtualMachineClusterInstancetype
+    name: o1.nano
+  preference:
+    kind: VirtualMachineClusterPreference
+    name: cirros
+  template:
+    metadata:
+      labels:
+        kubevirt.io/size: nano
+        kubevirt.io/domain: lab04-o1-cirros
+    spec:
+      domain:
+        devices:
+          disks:
+            - name: containerdisk
+            - name: cloudinitdisk
+          interfaces:
+            - name: default
+              masquerade: {}
+      networks:
+        - name: default
+          pod: {}
+      volumes:
+        - name: containerdisk
+          containerDisk:
+            image: quay.io/kubevirt/cirros-container-disk-demo
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+            userDataBase64: SGkuXG4=
+```
+
+Apply and start both VMs with
+```shell
+kubectl apply -f vm_lab04-u1-cirros.yaml
+kubectl apply -f vm_lab04-o1-cirros.yaml
+virtctl start lab04-u1-cirros
+virtctl start lab04-o1-cirros
+```
+{{% /details %}}
+
+
+## {{% task %}} Inspect difference due to instancetype
+
+The main difference in the instancetypes `u` and `o` are memory overcommitting. Let's inspect our two VMs. What exactly means
+overcommitting in the scope of a VirtualMachine instances? Overcommitting means we assign the VM more memory as we request
+from the cluster by setting `spec.domain.memory.guest` to a higher value than `spec.domain.resources.requests.memory`.
+
+What would you expect from both VMs?
+{{% details title="Task Hint" %}}
+
+* `u` class: Expect to have equal request for `spec.domain.memory.guest` and `spec.domain.resources.requests.memory`
+* `o` class: Expect to have a higher request for `spec.domain.memory.guest` as `spec.domain.resources.requests.memory`
+
+For both VMs we would expect the guest os to have approximately 512 mb of ram.
+{{% /details %}}
+
+Check the expectations about memory settings of both VirtualMachine instances `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros` and `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros`.
+
+{{% details title="Task Hint" %}}
+Describe both VirtualMachine instances using:
+```shell
+kubectl describe vmi lab04-o1-cirros -o yaml
+kubectl describe vmi lab04-u1-cirros -o yaml
+```
+
+`u` instance:
+```yaml
+apiVersion: kubevirt.io/v1
+kind: VirtualMachineInstance
+metadata:
+  name: lab04-o1-cirros
+spec:
+  domain:
+    resources:
+      requests:
+        memory: 512Mi
+    memory:
+      guest: 512Mi
+[...]
+```
+
+`o` instance:
+```yaml
+apiVersion: kubevirt.io/v1
+kind: VirtualMachineInstance
+metadata:
+  name: lab04-o1-cirros
+spec:
+  domain:
+    resources:
+      requests:
+        memory: 256Mi
+    memory:
+      guest: 512Mi
+[...]
+```
+
+As we can see the `o` class actually overcommits of 50% as defined in the `o1.nano` instance type.
+```yaml
+apiVersion: instancetype.kubevirt.io/v1beta1
+kind: VirtualMachineClusterInstancetype
+metadata:
+  name: o1.nano
+spec:
+  cpu:
+    guest: 1
+  memory:
+    guest: 512Mi
+    overcommitPercent: 50
+[...]
+```
+
+The `.status.memory` of both VirtualMachine instance show that the guest was assigned 512Mi memory.
+```yaml
+apiVersion: kubevirt.io/v1
+kind: VirtualMachineInstance
+status:
+  memory:
+    guestAtBoot: 512Mi
+    guestCurrent: 512Mi
+    guestRequested: 512Mi
+[...]
+```
+{{% /details %}}
+
 
 [^1]: [Data Plane Development Kit (DPDK)](https://www.dpdk.org/about/)
 [^2]: [Windows 10 system requirements](https://support.microsoft.com/en-us/windows/windows-10-system-requirements-6d4e9a79-66bf-7950-467c-795cf0386715)
