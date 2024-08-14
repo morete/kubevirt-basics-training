@@ -11,7 +11,7 @@ In the previous section we have provisioned a custom alpine cloud disk image. We
 disk image.
 
 
-## {{% task %}} Write a VM attaching our disk
+## {{% task %}} Attach the disk
 
 With your knowledge write a new VirtualMachine manifest named `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine.yaml`.
 
@@ -92,7 +92,7 @@ virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-
 ```
 
 
-## {{% task %}} Testing our VM
+## {{% task %}} Testing the VM
 
 Open the console of your VM:
 ```shell

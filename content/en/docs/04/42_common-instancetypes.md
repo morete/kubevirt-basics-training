@@ -31,7 +31,7 @@ spec:
     developerConfiguration:
       featureGates:
         - CommonInstancetypesDeploymentGate
-...
+[...]
 ```
 
 With the feature gate enabled, the operator itself takes care of deploying the cluster wide common instance types and preferences.
@@ -60,15 +60,10 @@ Shortened output of the command above:
 ```shell
 NAME          AGE
 cx1.2xlarge   31m
-...
 gn1.2xlarge   31m
-...
 m1.2xlarge    31m
-...
 n1.2xlarge    31m
-...
 o1.2xlarge    31m
-...
 u1.2xlarge    31m
 u1.4xlarge    31m
 u1.8xlarge    31m
@@ -78,6 +73,7 @@ u1.micro      31m
 u1.nano       31m
 u1.small      31m
 u1.xlarge     31m
+[...]
 ```
 
 As you see the instancetypes follow the naming schema:
@@ -132,17 +128,15 @@ Annotations:  instancetype.kubevirt.io/description:
                 
                 *O* is the abbreviation for "Overcommitted".
               instancetype.kubevirt.io/displayName: Overcommitted
-              ...
 API Version:  instancetype.kubevirt.io/v1beta1
 Kind:         VirtualMachineClusterInstancetype
-Metadata:
-  ...
 Spec:
   Cpu:
     Guest:  1
   Memory:
     Guest:               512Mi
     Overcommit Percent:  50
+[...]
 ```
 
 
@@ -157,7 +151,7 @@ Shortened output of the command above:
 NAME                     AGE
 alpine                   101m
 centos.7                 101m
-...
+[...]
 ```
 
 You may see the details of a preference by describing the resource:
@@ -179,8 +173,6 @@ Annotations:  iconClass: icon-cirros
               tags: hidden,kubevirt,cirros
 API Version:  instancetype.kubevirt.io/v1beta1
 Kind:         VirtualMachineClusterPreference
-Metadata:
-  ...
 Spec:
   Devices:
     Preferred Disk Bus:         virtio
@@ -190,6 +182,7 @@ Spec:
       Guest:  1
     Memory:
       Guest:  256Mi
+[...]
 ```
 
 
@@ -256,12 +249,11 @@ Output will list all preferences targeting the operating system linux (output sh
 ```shell
 alpine                   101m
 centos.7                 101m
-...
 cirros                   101m
 fedora                   101m
-....
 rhel.9.dpdk              100m
 ubuntu                   100m
+[...]
 ```
 
 
@@ -430,27 +422,28 @@ from the cluster by setting `spec.domain.memory.guest` to a higher value than `s
 What would you expect from both VMs?
 {{% details title="Task Hint" %}}
 
-* `u` class: Expect to have equal request for `spec.domain.memory.guest` and `spec.domain.resources.requests.memory`
-* `o` class: Expect to have a higher request for `spec.domain.memory.guest` as `spec.domain.resources.requests.memory`
+* `u` class should have equal request for `spec.domain.memory.guest` and `spec.domain.resources.requests.memory`
+* `o` class should have higher request for `spec.domain.memory.guest` as `spec.domain.resources.requests.memory`
 
 For both VMs we would expect the guest os to have approximately 512 mb of ram.
 {{% /details %}}
 
-Check the expectations about memory settings of both VirtualMachine instances `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros` and `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros`.
+Check the expectations about memory settings of both VirtualMachine instances `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros`
+and `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros`. Do they match our expectations?
 
 {{% details title="Task Hint" %}}
 Describe both VirtualMachine instances using:
 ```shell
-kubectl describe vmi lab04-o1-cirros -o yaml
 kubectl describe vmi lab04-u1-cirros -o yaml
+kubectl describe vmi lab04-o1-cirros -o yaml
 ```
 
-`u` instance:
+The `lab04-u1-cirros` instance:
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachineInstance
 metadata:
-  name: lab04-o1-cirros
+  name: lab04-u1-cirros
 spec:
   domain:
     resources:
@@ -461,7 +454,7 @@ spec:
 [...]
 ```
 
-`o` instance:
+`lab04-o1-cirros` instance:
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachineInstance
@@ -477,7 +470,7 @@ spec:
 [...]
 ```
 
-As we can see the `o` class actually overcommits of 50% as defined in the `o1.nano` instance type.
+As we can see in the difference between `spec.domain.memory.guest` and `spec.domain.resources.requests.memory` the `o` class actually overcommits of 50% as defined in the `o1.nano` instance type.
 ```yaml
 apiVersion: instancetype.kubevirt.io/v1beta1
 kind: VirtualMachineClusterInstancetype

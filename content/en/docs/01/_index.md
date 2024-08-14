@@ -92,11 +92,10 @@ Some prefer to explicitly select the Namespace for each `kubectl` command by add
 
 ### Placeholders
 
-In this lab we will use the following placeholders or naming conventions
-
-Placeholders:
+In this lab we will use the following placeholders or naming conventions:
 
 * `$USER` your username (for example `user4`)
+* `[...]` means that some lines in the listing or command have been omitted for readability.  
 
 
 ### Hints

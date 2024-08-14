@@ -28,7 +28,7 @@ your files according to the labs. Feel free to create a folder structure somethi
 |-- {{% param "labsubfolderprefix" %}}01
 |-- {{% param "labsubfolderprefix" %}}02
 |-- {{% param "labsubfolderprefix" %}}03
-...
+[...]
 ```
 
 if you want to initialize the structure you can do it within your terminal with
