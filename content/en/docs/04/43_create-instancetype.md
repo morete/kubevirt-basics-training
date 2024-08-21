@@ -12,7 +12,7 @@ In this section we will create and use our own instance type.
 
 ## {{% task %}} Create your own Instancetype
 
-In the previous section we have seen that the cirros preference requests 256Mi of memory. However, the smallest Instancetype
+In the previous section we have seen that the Cirros preference requests 256Mi of memory. However, the smallest Instancetype
 available requested 512Mi of memory. Let's create our own Instancetype and assign it to our VirtualMachines.
 
 Create a file `vmf_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-pico.yaml` and start with the
@@ -26,7 +26,7 @@ Define the Instancetype:
 
 {{% details title="Task Hint" %}}
 Your Instancetype should look like this (labels and annotations are optional):
-```ỳaml
+```yaml
 apiVersion: instancetype.kubevirt.io/v1beta1
 kind: VirtualMachineInstancetype
 metadata:
@@ -72,46 +72,40 @@ Show the created Instancetype with
 kubectl get vmf {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-pico -o yaml
 ```
 
-
-## {{% task %}} Adapt your VMs to use the new Instancetypes
-
-You need to update the instancetype section of your VM. Make sure you reference the newly create instancetype.
-
-{{% alert title="Note" color="info" %}}
-After creating our VMs some additional fields were added to the VM resource. For example the `revisionName`:
-```yaml
-  instancetype:
-    kind: VirtualMachineClusterInstancetype
-    name: u1.nano
-    revisionName: lab04-u1-cirros-u1.nano-v1beta1-e15b4047-3ff9-4308-9cd7-9f30b25336e0-1
-```
-
-It reflects the instancetype configuration at creation time of the VM. This prevents the
-VM from accidental changes whenever an Instancetype itself would change. If we want to change the Instancetype explicitely
-we have to remove the revisionName attribute completely otherwise it will reject the change.
-
-The easies way is to edit the resource directly:
+The output will be similar to this one:
 ```shell
-kubectl edit vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros
-```
-{{% /alert %}}
+apiVersion: instancetype.kubevirt.io/v1beta1
+kind: VirtualMachineInstancetype
+metadata:
+  annotations:
+    instancetype.kubevirt.io/description: |-
+      The U Series is quite neutral and provides resources for
+      general purpose applications.
 
-* Edit the VM `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros` and reference the `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-pico`
-* Edit the VM `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros` and reference the `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-pico`
+      *U* is the abbreviation for "Universal", hinting at the universal
+      attitude towards workloads.
 
-{{% details title="Task Hint" %}}
-The relevant section for the VM `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros` should look like this:
-
-```ỳaml
+      VMs of instance types will share physical CPU cores on a
+      time-slice basis with other VMs.
+    instancetype.kubevirt.io/displayName: General Purpose
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"instancetype.kubevirt.io/v1beta1","kind":"VirtualMachineInstancetype","metadata":{"annotations":{"instancetype.kubevirt.io/description":"The U Series is quite neutral and provides resources for\ngeneral purpose applications.\n\n*U* is the abbreviation for \"Universal\", hinting at the universal\nattitude towards workloads.\n\nVMs of instance types will share physical CPU cores on a\ntime-slice basis with other VMs.","instancetype.kubevirt.io/displayName":"General Purpose"},"labels":{"instancetype.kubevirt.io/class":"general.purpose","instancetype.kubevirt.io/cpu":"1","instancetype.kubevirt.io/icon-pf":"pficon-server-group","instancetype.kubevirt.io/memory":"256Mi","instancetype.kubevirt.io/vendor":"kubevirt-basics-training","instancetype.kubevirt.io/version":"1"},"name":"lab04-u1-pico","namespace":"user4"},"spec":{"cpu":{"guest":1},"memory":{"guest":"256Mi"}}}
+  creationTimestamp: "2024-08-14T12:10:36Z"
+  generation: 1
+  labels:
+    instancetype.kubevirt.io/class: general.purpose
+    instancetype.kubevirt.io/cpu: "1"
+    instancetype.kubevirt.io/icon-pf: pficon-server-group
+    instancetype.kubevirt.io/memory: 256Mi
+    instancetype.kubevirt.io/vendor: kubevirt-basics-training
+    instancetype.kubevirt.io/version: "1"
+  name: lab04-u1-pico
+  namespace: user4
+  resourceVersion: "16264315"
+  uid: 33cfc789-d041-4a56-bb28-26605759a890
 spec:
-  instancetype:
-    kind: VirtualMachineInstancetype
-    name: lab04-u1-pico
-```
-{{% /details %}}
-
-Make sure you restart both VMs to reflect the change of their instancetype:
-```shell
-virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros
-virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros
+  cpu:
+    guest: 1
+  memory:
+    guest: 256Mi
 ```

@@ -84,6 +84,12 @@ maxlabnumber = 7
 end-of-lab-title = "Cleaning up resources"
 end-of-lab-text = "You have reached the end of this lab. Please stop your running VirtualMachines to safe resources on the kubernetes cluster."
 
+# Cloud-init - Fedora Cloud
+#fedoraCloudDiskImage = "kubevirt/fedora-cloud-container-disk-demo:latest" # fedora cloud 32
+fedoraCloudCDI = "quay.io/containerdisks/fedora:40"
+
+# Ignition - Fedora CoreOS
+fedoraCoreOSCDI = "quay.io/fedora/fedora-coreos-kubevirt:stable"
 
 cirrosContainerDiskImage = "quay.io/kubevirt/cirros-container-disk-demo"
 cirrosContainerDiskDownload = "https://download.cirros-cloud.net/0.6.2/cirros-0.6.2-x86_64-disk.img"

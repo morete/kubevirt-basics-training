@@ -1,5 +1,5 @@
 ---
-title: "4.2 Common Instancetypes"
+title: "4.2 Common types and preferences"
 weight: 420
 labfoldernumber: "04"
 sectionnumber: 4.2
@@ -60,10 +60,15 @@ Shortened output of the command above:
 ```shell
 NAME          AGE
 cx1.2xlarge   31m
+[...]
 gn1.2xlarge   31m
+[...]
 m1.2xlarge    31m
+[...]
 n1.2xlarge    31m
+[...]
 o1.2xlarge    31m
+[...]
 u1.2xlarge    31m
 u1.4xlarge    31m
 u1.8xlarge    31m
@@ -73,7 +78,6 @@ u1.micro      31m
 u1.nano       31m
 u1.small      31m
 u1.xlarge     31m
-[...]
 ```
 
 As you see the instancetypes follow the naming schema:
@@ -110,7 +114,7 @@ kubectl describe virtualmachineclusterinstancetype o1.nano
 ```
 
 As an example you'll see that the instancetype `o1.nano` has 1 CPU, 512Mi of memory and overcommittes memory by 50%. The following output is shortened:
-```shell
+```
 Name:         o1.nano
 Namespace:    
 Labels:       app.kubernetes.io/component=kubevirt
@@ -147,7 +151,7 @@ kubectl get virtualmachineclusterpreference
 ```
 
 Shortened output of the command above:
-```shell
+```
 NAME                     AGE
 alpine                   101m
 centos.7                 101m
@@ -161,7 +165,7 @@ kubectl describe virtualmachineclusterpreference windows.10
 
 As an example you'll see that the instancetype `cirros` has the requirements of 1 CPU, 256Mi memory. The following output is shortened:
 
-```shell
+```
 Name:         cirros
 Namespace:    
 Labels:       app.kubernetes.io/component=kubevirt
@@ -173,6 +177,8 @@ Annotations:  iconClass: icon-cirros
               tags: hidden,kubevirt,cirros
 API Version:  instancetype.kubevirt.io/v1beta1
 Kind:         VirtualMachineClusterPreference
+Metadata:
+  [...]
 Spec:
   Devices:
     Preferred Disk Bus:         virtio
@@ -216,7 +222,7 @@ kubectl get virtualmachineclusterinstancetype --selector instancetype.kubevirt.i
 ```
 
 Output will list all instancetypes with 4 CPUs:
-```shell
+```
 NAME         AGE
 cx1.xlarge   98m
 gn1.xlarge   98m
@@ -246,11 +252,13 @@ kubectl get virtualmachineclusterpreference --selector instancetype.kubevirt.io/
 ```
 
 Output will list all preferences targeting the operating system linux (output shortened):
-```shell
+```
 alpine                   101m
 centos.7                 101m
+[...]
 cirros                   101m
 fedora                   101m
+[...]
 rhel.9.dpdk              100m
 ubuntu                   100m
 [...]
@@ -262,7 +270,7 @@ ubuntu                   100m
 You want to find the optimal configuration of instancetype and preference for a Windows 10 64-bit installation.
 According to Microsoft the Windows 10 system requirements[^2] are the following:
 
-```text
+```
 Processor: 1 gigahertz (GHz) or faster processor or SoC
 RAM: 2 GB for 64-bit
 Hard disk space: 20 GB for 64-bit OS
@@ -288,7 +296,9 @@ You would most likely pick `o1.small` or `u1.small` as your instancetype.
 For preferences, you can use the following query:
 ```shell
 kubectl get virtualmachineclusterpreference --selector instancetype.kubevirt.io/os-type=windows
+```
 
+```
 NAME                  AGE
 windows.10            153m
 windows.10.virtio     153m
@@ -307,7 +317,7 @@ windows.2k22.virtio   153m
 The preferences `windows.10` or `windows.10.virtio` are the best matching.
 
 {{% alert title="Note" color="info" %}}
-Of course this applies only to the minimal requirements. In a production environment you would most likely size your instance bigger than the minimal requirements.
+This only fulfills the machines minimal requirements. In a production environment you would most likely size your instance bigger than the minimal requirements.
 {{% /alert %}}
 
 {{% /details %}}
@@ -434,8 +444,8 @@ and `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros
 {{% details title="Task Hint" %}}
 Describe both VirtualMachine instances using:
 ```shell
-kubectl describe vmi lab04-u1-cirros -o yaml
-kubectl describe vmi lab04-o1-cirros -o yaml
+kubectl describe vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros -o yaml
+kubectl describe vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros -o yaml
 ```
 
 The `lab04-u1-cirros` instance:
@@ -443,7 +453,7 @@ The `lab04-u1-cirros` instance:
 apiVersion: kubevirt.io/v1
 kind: VirtualMachineInstance
 metadata:
-  name: lab04-u1-cirros
+  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros
 spec:
   domain:
     resources:
@@ -459,7 +469,7 @@ spec:
 apiVersion: kubevirt.io/v1
 kind: VirtualMachineInstance
 metadata:
-  name: lab04-o1-cirros
+  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros
 spec:
   domain:
     resources:

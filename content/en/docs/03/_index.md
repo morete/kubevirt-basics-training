@@ -3,6 +3,8 @@ title: "3. Containerized Data Importer (CDI)"
 weight: 1
 labfoldernumber: "03"
 sectionnumber: 3
+description: >
+  Provision Virtual Machine Disk Images using the Containerized Data Importer
 ---
 
 In this section we will get familiar with the Containerized Data Importer to provision PVCs which can be used as Disks

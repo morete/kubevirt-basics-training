@@ -3,6 +3,8 @@ title: "1. Lab Environment"
 weight: 1
 labfoldernumber: "01"
 sectionnumber: 1
+description: >
+  Getting to know the Lab Environment.
 ---
 
 

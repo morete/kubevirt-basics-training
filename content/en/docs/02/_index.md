@@ -4,11 +4,11 @@ weight: 1
 labfoldernumber: "02"
 sectionnumber: 2
 description: >
-  In this section we will create and run our first virtual machine.
+  Create and run your first Virtual Machine.
 ---
 
 
-## Goals of this lab
+## Lab Goals
 
 * Get familiar with the lab environment
 * Create your first VM using KubeVirt
