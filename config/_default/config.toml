@@ -90,6 +90,7 @@ fedoraCloudCDI = "quay.io/containerdisks/fedora:40"
 
 # Ignition - Fedora CoreOS
 fedoraCoreOSCDI = "quay.io/fedora/fedora-coreos-kubevirt:stable"
+ignitionVersion = "3.4.0"
 
 cirrosContainerDiskImage = "quay.io/kubevirt/cirros-container-disk-demo"
 cirrosContainerDiskDownload = "https://download.cirros-cloud.net/0.6.2/cirros-0.6.2-x86_64-disk.img"

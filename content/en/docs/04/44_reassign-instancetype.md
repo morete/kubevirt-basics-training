@@ -1,10 +1,10 @@
 ---
-title: "4.4 Re-Assign an Instancetype"
+title: "4.4 Re-assign an Instancetype"
 weight: 440
 labfoldernumber: "04"
 sectionnumber: 4.4
 description: >
-  Re-Assign an Instance type of your VM
+  Re-assign an Instance type of your VM
 ---
 
 In this section we will change the instancetype of our running VMs to our newly created instance type.

@@ -59,25 +59,25 @@ kubectl get virtualmachineclusterinstancetype
 Shortened output of the command above:
 ```shell
 NAME          AGE
-cx1.2xlarge   31m
+cx1.2xlarge   10m
 [...]
-gn1.2xlarge   31m
+gn1.2xlarge   10m
 [...]
-m1.2xlarge    31m
+m1.2xlarge    10m
 [...]
-n1.2xlarge    31m
+n1.2xlarge    10m
 [...]
-o1.2xlarge    31m
+o1.2xlarge    10m
 [...]
-u1.2xlarge    31m
-u1.4xlarge    31m
-u1.8xlarge    31m
-u1.large      31m
-u1.medium     31m
-u1.micro      31m
-u1.nano       31m
-u1.small      31m
-u1.xlarge     31m
+u1.2xlarge    10m
+u1.4xlarge    10m
+u1.8xlarge    10m
+u1.large      10m
+u1.medium     10m
+u1.micro      10m
+u1.nano       10m
+u1.small      10m
+u1.xlarge     10m
 ```
 
 As you see the instancetypes follow the naming schema:
@@ -153,8 +153,8 @@ kubectl get virtualmachineclusterpreference
 Shortened output of the command above:
 ```
 NAME                     AGE
-alpine                   101m
-centos.7                 101m
+alpine                   10m
+centos.7                 10m
 [...]
 ```
 
@@ -224,13 +224,13 @@ kubectl get virtualmachineclusterinstancetype --selector instancetype.kubevirt.i
 Output will list all instancetypes with 4 CPUs:
 ```
 NAME         AGE
-cx1.xlarge   98m
-gn1.xlarge   98m
-m1.xlarge    98m
-n1.large     98m
-n1.medium    98m
-o1.xlarge    98m
-u1.xlarge    98m
+cx1.xlarge   10m
+gn1.xlarge   10m
+m1.xlarge    10m
+n1.large     10m
+n1.medium    10m
+o1.xlarge    10m
+u1.xlarge    10m
 ```
 
 
@@ -253,14 +253,15 @@ kubectl get virtualmachineclusterpreference --selector instancetype.kubevirt.io/
 
 Output will list all preferences targeting the operating system linux (output shortened):
 ```
-alpine                   101m
-centos.7                 101m
+NAME                     AGE
+alpine                   10m
+centos.7                 10m
 [...]
-cirros                   101m
-fedora                   101m
+cirros                   10m
+fedora                   10m
 [...]
-rhel.9.dpdk              100m
-ubuntu                   100m
+rhel.9.dpdk              10m
+ubuntu                   10m
 [...]
 ```
 
@@ -285,9 +286,9 @@ kubectl get virtualmachineclusterinstancetype \
    --selector instancetype.kubevirt.io/cpu=1,instancetype.kubevirt.io/memory=2Gi
 
 NAME         AGE
-cx1.medium   153m
-o1.small     153m
-u1.small     152m
+cx1.medium   10m
+o1.small     10m
+u1.small     10m
 ```
 
 You would most likely pick `o1.small` or `u1.small` as your instancetype.
@@ -300,18 +301,18 @@ kubectl get virtualmachineclusterpreference --selector instancetype.kubevirt.io/
 
 ```
 NAME                  AGE
-windows.10            153m
-windows.10.virtio     153m
-windows.11            153m
-windows.11.virtio     153m
-windows.2k12          153m
-windows.2k12.virtio   153m
-windows.2k16          153m
-windows.2k16.virtio   153m
-windows.2k19          153m
-windows.2k19.virtio   153m
-windows.2k22          153m
-windows.2k22.virtio   153m
+windows.10            10m
+windows.10.virtio     10m
+windows.11            10m
+windows.11.virtio     10m
+windows.2k12          10m
+windows.2k12.virtio   10m
+windows.2k16          10m
+windows.2k16.virtio   10m
+windows.2k19          10m
+windows.2k19.virtio   10m
+windows.2k22          10m
+windows.2k22.virtio   10m
 ```
 
 The preferences `windows.10` or `windows.10.virtio` are the best matching.

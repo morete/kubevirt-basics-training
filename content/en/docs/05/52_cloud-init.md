@@ -10,6 +10,16 @@ description: >
 In this section we will use cloud-init to initialize a Fedora Cloud[^1] VM. Cloud-init is the defacto standard for providing
 startup scripts to VMs.
 
+Cloud-init is widely adopted. Some of the known users of cloud-init are:
+- Ubuntu
+- Arch Linux
+- CentOS
+- Red Hat
+- FreeBSD
+- Fedora
+- Gentoo Linux
+- openSUSE
+
 
 ## Supported datasources
 
@@ -121,7 +131,7 @@ kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfo
 
 The output should be:
 ```
-secret/lab05-cloudinit created
+secret/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit created
 ```
 
 You can inspect the secret with:
@@ -136,7 +146,7 @@ data:
 type: Opaque
 kind: Secret
 metadata:
-  name: lab05-cloudinit
+  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit
 [...]
 ```
 
@@ -227,6 +237,183 @@ spec:
 ```
 {{% /details %}}
 
+
+## {{% task %}} Enhance your startup script
+
+In the previous section we have created a VM using a cloud-init script. Enhance the startup script with the following functionality:
+
+- Set the Timezone to `Europe/Zurich`
+- Install nginx package
+- Write a custom nginx.conf to `/etc/nginx/nginx.conf`
+- Start the nginx service
+
+For the custom nginx configuration you can use the following content:
+```text
+user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log;
+pid /run/nginx.pid;
+
+events {
+  worker_connections 1024;
+}
+
+http {
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+    
+    access_log  /var/log/nginx/access.log  main;
+    
+    sendfile            on;
+    tcp_nopush          on;
+    tcp_nodelay         on;
+    keepalive_timeout   65;
+    types_hash_max_size 4096;
+    
+    include             /etc/nginx/mime.types;
+    default_type        text/plain;
+    
+    server {
+        listen       80;
+        server_name  _;
+        root         /usr/share/nginx/html;
+        
+        # Load configuration files for the default server block.
+        include /etc/nginx/default.d/*.conf;
+        
+        location /health {
+            return 200 'ok';
+        }
+        
+        location / {
+            set $response 'Hello from ${hostname}\n';
+            set $response '${response}GMT time:   $date_gmt\n';
+            set $response '${response}Local time: $date_local\n';
+        
+            return 200 '${response}';
+        }
+    }
+}
+```
+
+{{% details title="Task Hint" %}}
+Your cloud-init configuration will look like this:
+```yaml
+#cloud-config
+password: kubevirt
+chpasswd: { expire: False }
+packages:
+  - nginx
+timezone: Europe/Zurich
+write_files:
+  - content: |
+      user nginx;
+      worker_processes auto;
+      error_log /var/log/nginx/error.log;
+      pid /run/nginx.pid;
+
+      events {
+        worker_connections 1024;
+      }
+
+      http {
+          log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+          '$status $body_bytes_sent "$http_referer" '
+          '"$http_user_agent" "$http_x_forwarded_for"';
+
+          access_log  /var/log/nginx/access.log  main;
+
+          sendfile            on;
+          tcp_nopush          on;
+          tcp_nodelay         on;
+          keepalive_timeout   65;
+          types_hash_max_size 4096;
+
+          include             /etc/nginx/mime.types;
+          default_type        text/plain;
+
+          server {
+              listen       80;
+              server_name  _;
+              root         /usr/share/nginx/html;
+
+              # Load configuration files for the default server block.
+              include /etc/nginx/default.d/*.conf;
+
+              location /health {
+                return 200 'ok';
+              }
+
+              location / {
+                set $response 'Hello from ${hostname}\n';
+                set $response '${response}GMT time:   $date_gmt\n';
+                set $response '${response}Local time: $date_local\n';
+
+                return 200 '${response}';
+              }
+          }
+      }
+    path: /etc/nginx/nginx.conf
+runcmd:
+  - systemctl enable nginx
+  - systemctl start nginx
+```
+{{% /details %}}
+
+You need to recreate your secret:
+
+```shell
+kubectl delete secret {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit 
+kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --from-file=userdata=cloudinit-userdata.yaml
+```
+
+Next we need to restart our vm to pick up the changes in the cloud-init configuration.
+
+```shell
+virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit 
+```
+
+
+{{% alert title="Note" color="info" %}}
+It may take some minutes until your server is fully provisioned. While booting you may watch out for the message `Reached target cloud-init.target` in your VMs console.
+
+```shell
+virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit 
+```
+{{% /alert %}}
+
+## {{% task %}} Testing your webserver on your Virtual Machine
+
+We have spawn a Virtual Machine which uses cloud-init and installs a simple nginx webserver. Let us test the webserver:
+
+Create the following kubernetes service:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    kubevirt.io/domain: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit
+  type: ClusterIP
+```
+
+Test your working webserver from your webshell.
+```shell
+curl -s {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit.$USER.svc.cluster.local
+```
+
+```
+Hello from {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit
+GMT time:   Thursday, 22-Aug-2024 14:13:17 GMT
+Local time: Thursday, 22-Aug-2024 16:13:17 CEST
+```
 
 ## Reference
 
