@@ -11,14 +11,14 @@ In this section we will use cloud-init to initialize a Fedora Cloud[^1] VM. Clou
 startup scripts to VMs.
 
 Cloud-init is widely adopted. Some of the known users of cloud-init are:
-- Ubuntu
-- Arch Linux
-- CentOS
-- Red Hat
-- FreeBSD
-- Fedora
-- Gentoo Linux
-- openSUSE
+* Ubuntu
+* Arch Linux
+* CentOS
+* Red Hat
+* FreeBSD
+* Fedora
+* Gentoo Linux
+* openSUSE
 
 
 ## Supported datasources
@@ -242,10 +242,10 @@ spec:
 
 In the previous section we have created a VM using a cloud-init script. Enhance the startup script with the following functionality:
 
-- Set the Timezone to `Europe/Zurich`
-- Install nginx package
-- Write a custom nginx.conf to `/etc/nginx/nginx.conf`
-- Start the nginx service
+* Set the Timezone to `Europe/Zurich`
+* Install nginx package
+* Write a custom nginx.conf to `/etc/nginx/nginx.conf`
+* Start the nginx service
 
 For the custom nginx configuration you can use the following content:
 ```text
@@ -383,6 +383,7 @@ virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}
 ```
 {{% /alert %}}
 
+
 ## {{% task %}} Testing your webserver on your Virtual Machine
 
 We have spawn a Virtual Machine which uses cloud-init and installs a simple nginx webserver. Let us test the webserver:
@@ -414,6 +415,7 @@ Hello from {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-clo
 GMT time:   Thursday, 22-Aug-2024 14:13:17 GMT
 Local time: Thursday, 22-Aug-2024 16:13:17 CEST
 ```
+
 
 ## Reference
 

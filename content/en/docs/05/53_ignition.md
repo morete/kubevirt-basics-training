@@ -10,15 +10,17 @@ description: >
 In the previous section we created a VM using a cloud-init configuration secret. This time we will do something similar but with Ignition and Linux Fedora CoreOS.
 
 Known users of Ignition are:
-- Fedora CoreOS
-- Red Hat Enterprise Linux CoreOS
-- Flatcar
-- openSUSE MicroOS
-- SUSE Linux Enterprise Micro
+* Fedora CoreOS
+* Red Hat Enterprise Linux CoreOS
+* Flatcar
+* openSUSE MicroOS
+* SUSE Linux Enterprise Micro
+
 
 ## Supported datasources
 
 To provide Ignition data we have to use the ConfigDrive datasource.  
+
 
 ### ConfigDrive datasource
 
@@ -45,6 +47,7 @@ Similar to cloud-init, this volume must be referenced after the vm disk in the `
 ```
 
 Using the `cloudInitConfigDrive` attribute give us the following possibilities to provide our Ignition configuration:
+
 * `userData`: inline Ignition configuration
 * `userDataBase64`: Ignition configuration as base64 string.
 * `secretRef`: reference to a k8s secret containing Ignition configuration.
@@ -56,7 +59,9 @@ JSON config if needed. As our config for the Lab is simple enough we directly wr
 Make sure you use `secretRef` whenever you provide sensitive production information.
 {{% /alert %}}
 
+
 ## {{% task %}} Creating an Ignition config secret
+
 This time we are going to use a Fedora CoreOS VM and provide an Ignition configuration to initialize our vm.
 
 First we define our configuration. Create a file `ignition-data.yaml` with the following content:
@@ -105,6 +110,7 @@ The output should be:
 ```
 secret/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition created
 ```
+
 
 ## {{% task %}} Creating a VirtualMachine using Ignition
 
@@ -189,16 +195,17 @@ spec:
 ```
 {{% /details %}}
 
+
 ## {{% task %}} Enhance your startup script
 
 Enhance your Ignition configuration to include the following configurations:
-- Create a group `ssh-users`
-- Add user `core` to the group `docker` and `ssh-users`
-- Add a `sshAuthorizedKeys` for the user `core`. See instructions below to generate your ssh key.
-- Set the Hostname to `lab05-ignition-$USER` where `$USER` is your username
-- Configure the SSH Daemon with:
-  - Disable root login
-  - Allow only group `ssh-users` to login through ssh.
+* Create a group `ssh-users`
+* Add user `core` to the group `docker` and `ssh-users`
+* Add a `sshAuthorizedKeys` for the user `core`. See instructions below to generate your ssh key.
+* Set the Hostname to `lab05-ignition-$USER` where `$USER` is your username
+* Configure the SSH Daemon with:
+  * Disable root login
+  * Allow only group `ssh-users` to login through ssh.
 
 Generate your ssh key with the following command:
 ```shell
@@ -215,7 +222,7 @@ Your output should be similar to:
 ssh-rsa AAAAB3NzaC[...] theia@$USER-webshell-554b45d885-b79ks
 ```
 
-Make sure the key starts with ssh-rsa and copy the key to the `sshAuthorizedKeys` attribute. 
+Make sure the key starts with ssh-rsa and copy the key to the `sshAuthorizedKeys` attribute.
 
 {{% details title="Task Hint" %}}
 Make sure you replace the `$USER` and the `passwordHash` and `sshAuthorizedKeys` hashes. Your Ignition configuration will look like this:
@@ -271,6 +278,7 @@ Make sure you replace the `$USER` and the `passwordHash` and `sshAuthorizedKeys`
 ```
 {{% /details %}}
 
+
 ## {{% task %}} Testing your webserver on your Virtual Machine
 
 You may now be able to login from your webshell to your VM:
@@ -307,6 +315,6 @@ hostname
 
 You may find additional Information about Ignition here:
 
-- [Ignition Examples](https://coreos.github.io/ignition/examples/)
-- [Supported Platforms](https://coreos.github.io/ignition/supported-platforms/)
+* [Ignition Examples](https://coreos.github.io/ignition/examples/)
+* [Supported Platforms](https://coreos.github.io/ignition/supported-platforms/)
 
