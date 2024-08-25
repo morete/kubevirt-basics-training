@@ -24,6 +24,7 @@ Cloud-Init is the most widely adopted method, and you will find great support on
 No, the Disk/System must include the software to run cloud-init, Ignition or Sysprep. This means that you have to use special images/disks.
 They are usually called Cloud Images and are pre-installed disk images that can be customized using startup scripts. Some
 variants are:
+
 * Fedora Cloud: https://fedoraproject.org/de/cloud/
 * Ubuntu Cloud: https://cloud-images.ubuntu.com/
 * AlmaLinux: https://almalinux.org/get-almalinux/

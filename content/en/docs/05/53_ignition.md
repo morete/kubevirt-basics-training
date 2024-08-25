@@ -323,6 +323,7 @@ Last login: Fri Aug 23 12:21:09 2024
 
 {{% alert title="Note" color="info" %}}
 Our SSH Deamon is configured to only allow logins:
+
 * Not from root (`PermitRootLogin no` in `30-disable-rootlogin.conf`)
 * Only from users which are a member of the `ssh-users` group (`AllowGroups ssh-users` in `30-allow-groups.conf`)
 * Using keys and not username/password (`PasswordAuthentication no` in default config).
