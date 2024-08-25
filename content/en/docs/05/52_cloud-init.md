@@ -11,6 +11,7 @@ In this section we will use cloud-init to initialize a Fedora Cloud[^1] VM. Clou
 startup scripts to VMs.
 
 Cloud-init is widely adopted. Some of the known users of cloud-init are:
+
 * Ubuntu
 * Arch Linux
 * CentOS
@@ -236,6 +237,11 @@ spec:
               name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit
 ```
 {{% /details %}}
+
+Make sure you create your VM with:
+```shell
+kubectl create -f vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit.yaml
+```
 
 
 ## {{% task %}} Enhance your startup script

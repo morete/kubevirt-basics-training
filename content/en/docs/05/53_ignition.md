@@ -10,6 +10,7 @@ description: >
 In the previous section we created a VM using a cloud-init configuration secret. This time we will do something similar but with Ignition and Linux Fedora CoreOS.
 
 Known users of Ignition are:
+
 * Fedora CoreOS
 * Red Hat Enterprise Linux CoreOS
 * Flatcar
@@ -53,7 +54,8 @@ Using the `cloudInitConfigDrive` attribute give us the following possibilities t
 * `secretRef`: reference to a k8s secret containing Ignition configuration.
 
 The data format of an Ignition configuration is always JSON. There is a transpiler available to convert a YAML-formatted Butane config to a
-JSON config if needed. As our config for the Lab is simple enough we directly write the JSON config. You may find more details about Butane here: [Producing an Ignition Config](https://docs.fedoraproject.org/en-US/fedora-coreos/producing-ign/#_configuration_process)
+JSON config if needed. As our config for the Lab is simple enough we directly write the JSON config.
+You may find more details about Butane here: [Producing an Ignition Config](https://docs.fedoraproject.org/en-US/fedora-coreos/producing-ign/#_configuration_process)
 
 {{% alert title="Important" color="warning" %}}
 Make sure you use `secretRef` whenever you provide sensitive production information.
@@ -101,15 +103,7 @@ python -c 'import crypt,getpass; print(crypt.crypt(getpass.getpass(), crypt.mksa
 $6$vdwmUilVEr7j7j.T$.2wFftwtDSxK[...]
 ```
 
-Generate a hash for `kubevirt` and add the generated `passwordHash` to the Ignition configuration. Create the secret with the following command:
-```shell
-kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --from-file=userdata=ignition-data.yaml
-```
-
-The output should be:
-```
-secret/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition created
-```
+Generate a hash for `kubevirt` and add the generated `passwordHash` to the Ignition configuration.
 
 
 ## {{% task %}} Creating a VirtualMachine using Ignition
@@ -198,7 +192,8 @@ spec:
 
 ## {{% task %}} Enhance your startup script
 
-Enhance your Ignition configuration to include the following configurations:
+With the help of the Documentation and Examples (See Section References below), try to enhance your Ignition configuration to include the following configurations:
+
 * Create a group `ssh-users`
 * Add user `core` to the group `docker` and `ssh-users`
 * Add a `sshAuthorizedKeys` for the user `core`. See instructions below to generate your ssh key.
@@ -281,10 +276,43 @@ Make sure you replace the `$USER` and the `passwordHash` and `sshAuthorizedKeys`
 
 ## {{% task %}} Testing your webserver on your Virtual Machine
 
-You may now be able to login from your webshell to your VM:
+For running our VM we first have to create the secret with our Ignition configuration:
 ```shell
-ssh core@{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition-ssh.$USER.svc.cluster.local
+kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --from-file=userdata=ignition-data.yaml
 ```
+
+The output should be:
+```
+secret/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition created
+```
+
+Then we need to create our VM:
+```shell
+kubectl create -f vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition.yaml
+```
+
+To access our VM from the webshell we need to create a kubernetes service. Create a file
+`svc_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition.yaml` with the following content:
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition
+spec:
+  ports:
+  - port: 22
+    protocol: TCP
+    targetPort: 22
+  selector:
+    kubevirt.io/domain: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition
+  type: ClusterIP
+```
+
+You may now be able to login with SSH from your webshell to your VM:
+```shell
+ssh core@{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition.$USER.svc.cluster.local
+```
+
 ```
 Fedora CoreOS 40.20240728.3.0
 Tracker: https://github.com/coreos/fedora-coreos-tracker
@@ -293,21 +321,38 @@ Discuss: https://discussion.fedoraproject.org/tag/coreos
 Last login: Fri Aug 23 12:21:09 2024
 ```
 
+{{% alert title="Note" color="info" %}}
+Our SSH Deamon is configured to only allow logins:
+* Not from root (`PermitRootLogin no` in `30-disable-rootlogin.conf`)
+* Only from users which are a member of the `ssh-users` group (`AllowGroups ssh-users` in `30-allow-groups.conf`)
+* Using keys and not username/password (`PasswordAuthentication no` in default config).
+
+You may verify the presence of the two configurations with:
+```shell
+ls /etc/ssh/sshd_config.d/*.conf
+```
+
+Which should list the two files `30-disable-rootlogin` and `30-allow-groups.conf` created in the Ignition config.
+{{% /alert %}}
+
 
 Verify your assigned groups with:
 ```shell
 groups
 ```
+You should see the assigned groups docker and ssh-users:
 ```
 core adm wheel sudo systemd-journal docker ssh-users
 ```
 
-Show the configured hostname
+The default hostname would be the VM name `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition`.
+Show the configured hostname:
 ```shell
 hostname
 ```
+We should see our postfix `-$USER` added to our hostname:
 ```
-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition-user4
+{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition-$USER
 ```
 
 
@@ -315,6 +360,7 @@ hostname
 
 You may find additional Information about Ignition here:
 
+* [Ignition Documentation](https://coreos.github.io/ignition/)
 * [Ignition Examples](https://coreos.github.io/ignition/examples/)
 * [Supported Platforms](https://coreos.github.io/ignition/supported-platforms/)
 
