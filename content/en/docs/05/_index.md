@@ -1,5 +1,5 @@
 ---
-title: "5. Initialize VMs with cloud-init"
+title: "5. Initialize VMs with startup scripts"
 weight: 1
 labfoldernumber: "05"
 sectionnumber: 5

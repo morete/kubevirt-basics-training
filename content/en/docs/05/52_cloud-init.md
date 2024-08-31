@@ -64,6 +64,8 @@ Using the `cloudInitNoCloud` attribute give us the following possibilities to pr
 * `networkDataBase64`: NoCloud networkdata as base64 string.
 * `networkDataSecretRef`: reference to a k8s secret containing NoCloud networkdata.
 
+The most convenient for the lab is to use the NoCloud userdata method.
+
 The user data format recognized the following headers. Depending on the header the content is interpreted and executed
 differently. For example if you use the `#!/bin/sh` header the content is treated as an executable shell script.
 
@@ -78,7 +80,23 @@ differently. For example if you use the `#!/bin/sh` header the content is treate
 | Include file         | `#include`                      | text/x-include-url        |
 | Part handler         | `#part-handler`                 | text/part-handler         |
 
-The most convenient for the lab is to use the NoCloud userdata method.
+If you want to combine multiple items you can do that using #cloud-config-archive.
+
+Here is an example how to configure multiple items:
+```yaml
+volumes:
+  - name: cloudinitdisk
+    cloudInitNoCloud:
+      userData: |
+        #cloud-config-archive
+        - type: "text/cloud-config"
+          content: |
+            timezone: Europe/Zurich
+        - type: "text/x-shellscript"
+          content: |
+            #!/bin/sh
+            yum install -y nginx
+```
 
 Check [Cloud-inits Network configuration sources](https://cloudinit.readthedocs.io/en/latest/reference/network-config.html) for more Information about the format
 of the network data. Be aware that there is a different format used whenever you use `NoCloud` or `ConfigDrive`.
