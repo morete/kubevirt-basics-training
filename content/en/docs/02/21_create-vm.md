@@ -85,7 +85,7 @@ spec:
       volumes:
         - name: containerdisk
           containerDisk:
-            image: {{% param "cirrosContainerDiskImage" %}}
+            image: {{% param "cirrosCDI" %}}
 ```
 
 Make sure you implement the required parts for a container disk and the network interface specification in you VM manifest.
@@ -123,7 +123,7 @@ spec:
       volumes:
         - name: containerdisk
           containerDisk:
-            image: quay.io/kubevirt/cirros-container-disk-demo
+            image: {{% param "cirrosCDI" %}}
 ```
 {{% /details %}}
 

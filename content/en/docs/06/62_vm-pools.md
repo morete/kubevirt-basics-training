@@ -7,7 +7,7 @@ description: >
   Using VirtualMachine Pools
 ---
 
-A VirtualMachinePool tries to ensure that a specified number of VirtualMachines are always in a ready state.
+A VirtualMachinePool tries to ensure that a specified number of virtual machines are always in a ready state.
 
 However, the VirtualMachinePool does not maintain any state or provide guarantees about the maximum number of VMs
 running at any given time. For instance, the pool may initiate new replicas if it detects that some VMs have entered
@@ -46,7 +46,7 @@ spec:
 ```
 
 {{% alert title="Note" color="info" %}}
-Be aware that if `spec.selector` does not match `spec.virtualMachineTemplate.metadata.spec` the controller will do nothing
+Be aware that if `spec.selector` does not match `spec.virtualMachineTemplate.metadata.labels` the controller will do nothing
 except logging an error. Further, it is your responsibility to not create two `VirtualMachinePool`s conflicting with each other.
 {{% /alert %}}
 
@@ -272,7 +272,7 @@ If you issue the request multiple times and watch for the greeting webserver. Do
 loadbalanced way? This is the default behaviour of kubernetes service.
 
 
-### Unique Secrets and ConfigMaps
+## Unique Secrets and ConfigMaps
 
 We have seen that the VirtualMachinePool created unique disks for our webserver. However, the referenced secret in the
 `cloudInitNoCloud` section is the same and all instances access und use the same secret. If we had used machine specific
@@ -284,7 +284,7 @@ references to Secrets or ConfigMaps have the sequential id as postfix. It is you
 secrets with the postfixes.  
 
 
-### Scaling the VirtualMachinePool
+## Scaling the VirtualMachinePool
 
 As the VirtualMachinePool implements the kubernetes standard `scale` subresource you could scale the VirtualMachinePool using
 the `kubectl scale` command.
@@ -294,7 +294,7 @@ kubectl scale vmpool {{% param "labsubfolderprefix" %}}{{% param "labfoldernumbe
 ```
 
 
-### Horizontal Pod Autoscaler
+## Horizontal Pod Autoscaler
 
 The Horizontal Pod Autoscaler (HPA)[^1] can be used to manage the replica count depending on resource usage.
 
@@ -314,5 +314,13 @@ spec:
 ```
 
 This will ensure that the VirtualMachinePool is automatically scaled depending on the CPU utilization.
+
+
+## {{% task %}} Scale down the VirtualMachinePool
+
+Scale down the VM pool with:
+```shell
+kubectl scale vmpool {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver --replicas 0
+```
 
 [^1]: [Horizontal Pod Autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
