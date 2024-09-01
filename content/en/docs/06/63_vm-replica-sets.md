@@ -127,6 +127,7 @@ spec:
 ```
 
 Enhance the `spec.template.spec` block to start a VM matching these criteria:
+
 * Use the container disk {{% param "cirrosCDI" %}}
 * Use an empty `cloudInitNoCloud` block
 * Use `1` replicas
