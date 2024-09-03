@@ -133,7 +133,7 @@ spec:
 Since you have completed the yaml configuration for the VM it's now time to create it our VM in the kubernetes cluster.
 
 ```shell
-kubectl create -f {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm.yaml
+kubectl create -f vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm.yaml
 ```
 
 The output should be:
