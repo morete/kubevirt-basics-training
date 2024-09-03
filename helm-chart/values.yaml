@@ -26,7 +26,7 @@ acendTraining:
         annotations:
           kubernetes.io/tls-acme: "true"
           cert-manager.io/cluster-issuer: letsencrypt-prod
-        secretOverride: acend-wildcard
+        secretOverride: cert-timkoko
         appname: kubevirt-basics
         domain: training.tim-koko.ch
 
