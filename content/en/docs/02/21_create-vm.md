@@ -61,7 +61,7 @@ outside world.
 
 ### {{% task %}} Write your own VirtualMachine manifest
 
-Create a new empty file `~/{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/firstvm.yaml` and copy the `VirtualMachine` manifest from above as a starting point. Starting from the basic manifest you need to add a bootable disk for your vm and a network and interface specification.
+Create a new empty file `firstvm.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/` and copy the `VirtualMachine` manifest from above as a starting point. Starting from the basic manifest you need to add a bootable disk for your vm and a network and interface specification.
 To achieve that you need to specify the following parts in the `VirtualMachine` manifest:
 
 * `spec.template.spec.domain.devices`
@@ -94,7 +94,7 @@ spec:
 
 Make sure you implement the required parts for a container disk and the network interface specification in you VM manifest.
 
-{{% details title="Task Hint" %}}
+{{% details title="Task Hint: Resulting yaml" %}}
 Your VirtualMachine yaml should look like this:
 ```yaml
 apiVersion: kubevirt.io/v1
@@ -137,12 +137,12 @@ spec:
 Since you have completed the yaml configuration for the VM it's now time to create it our VM in the kubernetes cluster.
 
 ```shell
-kubectl create -f ~/{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/firstvm.yaml
+kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/firstvm.yaml --namespace=$USER
 ```
 
 The output should be:
 
 ```shell
-virtualmachine.kubevirt.io/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}} created
+virtualmachine.kubevirt.io/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm created
 ```
 

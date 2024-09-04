@@ -20,7 +20,7 @@ the webserver port.
 
 As you see with the following command creating the VM does not create any kubernetes service for it.
 ```shell
-kubectl get service
+kubectl get service --namespace=$USER
 ```
 
 In your namespace you should only see the service of your webshell:
@@ -35,7 +35,7 @@ $USER-webshell   ClusterIP   10.43.248.212   <none>        3000/TCP   1d
 To access the SSH port from the kubernetes default pod network we have to create a simple service.
 For this we use a Service of type `ClusterIP`.
 
-The needed configuration for the kubernetes `Service` looks like this. Create a file `svc_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm-ssh.yaml` and use the following yaml configuration.
+The needed configuration for the kubernetes `Service` looks like this. Create a file `svc_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm-ssh.yaml` in the `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` directory and use the following yaml configuration.
 
 ```yaml
 apiVersion: v1
@@ -55,23 +55,19 @@ spec:
 
 Apply the service with:
 ```shell
-kubectl apply -f `svc_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm-ssh.yaml`
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/svc_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm-ssh.yaml --namespace=$USER
 ```
 
-You may now log in from your webshell terminal to the ssh port of the virtual machine using the following command:
+You may now log in from your webshell terminal to the ssh port of the virtual machine using the following command (password: `gocubsgo`):
 ```shell
 ssh cirros@{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm-ssh.$USER.svc.cluster.local
 ```
 
 {{% alert title="Note" color="info" %}}
-Make sure you replace `$USER` in the command above with your namespace. It should be equivalent with your username.
-{{% /alert %}}
-
-{{% alert title="Note" color="info" %}}
 We could also use the `virtctl` command to create a service for us. The command for the service above would be:
 
 ```shell
-virtctl expose vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm --name={{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm-ssh --port=22
+virtctl expose vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm --name={{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm-ssh --port=22 --namespace=$USER
 ```
 
 We will use this approach in the next section.
@@ -86,12 +82,12 @@ cluster we can expose the port 22(ssh) as a `NodePort` service to access it from
 This time we will use the `virtctl` command to expose the port as type `NodePort`. Us this command to create the Service:
 
 ```shell
-virtctl expose vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm --name={{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm-ssh-np --port=22 --type=NodePort
+virtctl expose vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm --name={{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm-ssh-np --port=22 --type=NodePort --namespace=$USER
 ```
 
 If you check your services you should now see both services for your VM:
 ```shell
-kubectl get service
+kubectl get service --namespace=$USER
 ```
 
 Which should produce a similar output:
@@ -107,7 +103,7 @@ assigned Port. In this example our assigned NodePort is `32664/TCP` which target
 
 To connect to the NodePort we actually need to know the IPs of our worker-nodes. You can directly get the IPs with:
 ```shell
-kubectl get nodes --selector=node-role.kubernetes.io/master!=true -o jsonpath={.items[*].status.addresses[?\(@.type==\"ExternalIP\"\)].address}
+kubectl get nodes --selector=node-role.kubernetes.io/master!=true -o jsonpath={.items[*].status.addresses[?\(@.type==\"ExternalIP\"\)].address} --namespace=$USER
 ```
 
 Which will produce a similar output to this:
@@ -119,7 +115,7 @@ Which will produce a similar output to this:
 You can also see the IPs of the nodes using:
 
 ```shell
-kubectl get nodes -o wide
+kubectl get nodes -o wide --namespace=$USER
 ```
 {{% /alert %}}
 

@@ -77,6 +77,7 @@ enabledModule = "base"
 offlineSearch = true
 
 # kubevirt lab variables
+projecthome = "/home/project"
 labsfoldername = "labs"
 labsubfolderprefix = "lab"
 maxlabnumber = 7

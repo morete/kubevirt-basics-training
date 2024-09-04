@@ -31,8 +31,19 @@ your files according to the labs. Feel free to create a folder structure somethi
 [...]
 ```
 
-if you want to initialize the structure you can do it within your terminal with
+Make sure you're in the correct directory
+```shell
+cd {{% param "projecthome" %}}
+```
+
+And initialize the lab structure by executing the following command
 
 ```shell
 mkdir -p {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{01..{{% param "maxlabnumber" %}}}/
+```
+
+And verify the structure:
+
+```shell
+tree {{% param "labsfoldername" %}}
 ```

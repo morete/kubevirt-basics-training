@@ -33,7 +33,7 @@ Let's verify that by executing the following command in a freshly created termin
 kubectl version
 ```
 
-The files in the home directory under `/home/project` are stored in a persistence volume, so please make sure to store all your persistence data in this directory and use it as starting point for all our lab files.
+The files in the home directory under `{{% param "projecthome" %}}` are stored in a persistence volume, so please make sure to store all your persistence data in this directory and use it as starting point for all our lab files.
 You can create files within your webshell or using the file explorer. Using the shell they will show up in the file
 explorer and vice versa.
 
