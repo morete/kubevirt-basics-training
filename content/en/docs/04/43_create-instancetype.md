@@ -62,10 +62,8 @@ kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" 
 And verify whether the creation was successful:
 
 ```shell
-kubectl get vmf {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-pico  --namespace=$USER
+kubectl get vmf {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-pico --namespace=$USER
 ```
-
-
 
 
 ## {{% task %}} Create your own Instancetype with virtctl
