@@ -104,5 +104,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           message: |
            PR Environments:
-           * acend version <https://kubevirt-basics-training-pr-${{ github.event.pull_request.number }}.training.acend.ch>
-           * tim&koko version <https://kubevirt-basics-training-pr-${{ github.event.pull_request.number }}.training.tim-koko.ch>
+           * acend version <https://kubevirt-basics-pr-${{ github.event.pull_request.number }}.training.acend.ch>
+           * tim&koko version <https://kubevirt-basics-pr-${{ github.event.pull_request.number }}.training.tim-koko.ch>
