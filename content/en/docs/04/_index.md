@@ -14,7 +14,7 @@ runtime characteristics like resources or performance settings which can then be
 ## Lab Goals
 
 * Know the benefit of `VirtualMachineInstancetype` and `VirtualMachinePreference`
-* Examine Common Instance type and Preferences
-* Deploy VMs with a common instancetype
-* Define your own instance type and preference settings.
-* Use your custom instance types with your VMs
+* Examine Common Instance types and Preferences.
+* Deploy VMs with a common Instance type.
+* Define your own Instance type and Preference settings.
+* Use your custom Instance types with your VMs.

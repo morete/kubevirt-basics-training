@@ -9,13 +9,13 @@ description: >
 
 Even if KubeVirt provides advanced options and a lot of configuration options for different VMs we usually have a common
 set of VM specifications which we will use for most of our VMs. Therefore, it may make sense of defining such
-specifications as Instancetypes and or Preferences.
+specifications as Instancetypes and / or Preferences.
 
 To achieve this, KubeVirt provides multiple Custom Resource
 Definitions like `VirtualMachineInstancetype`, `VirtualMachineClusterInstancetype` or `VirtualMachinePreference`.
 
 
-## VM Instancetype
+## VM VirtualMachineInstancetype
 
 For an Instancetype we have the option of using the cluster wide `VirtualMachineClusterInstancetype` or the namespaced
 `VirtualMachineInstancetype`.
@@ -30,7 +30,7 @@ With Instancetypes we can define the following resource related characteristics:
 * **LaunchSecurity** - Optional LaunchSecurity to be used
 
 {{% alert title="Important" color="warning" %}}
-Any provided Instancetype characteristic cannot be overridden from within the VirtualMachine. Be aware that `CPU` and
+Any provided Instancetype characteristic can not be overridden from within the VirtualMachine. Be aware that `CPU` and
 `Memory` both are required for an Instancetype. Therefore, any different request of `CPU` or `Memory` on a VirtualMachine
 will conflict and the request will be rejected.
 {{% /alert %}}
@@ -39,7 +39,7 @@ will conflict and the request will be rejected.
 ## VM Preference
 
 KubeVirt also provides a CRD `VirtualMachineClusterPreference` for cluster wide preferences as well as a namespaced
-version `VirtualMachinePreference`. A preference specification encapsulates every value of the remaining attribues of a VirtualMachine.
+version `VirtualMachinePreference`. A preference specification encapsulates every value of the remaining attributes of a VirtualMachine.
 
 {{% alert title="Note" color="info" %}}
 Not like the characteristics from an Instancetype the preferences only defined the preferred values. They can be overridden

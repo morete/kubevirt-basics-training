@@ -29,7 +29,7 @@ spec:
 
 Use the following command to list all available `controllerrevision`:
 ```shell
-kubectl get controllerrevision
+kubectl get controllerrevision --namespace=$USER
 ```
 
 ```
@@ -43,12 +43,12 @@ If we want to explicitly change the Instancetype or preference we have to remove
 
 The easies way is to edit the resource directly is:
 ```shell
-kubectl edit vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros
+kubectl edit vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros --namespace=$USER
 ```
 
 An alternative would be patching the resource directly with:
 ```shell
-kubectl patch vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros --type merge --patch '{"spec":{"instancetype":{"kind":"<KIND>","name":"<NAME>","revisionName":null}}}'
+kubectl patch vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros --type merge --patch '{"spec":{"instancetype":{"kind":"<KIND>","name":"<NAME>","revisionName":null}}}' --namespace=$USER
 ```
 
 
@@ -77,14 +77,14 @@ spec:
 
 Make sure you restart both VMs to reflect the change of their instancetype:
 ```shell
-virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros
-virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros
+virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros --namespace=$USER
+virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros --namespace=$USER
 ```
 
 Describe both VirtualMachine instances and observe the effect:
 ```shell
-kubectl describe vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros -o yaml
-kubectl describe vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros -o yaml
+kubectl get vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros -o yaml --namespace=$USER
+kubectl get vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros -o yaml --namespace=$USER
 ```
 
 The `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros` instance:
@@ -126,7 +126,7 @@ spec:
 
 Stop your running VM with
 ```shell
-virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros
-virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros
+virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros --namespace=$USER
+virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros --namespace=$USER
 ```
 {{% /alert %}}

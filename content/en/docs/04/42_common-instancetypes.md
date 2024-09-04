@@ -4,20 +4,23 @@ weight: 420
 labfoldernumber: "04"
 sectionnumber: 4.2
 description: >
-  Discover and user Common Instancetypes and Preferences provided by KubeVirt.
+  Discover and use common Instancetypes and Preferences provided by KubeVirt.
 ---
 
-The KubeVirt project [Common Instancetypes and Preferences](https://github.com/kubevirt/common-instancetypes) provides a set of instancetypes and preferences.
+The KubeVirt project [Common Instancetypes and Preferences](https://github.com/kubevirt/common-instancetypes) provides a set of Instancetypes and Preferences.
 
 
 ## Deployment of Common Instancetypes and Preferences
 
-The common instancetypes and preferences are not available by default. They have to be deployed manually or using a
-feature gate of the KubeVirt operator.
+The common Instancetypes and Preferences are not available by default. They have to be deployed manually or using a feature gate of the KubeVirt operator.
 
 You can check the configuration on the KubeVirt CustomResource:
 ```shell
-kubectl get kubevirt kubevirt -n kubevirt -o jsonpath={.spec.configuration.developerConfiguration.featureGates}
+kubectl get kubevirt kubevirt --namespace=kubevirt -o jsonpath={.spec.configuration.developerConfiguration.featureGates}
+```
+or
+```shell
+kubectl get kubevirt kubevirt --namespace=kubevirt -o yaml
 ```
 
 The relevant section on the CustomResource is the following:
@@ -34,16 +37,13 @@ spec:
 [...]
 ```
 
-With the feature gate enabled, the operator itself takes care of deploying the cluster wide common instance types and preferences.
+With the feature gate enabled, the operator itself takes care of deploying the cluster wide common Instancetypes and Preferences.
 
 
 ### Manually deploy the Common Instancetypes and Preferences
 
-If you want to deploy the instance types and preferences manually, simply apply them using the kustomize flag `-k`:
-
-```shell
-kubectl apply -k https://github.com/kubevirt/common-instancetypes.git
-```
+This step has been done for your on the Lab cluster.
+How to deploy the Common Instancetypes and Preferences on your own cluster can be found in the [documentation](https://kubevirt.io/user-guide/user_workloads/deploy_common_instancetypes/).
 
 
 ## List and inspect Instancetypes
@@ -160,7 +160,7 @@ centos.7                 10m
 
 You may see the details of a preference by describing the resource:
 ```shell
-kubectl describe virtualmachineclusterpreference windows.10
+kubectl describe virtualmachineclusterpreference cirros
 ```
 
 As an example you'll see that the instancetype `cirros` has the requirements of 1 CPU, 256Mi memory. The following output is shortened:
@@ -333,8 +333,8 @@ Deploy two VMs with different instance types:
 * Deploy a cirros VM using an `o` class instancetype and the same preference.
   * rite the VM specification in `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros.yaml`
 
-{{% details title="Task Hint" %}}
-`vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros.yaml` specification:
+{{% details title="Task Hint: Solution" %}}
+`{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros.yaml` specification:
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
@@ -374,7 +374,7 @@ spec:
             userDataBase64: SGkuXG4=
 ```
 
-`vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros.yaml` specification:
+`{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros.yaml` specification:
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
@@ -416,8 +416,8 @@ spec:
 
 Apply and start both VMs with
 ```shell
-kubectl apply -f vm_lab04-u1-cirros.yaml
-kubectl apply -f vm_lab04-o1-cirros.yaml
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_lab04-u1-cirros.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_lab04-o1-cirros.yaml --namespace=$USER
 virtctl start lab04-u1-cirros
 virtctl start lab04-o1-cirros
 ```
@@ -445,8 +445,8 @@ and `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros
 {{% details title="Task Hint" %}}
 Describe both VirtualMachine instances using:
 ```shell
-kubectl describe vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros -o yaml
-kubectl describe vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros -o yaml
+kubectl get vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros -o yaml --namespace=$USER
+kubectl get vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros -o yaml --namespace=$USER
 ```
 
 The `lab04-u1-cirros` instance:
