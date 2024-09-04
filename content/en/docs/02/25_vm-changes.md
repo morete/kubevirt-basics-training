@@ -15,7 +15,7 @@ to our running vm and observe what happens if we restart the VM.
 
 Head over to your vm console with:
 ```shell
-virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm
+virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm --namespace=$USER
 ```
 
 Login with the specified credentials and create a file:
@@ -24,10 +24,17 @@ Login with the specified credentials and create a file:
 touch myfile
 ```
 
+And verify that the file really is present:
+
+Check the file status with:
+```shell
+stat myfile
+```
+
 Exit the console and restart your vm with:
 
 ```shell
-virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm
+virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm --namespace=$USER
 ```
 
 The output should be:
@@ -45,7 +52,7 @@ Ask yourself:
 
 Check yourself with entering the console again with:
 ```shell
-virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm
+virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm --namespace=$USER
 ```
 
 Check the file status with:
@@ -72,7 +79,7 @@ look about storage in a later section.
 
 Stop your running VM with
 ```shell
-virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm
+virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm --namespace=$USER
 ```
 {{% /alert %}}
 

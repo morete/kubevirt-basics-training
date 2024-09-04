@@ -61,10 +61,14 @@ outside world.
 
 ### {{% task %}} Write your own VirtualMachine manifest
 
-Create a file `vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm.yaml` with the content yaml
-content from above. Starting from the basic manifest you need to add a bootable disk for your vm and a network and
-interface specification. The easiest way is to use an ephemeral `containerDisk` mountable as a volume. Regarding the
-network we connect our VM to the underlying kubernetes default network.
+Create a new empty file `firstvm.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/` and copy the `VirtualMachine` manifest from above as a starting point. Starting from the basic manifest you need to add a bootable disk for your vm and a network and interface specification.
+To achieve that you need to specify the following parts in the `VirtualMachine` manifest:
+
+* `spec.template.spec.domain.devices`
+* `spec.template.spec.networks`
+* `spec.template.spec.volumes`
+
+The easiest way is to use an ephemeral `containerDisk` mountable as a volume. Regarding the network we connect our VM to the underlying kubernetes default network.
 
 ```yaml
 spec:
@@ -90,8 +94,8 @@ spec:
 
 Make sure you implement the required parts for a container disk and the network interface specification in you VM manifest.
 
-{{% details title="Task Hint" %}}
-Your yaml should look like this:
+{{% details title="Task Hint: Resulting yaml" %}}
+Your VirtualMachine yaml should look like this:
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
@@ -133,12 +137,12 @@ spec:
 Since you have completed the yaml configuration for the VM it's now time to create it our VM in the kubernetes cluster.
 
 ```shell
-kubectl create -f vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm.yaml
+kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/firstvm.yaml --namespace=$USER
 ```
 
 The output should be:
 
 ```shell
-virtualmachine.kubevirt.io/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}} created
+virtualmachine.kubevirt.io/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm created
 ```
 
