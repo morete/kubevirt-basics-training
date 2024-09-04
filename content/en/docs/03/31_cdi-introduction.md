@@ -21,7 +21,7 @@ The operator has already been installed in the namespace `cdi`. If you want to d
 
 You may see the cdi operator components with:
 ```shell
-kubectl get pods -n cdi
+kubectl get pods --namespace cdi
 ```
 
 The output should similar to:

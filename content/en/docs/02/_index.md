@@ -15,7 +15,7 @@ description: >
 * Start and Stop a VM using `virtctl` or `kubectl`
 * Connect to the console of the VM
 * Expose and access ports of your VM
-* Making file changes to you VM and observe behaviour
+* Changing a file inside of a VM and observe behaviour
 
 
 ## Folder structure
