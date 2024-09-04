@@ -17,7 +17,7 @@ We want to provision a VM running an Alpine Cloud Image[^1].
 
 ## {{% task %}} Write your own DataVolume manifest
 
-Create a file `dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpinedisk.yaml` and start with the
+Create a file `dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpinedisk.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}`and start with the
 yaml content from the previous section:
 
 ```yaml
@@ -70,7 +70,7 @@ spec:
 Before you apply your DataVolume to the cluster check the currently available pvcs.
 
 ```shell
-kubectl get pvc
+kubectl get pvc --namespace=$USER
 ```
 
 The output should be similar to:
@@ -82,7 +82,7 @@ $USER-webshell-docker   Bound    pvc-86e4bc75-396f-4630-940e-b0a4b0cf23fa   10Gi
 
 Now create the DataVolume in the kubernetes cluster with:
 ```shell
-kubectl create -f {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpinedisk.yaml
+kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpinedisk.yaml --namespace=$USER
 ```
 
 The output should be:
@@ -92,7 +92,7 @@ datavolume.cdi.kubevirt.io/{{% param "labsubfolderprefix" %}}{{% param "labfolde
 
 This will trigger the CDI operator which will start an importer pod to provision your pvc. If you are fast enough you may see the pod with:
 ```shell
-kubectl get pods
+kubectl get pods --namespace=$USER
 ```
 
 The output should be similar to:
@@ -105,7 +105,7 @@ $USER-webshell-885dbc579-lwhtd                        2/2     Running           
 After some time the pod will complete and your pvc should be provisioned. Let's check for the existence of the pvc.
 
 ```shell
-kubectl get pvc
+kubectl get pvc --namespace=$USER
 ```
 
 The output should be similar to:

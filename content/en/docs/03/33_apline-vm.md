@@ -13,7 +13,7 @@ disk image.
 
 ## {{% task %}} Attach the disk
 
-With your knowledge write a new VirtualMachine manifest named `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine.yaml`.
+With your knowledge write a new VirtualMachine manifest named `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine.yaml` in the directory `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}`.
 
 {{% alert title="Note" color="info" %}}  
 This Alpine Cloud Image has cloud-init included. We will need another disk (cloudinitdisk) which configures our environment.
@@ -83,12 +83,12 @@ spec:
 
 Create the vm in the kubernetes cluster:
 ```shell
-kubectl create -f {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine.yaml
+kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine.yaml --namespace=$USER
 ```
 
 Start your vm with:
 ```shell
-virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine
+virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine --namespace=$USER
 ```
 
 
@@ -96,7 +96,7 @@ virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-
 
 Open the console of your VM:
 ```shell
-virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine
+virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine --namespace=$USER
 ```
 
 After some time your VM should be successfully be provisioned with the alpine cloud disk image.
@@ -109,11 +109,11 @@ You should be able to successfully login with user `alpine` and the configured p
 
 Stop your running VM with
 ```shell
-virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine
+virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine --namespace=$USER
 ```
 
 Delete your DataVolume which will delete the PVC and free the diskspace.
 ```shell
-kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpinedisk
+kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpinedisk --namespace=$USER
 ```
 {{% /alert %}}
