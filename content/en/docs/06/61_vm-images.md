@@ -104,67 +104,67 @@ spec:
           name: fedora-cloud-nginx-base
       - name: cloudinitdisk
         cloudInitNoCloud:
-        userData: |
-          #cloud-config-archive    
-          - type: "text/cloud-config"    
-            content: |    
-              write_files:    
-                - content: |    
-                    user nginx;    
-                    worker_processes auto;    
-                    error_log /var/log/nginx/error.log;    
-                    pid /run/nginx.pid;    
+          userData: |
+            #cloud-config-archive    
+            - type: "text/cloud-config"    
+              content: |    
+                write_files:    
+                  - content: |    
+                      user nginx;    
+                      worker_processes auto;    
+                      error_log /var/log/nginx/error.log;    
+                      pid /run/nginx.pid;    
 
-                    events {    
-                      worker_connections 1024;    
-                    }    
+                      events {    
+                        worker_connections 1024;    
+                      }    
 
-                    http {    
-                      log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '    
-                      '$status $body_bytes_sent "$http_referer" '    
-                      '"$http_user_agent" "$http_x_forwarded_for"';    
+                      http {    
+                        log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '    
+                        '$status $body_bytes_sent "$http_referer" '    
+                        '"$http_user_agent" "$http_x_forwarded_for"';    
 
-                      access_log  /var/log/nginx/access.log  main;    
+                        access_log  /var/log/nginx/access.log  main;    
 
-                      sendfile            on;    
-                      tcp_nopush          on;    
-                      tcp_nodelay         on;    
-                      keepalive_timeout   65;    
-                      types_hash_max_size 4096;    
+                        sendfile            on;    
+                        tcp_nopush          on;    
+                        tcp_nodelay         on;    
+                        keepalive_timeout   65;    
+                        types_hash_max_size 4096;    
 
-                      include             /etc/nginx/mime.types;    
-                      default_type        text/plain;    
+                        include             /etc/nginx/mime.types;    
+                        default_type        text/plain;    
 
-                      server {    
-                          listen       80;
-                          server_name  _;
-                          root         /usr/share/nginx/html; 
+                        server {    
+                            listen       80;
+                            server_name  _;
+                            root         /usr/share/nginx/html; 
 
-                          # Load configuration files for the default server block.
-                          include /etc/nginx/default.d/*.conf;
+                            # Load configuration files for the default server block.
+                            include /etc/nginx/default.d/*.conf;
 
-                          location /health {
-                            return 200 'ok';
-                          }
+                            location /health {
+                              return 200 'ok';
+                            }
 
-                          location / {
-                            set $response 'Hello from ${hostname}\n';
-                            set $response '${response}GMT time:   $date_gmt\n';
-                            set $response '${response}Local time: $date_local\n';
+                            location / {
+                              set $response 'Hello from ${hostname}\n';
+                              set $response '${response}GMT time:   $date_gmt\n';
+                              set $response '${response}Local time: $date_local\n';
 
-                            return 200 '${response}';
+                              return 200 '${response}';
+                            }
                           }
                         }
-                      }
-                    path: /etc/nginx/nginx.conf
-            - type: "text/x-shellscript"
-              content: |
-                #!/bin/sh
-                yum install -y nginx
-                systemctl enable nginx
-                # removing instances ensures cloud init will execute again after reboot
-                rm -rf /var/lib/cloud/instances
-                shutdown now
+                      path: /etc/nginx/nginx.conf
+              - type: "text/x-shellscript"
+                content: |
+                  #!/bin/sh
+                  yum install -y nginx
+                  systemctl enable nginx
+                  # removing instances ensures cloud init will execute again after reboot
+                  rm -rf /var/lib/cloud/instances
+                  shutdown now
   dataVolumeTemplates:
   - metadata:
       name: fedora-cloud-nginx-base

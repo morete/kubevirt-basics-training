@@ -15,6 +15,7 @@ To create a Virtual Machine in our kubernetes cluster we have to create and appl
 This is a very basic example of a bootable virtual machine manifest.
 
 ```yaml
+apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
   name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm
