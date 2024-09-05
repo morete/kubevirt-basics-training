@@ -66,12 +66,12 @@ Events:                            <none>
 
 ## Create a DataVolume
 
-Lets have a look how this works. Assume we create a DataVolume `my-dv` with the following specification and apply it to the cluster:
+Let's have a look how this works. Assume we create a DataVolume `my-dv` with the following specification and apply it to the cluster:
 ```yaml
 apiVersion: cdi.kubevirt.io/v1beta1
 kind: DataVolume
 metadata:
-  name: lab07-fs-disk
+  name: my-dv
 spec:
   source:
     blank: {}
@@ -138,7 +138,7 @@ When we have the storage profile configured and in place, we can re-apply our Da
 apiVersion: cdi.kubevirt.io/v1beta1
 kind: DataVolume
 metadata:
-  name: lab07-fs-disk
+  name: my-dv
 spec:
   source:
     blank: {}

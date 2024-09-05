@@ -133,12 +133,12 @@ Actually we can see that we have two disks available.
 
 ## {{% task %}} Create a DataVolume to be hot plugged
 
-Create a file `dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug.yaml` with the following content:
+Create a file `dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk.yaml` with the following content:
 ```yaml
 apiVersion: cdi.kubevirt.io/v1beta1
 kind: DataVolume
 metadata:
-  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug
+  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk
 spec:
   source:
     blank: {}
@@ -152,7 +152,7 @@ spec:
 
 Create the data volume with:
 ```shell
-kubectl create -f dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug.yaml
+kubectl create -f dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk.yaml
 ```
 
 
@@ -161,10 +161,10 @@ kubectl create -f dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumbe
 Hotplug the disk by using `virtctl`:
 
 ```shell
-virtctl addvolume {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros --volume-name={{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug
+virtctl addvolume {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros --volume-name={{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk
 ```
 ```
-Successfully submitted add volume request to VM {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros for volume {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug
+Successfully submitted add volume request to VM {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros for volume {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk
 ```
 
 After some time the device will be hot plugged to your virtual machine. You may get a first hint where your new disk is
@@ -263,10 +263,10 @@ sudo touch /mnt/disk/myfile
 
 You can remove a hot plugged disk with:
 ```shell
-virtctl removevolume lab07-cirros --volume-name=lab07-hotplug
+virtctl removevolume {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros --volume-name={{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk
 ```
 ```
-Successfully submitted remove volume request to VM lab07-cirros for volume lab07-hotplug
+Successfully submitted remove volume request to VM {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros for volume {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk
 ```
 
 What happens if you remount the disk again? Is the created file `/mnt/disk/myfile` still present?
@@ -289,10 +289,10 @@ With the above steps we have hot plugged a disk into the vm. This mount is not p
 or shutdown the disk is not attached. When you want to mount the disk persistently you can use the `--persist` flag.
 
 ```shell
-virtctl addvolume {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros --volume-name={{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug --persist
+virtctl addvolume {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros --volume-name={{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk --persist
 ```
 ```
-Successfully submitted add volume request to VM {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros for volume {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug
+Successfully submitted add volume request to VM {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros for volume {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk
 ```
 
 This will add the relevant sections to your `VirtualMachine` manifest. You can show the modified configuration with:
@@ -304,7 +304,7 @@ kubectl get vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name: lab07-cirros
+  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros
 spec:
   [...]
   template:
@@ -319,10 +319,10 @@ spec:
           - name: cloudinitdisk
             disk:
               bus: virtio
-          - name: lab07-hotplug
+          - name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk
             disk:
               bus: scsi
-            serial: lab07-hotplug
+            serial: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk
       volumes:
       - name: containerdisk
         containerDisk:
@@ -331,10 +331,10 @@ spec:
         cloudInitNoCloud:
           userData: |
             #cloud-config
-      - name: lab07-hotplug
+      - name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk
         dataVolume:
           hotpluggable: true
-          name: lab07-hotplug
+          name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk
 [...]
 ```
 
