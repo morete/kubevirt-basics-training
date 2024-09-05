@@ -1,5 +1,5 @@
 ---
-title: "7.1 Mounting Disks"
+title: "7.1 Mount Disks and Filesystems"
 weight: 710
 labfoldernumber: "07"
 sectionnumber: 7.1

@@ -159,6 +159,3 @@ Status:
     Reason:                Bound
     Status:                True
 ```
-
-
-[^1] [StorageProfile Parameters](https://github.com/kubevirt/containerized-data-importer/blob/main/doc/storageprofile.md#parameters)

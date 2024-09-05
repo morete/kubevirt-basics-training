@@ -1,5 +1,5 @@
 ---
-title: "7.3 VM disk images"
+title: "7.3 Mount Secrets and ConfigMaps"
 weight: 730
 labfoldernumber: "07"
 sectionnumber: 7.3
