@@ -209,7 +209,7 @@ You can see that for example `vda4` has been resized from `5.7G` to `7.6G`.
 
 {{% alert title="Cleanup resources" color="warning" %}}  {{% param "end-of-lab-text" %}}
 
-Delete your `VirtualMachines`:
+Delete your VirtualMachines:
 ```shell
 kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros
 kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot
@@ -223,6 +223,11 @@ kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" 
 kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-disk
 kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk
 kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk
+```
+
+Delete your VirtualMachineSnapshots:
+```shell
+kubectl delete vmsnapshot {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot-snap
 ```
 
 {{% /alert %}}
