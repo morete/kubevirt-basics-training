@@ -56,6 +56,12 @@ kubectl patch vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %
 
 Edit the VM `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros` and reference the `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-pico` and do the same for the VM `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros` and reference `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-pico`
 
+{{% alert title="Note" color="info" %}}
+Since so far we were referencing a `VirtualMachineClusterPreference` also change the kind to `VirtualMachineInstancetype` for our new InstanceTypes.
+And don't forget to remove the referenced `revisionName`.
+{{% /alert %}}
+
+
 {{% details title="Task Hint" %}}
 The relevant section for the VM `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros` should look like this:
 
@@ -81,9 +87,16 @@ virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}
 virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros --namespace=$USER
 ```
 
+Verify whether the two VMIs are running again properly:
+```shell
+kubectl get vmi --namespace=$USER
+```
+
 Describe both VirtualMachine instances and observe the effect:
 ```shell
 kubectl get vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros -o yaml --namespace=$USER
+```
+```shell
 kubectl get vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros -o yaml --namespace=$USER
 ```
 
