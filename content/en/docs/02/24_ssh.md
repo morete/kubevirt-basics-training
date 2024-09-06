@@ -115,7 +115,7 @@ Which will produce a similar output to this:
 You can also see the IPs of the nodes using:
 
 ```shell
-kubectl get nodes -o wide --namespace=$USER
+kubectl get nodes -o wide
 ```
 {{% /alert %}}
 

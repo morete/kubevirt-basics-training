@@ -102,7 +102,7 @@ Check [Cloud-inits Network configuration sources](https://cloudinit.readthedocs.
 of the network data. Be aware that there is a different format used whenever you use `NoCloud` or `ConfigDrive`.
 
 {{% alert title="Important" color="warning" %}}
-Make sure you use `secretRef` or `networkDataSecretRef` whenever you provide sensitive data like credentials, certificates and such.
+Make sure you use `secretRef` or `networkDataSecretRef` whenever you provide sensitive data like credentials, certificates and so on.
 {{% /alert %}}
 
 
@@ -212,7 +212,7 @@ spec:
 ```
 
 Extend the VM configuration to include our secret `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit` we created above.
-Use the [documentation](https://kubevirt.io/user-guide/user_workloads/startup_scripts/) for further info
+Use the linked under `Reference` at the end of this lab for further information.
 
 {{% details title="Task Hint: Solution" %}}
 Your VirtualMachine configuration should look like this:
@@ -265,7 +265,7 @@ kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" 
 Start the VM and verify whether logging in with the defined user and password works as expected.
 
 {{% details title="Solution" %}}
-Start the newly created VM, this might take a while, due to the lab environment
+Start the newly created VM, this might take a while(a couple of minutes), due to the lab environment
 ```shell
 virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --namespace=$USER
 ```
@@ -444,7 +444,7 @@ virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}
 
 We have spawn a Virtual Machine which uses cloud-init and installs a simple nginx webserver. Let us test the webserver:
 
-Create the following kubernetes service (file: `service.yaml` folder: `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}`):
+Create the following kubernetes service (file: `service-cloudinit.yaml` folder: `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}`):
 
 ```yaml
 apiVersion: v1
@@ -463,7 +463,7 @@ spec:
 And create it:
 
 ```shell
-kubectl apply -f  {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/service.yaml --namespace=$USER
+kubectl apply -f  {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/service-cloudinit.yaml --namespace=$USER
 ```
 
 
@@ -483,7 +483,7 @@ Local time: Thursday, 22-Aug-2024 16:13:17 CEST
 
 The nginx webserver is now only accessible within our kubernetes cluster. In this optional lab we expose it via ingress to the internet.
 
-For that we need to create an ingress resource. Create a file `ingress.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
+For that we need to create an ingress resource. Create a file `ingress-cloudinit.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
 
 ```yaml
 ---
@@ -517,13 +517,24 @@ are replaced accordingly, before you create the ingress by
 
 
 ```shell
-kubectl apply -f  {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/ingress.yaml --namespace=$USER
+kubectl apply -f  {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/ingress-cloudinit.yaml --namespace=$USER
 ```
 
 After that open a new Browser Tab and enter URL:
 `https://{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit-<user>.<appdomain>`
 
 Congratulations, you've successfully exposed nginx, running in a fedora VM, on Kubernetes to the internet.
+
+
+## End of lab
+
+{{% alert title="Cleanup resources" color="warning" %}}  {{% param "end-of-lab-text" %}}
+
+Stop your running VM with
+```shell
+virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --namespace=$USER
+```
+{{% /alert %}}
 
 
 ## Reference

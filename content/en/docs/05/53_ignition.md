@@ -47,7 +47,7 @@ Similar to cloud-init, this volume must be referenced after the vm disk in the `
     bus: virtio
 ```
 
-Using the `cloudInitConfigDrive` attribute give us the following possibilities to provide our Ignition configuration:
+Using the `cloudInitConfigDrive` attribute gives us the following possibilities to provide our Ignition configuration:
 
 * `userData`: inline Ignition configuration
 * `userDataBase64`: Ignition configuration as base64 string.
@@ -58,15 +58,17 @@ JSON config if needed. As our config for the Lab is simple enough we directly wr
 You may find more details about Butane here: [Producing an Ignition Config](https://docs.fedoraproject.org/en-US/fedora-coreos/producing-ign/#_configuration_process)
 
 {{% alert title="Important" color="warning" %}}
-Make sure you use `secretRef` whenever you provide sensitive production information.
+Make sure you use `secretRef` whenever you provide sensitive data like credentials, certificates and so on.
 {{% /alert %}}
 
 
 ## {{% task %}} Creating an Ignition config secret
 
-This time we are going to use a Fedora CoreOS VM and provide an Ignition configuration to initialize our vm.
+This time we are going to use a Fedora CoreOS VM and provide an Ignition configuration to initialize our VM.
 
-First we define our configuration. Create a file `ignition-data.yaml` with the following content:
+You can find more information and examples in the official documentation under `Reference` at the end of this lab.
+
+First we define our configuration. Create a file `ignition-data.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
 ```yaml
 {
   "ignition": {
@@ -105,10 +107,21 @@ $6$vdwmUilVEr7j7j.T$.2wFftwtDSxK[...]
 
 Generate a hash for `kubevirt` and add the generated `passwordHash` to the Ignition configuration.
 
+After that don't forget to create the kubernetes secret containing the ignition configuration, similar to the previous lab.
+
+{{% details title="Solution" %}}
+To create the kubernetes secret run the following command:
+
+```shell
+kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --from-file=userdata={{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/ignition-data.yaml --namespace=$USER
+```
+
+{{% /details %}}
+
 
 ## {{% task %}} Creating a VirtualMachine using Ignition
 
-Create a file `vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition.yaml` and start with the
+Create a file `vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` and start with the
 following VM configuration:
 
 ```yaml
@@ -189,6 +202,30 @@ spec:
 ```
 {{% /details %}}
 
+Create your VM with:
+```shell
+kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition.yaml --namespace=$USER
+```
+
+Start the VM and verify whether logging in with the defined user and password works as expected.
+
+{{% details title="Solution" %}}
+Start the newly created VM, this might take a while (a couple of minutes), due to the lab environment
+```shell
+virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --namespace=$USER
+```
+Connect to the console and login as soon as the prompt shows up with the defined credentials.
+
+```shell
+virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --namespace=$USER
+```
+
+{{% alert title="Note" color="info" %}}
+Hit the `Enter` key if the login prompt doesn't show automatically.
+{{% /alert %}}
+
+{{% /details %}}
+
 
 ## {{% task %}} Enhance your startup script
 
@@ -197,7 +234,7 @@ With the help of the Documentation and Examples (See Section References below), 
 * Create a group `ssh-users`
 * Add user `core` to the group `docker` and `ssh-users`
 * Add a `sshAuthorizedKeys` for the user `core`. See instructions below to generate your ssh key.
-* Set the Hostname to `lab05-ignition-$USER` where `$USER` is your username
+* Set the Hostname to `lab05-ignition-<user>` where `<user>` is your username
 * Configure the SSH Daemon with:
   * Disable root login
   * Allow only group `ssh-users` to login through ssh.
@@ -220,7 +257,7 @@ ssh-rsa AAAAB3NzaC[...] theia@$USER-webshell-554b45d885-b79ks
 Make sure the key starts with ssh-rsa and copy the key to the `sshAuthorizedKeys` attribute.
 
 {{% details title="Task Hint" %}}
-Make sure you replace the `$USER` and the `passwordHash` and `sshAuthorizedKeys` hashes. Your Ignition configuration will look like this:
+Make sure you replace the `<user>` and the `passwordHash` and `sshAuthorizedKeys` hashes. Your Ignition configuration will look like this:
 ```yaml
 {
   "ignition": {
@@ -242,7 +279,7 @@ Make sure you replace the `$USER` and the `passwordHash` and `sshAuthorizedKeys`
         ],
         "passwordHash": "[...]",
         "sshAuthorizedKeys": [
-          "ssh-rsa AAAAB3NzaC[...] theia@$USER-webshell-554b45d885-b79ks"
+          "ssh-rsa AAAAB3NzaC[...] theia@<user>-webshell-554b45d885-b79ks"
         ]
       }
     ]
@@ -253,7 +290,7 @@ Make sure you replace the `$USER` and the `passwordHash` and `sshAuthorizedKeys`
         "path": "/etc/hostname",
         "mode": 420,
         "overwrite": true,
-        "contents": { "source": "data:,ignitionVersion-ignition-$USER" }
+        "contents": { "source": "data:,{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition-<user>" }
       },
       {
         "path": "/etc/ssh/sshd_config.d/30-disable-rootlogin.conf",
@@ -273,26 +310,28 @@ Make sure you replace the `$USER` and the `passwordHash` and `sshAuthorizedKeys`
 ```
 {{% /details %}}
 
+You need to recreate your secret:
+
+```shell
+kubectl delete secret {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --namespace=$USER
+kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --from-file=userdata={{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/ignition-data.yaml --namespace=$USER
+```
+
+Next we need to restart our vm to pick up the changes in the ignition configuration.
+
+```shell
+virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --namespace=$USER
+```
+
+{{% alert title="Note" color="info" %}}
+It may take some minutes until your server is fully provisioned.
+{{% /alert %}}
+
 
 ## {{% task %}} Testing your webserver on your Virtual Machine
 
-For running our VM we first have to create the secret with our Ignition configuration:
-```shell
-kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --from-file=userdata=ignition-data.yaml
-```
-
-The output should be:
-```
-secret/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition created
-```
-
-Then we need to create our VM:
-```shell
-kubectl create -f vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition.yaml
-```
-
 To access our VM from the webshell we need to create a kubernetes service. Create a file
-`svc_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition.yaml` with the following content:
+`service-ignition.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
 ```yaml
 apiVersion: v1
 kind: Service
@@ -306,6 +345,12 @@ spec:
   selector:
     kubevirt.io/domain: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition
   type: ClusterIP
+```
+
+And create it:
+
+```shell
+kubectl apply -f  {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/service-ignition.yaml --namespace=$USER
 ```
 
 You may now be able to login with SSH from your webshell to your VM:
@@ -333,6 +378,8 @@ You may verify the presence of the two configurations with:
 ls /etc/ssh/sshd_config.d/*.conf
 ```
 
+Hint: `sudo su - root`
+
 Which should list the two files `30-disable-rootlogin` and `30-allow-groups.conf` created in the Ignition config.
 {{% /alert %}}
 
@@ -351,10 +398,61 @@ Show the configured hostname:
 ```shell
 hostname
 ```
-We should see our postfix `-$USER` added to our hostname:
+We should see our postfix `-<user>` added to our hostname:
 ```
-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition-$USER
+{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition-<user>
 ```
+
+
+## {{% task %}} (Optional) Expose ssh as NodePort to the Internet
+
+In this optional lab we expose the ssh service as node port to the external world.
+Similar to what we did in lab 2.4.
+
+* create a NodePort Service
+* Find out the Port
+* Get the IP Address of one of the Kubernetes Nodes
+* ssh to the service.
+
+{{% details title="Solution" %}}
+
+Create the NodePort
+```shell
+virtctl expose vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --name={{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition-ssh-np --port=22 --type=NodePort --namespace=$USER
+```
+
+Find out the Port
+```shell
+kubectl get service --namespace=$USER
+```
+
+Get the IP Address of one of the Kubernetes Nodes
+```shell
+kubectl get nodes --selector=node-role.kubernetes.io/master!=true -o jsonpath={.items[*].status.addresses[?\(@.type==\"ExternalIP\"\)].address} --namespace=$USER
+```
+or
+```shell
+kubectl get nodes -o wide
+```
+
+ssh to the service.
+```shell
+ssh core@188.245.73.202 -p <port>
+```
+
+
+{{% /details %}}
+
+
+## End of lab
+
+{{% alert title="Cleanup resources" color="warning" %}}  {{% param "end-of-lab-text" %}}
+
+Stop your running VM with
+```shell
+virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --namespace=$USER
+```
+{{% /alert %}}
 
 
 ## Reference
