@@ -1,8 +1,8 @@
 ---
-title: "7.5 Snapshot and Restore"
-weight: 750
+title: "7.4 Snapshot and Restore"
+weight: 740
 labfoldernumber: "07"
-sectionnumber: 7.5
+sectionnumber: 7.4
 description: >
   Snapshot and restore a virtual machine
 ---
