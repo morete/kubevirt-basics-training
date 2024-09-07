@@ -17,12 +17,12 @@ On the kubernetes cluster used for this training the following operators have be
 | KubeVirt                         | kubevirt   |
 | Containerized Data Impoter (CDI) | cdi        |
 
-As the configuration and the required feature flags are subject to change we are referencing them on every section.
+As the configuration and the required feature flags are subject to change we do not highlight them on every section.
 
 
 ### Emulation
 
-This cluster is using emulation.
+This cluster is using emulation. This has an impact on the VM performance.
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: KubeVirt

@@ -480,7 +480,7 @@ Volumes:
     Type:                    Projected (a volume that contains injected data from multiple sources)
 ````
 
-This is a highly stripped output of the pod description showing the relevant sections. Our virt-launcher pod has multiple
+This is a highly shortened output of the pod description showing the relevant sections. Our virt-launcher pod has multiple
 helper containers managing the mounts. Every storage is shown in the volumes block. The ServiceAccount is actually in
 the `kube-api-access` volume. The `compute` container is the container running our virtual machine where our storage
 should be available.
