@@ -95,7 +95,7 @@ Successfully connected to kubevirtvm console. The escape sequence is ^
 
 This simple escape sequence `^` does not work within the webshell terminal. You have the following options to exit the console:
 
-* Press `Ctrl+AltGr+]]` (yes, press `]` twice)
+* Press `Ctrl+AltGr+]]` (yes, press `]` twice). This might not work in all browsers. Use Chrome for the best experience.
 * Close the webshell terminal and open a new one with `Ctrl+Shift+^`
 
 

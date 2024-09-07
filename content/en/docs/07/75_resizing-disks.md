@@ -1,5 +1,5 @@
 ---
-title: "7.5 Resizing a disk"
+title: "7.5 Resizing a Disk"
 weight: 750
 labfoldernumber: "07"
 sectionnumber: 7.5
@@ -211,6 +211,7 @@ You can see that for example `vda4` has been resized from `5.7G` to `7.6G`.
 
 Delete your VirtualMachines:
 ```shell
+kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage
 kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros
 kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot
 kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand

@@ -1,5 +1,5 @@
 ---
-title: "7.2 StorageProfiles"
+title: "7.2 Using StorageProfiles"
 weight: 720
 labfoldernumber: "07"
 sectionnumber: 7.2

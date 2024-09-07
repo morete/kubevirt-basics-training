@@ -1,5 +1,5 @@
 ---
-title: "7.4 Snapshot and Restore"
+title: "7.4 VM Snapshot and Restore"
 weight: 740
 labfoldernumber: "07"
 sectionnumber: 7.4
