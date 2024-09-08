@@ -87,7 +87,7 @@ Since we have done this in a previous lab you can practice creating a cloud-init
 * Set the timezone to `Europe/Zurich`
 
 {{% details title="Task Hint" %}}
-Create a file `cloudinit-userdata.yaml` with the following content:
+Create a file `cloudinit-userdata.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
 ```yaml
 #cloud-config
 password: kubevirt
@@ -97,7 +97,7 @@ timezone: Europe/Zurich
 
 Create the secret:
 ```shell
-kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --from-file=userdata=cloudinit-userdata.yaml
+kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --from-file=userdata={{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/cloudinit-userdata.yaml --namespace=$USER
 ```
 {{% /details %}}
 
@@ -106,7 +106,7 @@ kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfo
 
 Now we have all our prerequisites in place and are ready to create our virtual machine pool.
 
-Create a file `vmpool_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver.yaml` and start with the following boilerplate config:
+Create a file `vmpool_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` and start with the following boilerplate config:
 ```yaml
 apiVersion: pool.kubevirt.io/v1alpha1    
 kind: VirtualMachinePool    
@@ -137,7 +137,7 @@ vm from the previous lab. Make sure the vm has the following characteristics:
 * Use a `cloudInitNoCloud` named `cloudinitdisk` and reference the created secret to initialize our credentials.
 
 {{% details title="Task Hint" %}}
-Your VirtualMachinePool should look like this (Make sure you replace `$USER` to your username):
+Your VirtualMachinePool should look like this (Make sure you replace `<user>` to your username):
 ```yaml
 apiVersion: pool.kubevirt.io/v1alpha1
 kind: VirtualMachinePool
@@ -199,14 +199,14 @@ spec:
                 storage: 6Gi
           source:
             pvc:
-              namespace: $USER
+              namespace: <user>
               name: fedora-cloud-nginx-base
 ```
 {{% /details %}}
 
 Create the VirtualMachinePool with:
 ```shell
-kubectl create -f vmpool_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver.yaml
+kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vmpool_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver.yaml --namespace=$USER
 ```
 ```
 virtualmachinepool.pool.kubevirt.io/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver created
@@ -218,7 +218,7 @@ sequential id as postfix of the disk.
 
 Investigate the availability of our pvc for the webserver instances
 ```shell
-kubectl get pvc
+kubectl get pvc --namespace=$USER
 ```
 
 We see the two disk images to be present in our namespace. This means that each our instance is a completely unique and
@@ -234,7 +234,7 @@ NAME                      STATUS   VOLUME                                     CA
 
 Create a service to access our webservers from within the webshell.
 
-Create a file `svc_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver.yaml` with the following content:
+Create a file `svc_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
 ```yaml
 apiVersion: v1
 kind: Service
@@ -252,7 +252,7 @@ spec:
 
 Apply the service with:
 ```shell
-kubectl create -f svc_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver.yaml
+kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/svc_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver.yaml --namespace=$USER
 ```
 ```
 service/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver created
@@ -290,7 +290,7 @@ As the VirtualMachinePool implements the kubernetes standard `scale` subresource
 the `kubectl scale` command.
 
 ```shell
-kubectl scale vmpool {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver --replicas 1
+kubectl scale vmpool {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver --replicas 1 --namespace=$USER
 ```
 
 
@@ -320,7 +320,7 @@ This will ensure that the VirtualMachinePool is automatically scaled depending o
 
 Scale down the VM pool with:
 ```shell
-kubectl scale vmpool {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver --replicas 0
+kubectl scale vmpool {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver --replicas 0 --namespace=$USER
 ```
 
 [^1]: [Horizontal Pod Autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)

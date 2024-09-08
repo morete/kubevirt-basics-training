@@ -247,7 +247,7 @@ As specified above we delete the data in `/var/lib/cloud/instances`. As this is 
 After the provisioning was successfully the VM will terminate itself due to the `shutdown now` statement.
 
 ```shell
-kubectl get vmi --namespace=$USER
+kubectl get vm --namespace=$USER
 ```
 
 ```
