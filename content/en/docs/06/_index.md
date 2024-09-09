@@ -8,12 +8,12 @@ description: >
 
 ---
 
-Similar to regular container Pods there cases when we want to have multiple instances of the same VM running. In this section
+Similar to regular container Pods there are cases when we want to have multiple instances of the same VM running. In this section
 we will have a look how KubeVirt supports this.
 
 
 ## Lab Goals
 
-* Know how to use VirtualMachine pools
+* Know how to use VirtualMachine Pools
 * Know the difference for ephemeral VMs and VMs requiring persistent storage
 * Create and use a pool

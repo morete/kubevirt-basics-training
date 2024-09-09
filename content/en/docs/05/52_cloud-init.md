@@ -102,7 +102,7 @@ Check [Cloud-inits Network configuration sources](https://cloudinit.readthedocs.
 of the network data. Be aware that there is a different format used whenever you use `NoCloud` or `ConfigDrive`.
 
 {{% alert title="Important" color="warning" %}}
-Make sure you use `secretRef` or `networkDataSecretRef` whenever you provide sensitive production information.
+Make sure you use `secretRef` or `networkDataSecretRef` whenever you provide sensitive data like credentials, certificates and so on.
 {{% /alert %}}
 
 
@@ -125,14 +125,14 @@ This volume must be referenced after the vm disk in the `spec.template.spec.doma
     bus: virtio
 ```
 
-When using ConfigDrive the networkdata has to be in the [OpenStack Metadata Service Network](https://specs.openstack.org/openstack/nova-specs/specs/liberty/implemented/metadata-service-network-info.html) format
+When using ConfigDrive the networkdata has to be in the [OpenStack Metadata Service Network](https://specs.openstack.org/openstack/nova-specs/specs/liberty/implemented/metadata-service-network-info.html) format.
 
 
 ## {{% task %}} Creating a cloud-init config secret
 
-We are now going to create a Fedora Cloud VM and provide a cloud-init userdata configuration to initialize our vm.
+We are now going to create a Fedora Cloud VM and provide a cloud-init userdata configuration to initialize our WM.
 
-First we are going to define our configuration. Create a file `cloudinit-userdata.yaml` with the following content:
+First we are going to define our configuration. Create a file `cloudinit-userdata.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
 ```yaml
 #cloud-config
 password: kubevirt
@@ -145,7 +145,7 @@ to never expire.
 From this configuration we need to create the secret. You can use the following command to create the secret in the kubernetes cluster.
 
 ```shell
-kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --from-file=userdata=cloudinit-userdata.yaml
+kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --from-file=userdata={{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/cloudinit-userdata.yaml --namespace=$USER
 ```
 
 The output should be:
@@ -155,7 +155,7 @@ secret/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudin
 
 You can inspect the secret with:
 ```shell
-kubectl get secret {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit -o yaml
+kubectl get secret {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit -o yaml --namespace=$USER
 ```
 
 ```
@@ -175,7 +175,7 @@ convenient to create it from the raw configuration using the `kubectl` tool.
 
 ## {{% task %}} Creating a VirtualMachine using cloud-init
 
-Create a file `vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit.yaml` and start with the
+Create a file `vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}`and start with the
 following VM configuration:
 
 ```yaml
@@ -212,8 +212,9 @@ spec:
 ```
 
 Extend the VM configuration to include our secret `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit` we created above.
+Use the linked under `Reference` at the end of this lab for further information.
 
-{{% details title="Task Hint" %}}
+{{% details title="Task Hint: Solution" %}}
 Your VirtualMachine configuration should look like this:
 ```yaml
 apiVersion: kubevirt.io/v1
@@ -258,8 +259,39 @@ spec:
 
 Make sure you create your VM with:
 ```shell
-kubectl create -f vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit.yaml
+kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit.yaml --namespace=$USER
 ```
+
+Start the VM and verify whether logging in with the defined user and password works as expected.
+
+{{% details title="Solution" %}}
+Start the newly created VM, this might take a while(a couple of minutes), due to the lab environment
+```shell
+virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --namespace=$USER
+```
+Connect to the console, and login as soon as the prompt shows up
+
+```shell
+virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --namespace=$USER
+```
+
+You will also see the cloud-init executions in the console log during startup
+```shell
+[...]
+[  OK  ] Started systemd-logind.service - User Login Management.
+[  147.604999] cloud-init[796]: Cloud-init v. 23.4.4 running 'init-local' at Fri, 06 Sep 2024 11:42:25 +0000. Up 147.17 seconds.
+         Starting systemd-hostnamed.service - Hostname Service...
+[...]
+
+[  210.442576] cloud-init[973]: Cloud-init v. 23.4.4 finished at Fri, 06 Sep 2024 11:43:29 +0000. Datasource DataSourceNoCloud [seed=/dev/vdb][dsmode=net].  Up 210.34 seconds
+[...]
+```
+
+{{% alert title="Note" color="info" %}}
+Hit the `Enter` key if the login prompt doesn't show automatically.
+{{% /alert %}}
+
+{{% /details %}}
 
 
 ## {{% task %}} Enhance your startup script
@@ -321,7 +353,7 @@ http {
 }
 ```
 
-{{% details title="Task Hint" %}}
+{{% details title="Solution" %}}
 Your cloud-init configuration will look like this:
 ```yaml
 #cloud-config
@@ -388,14 +420,14 @@ runcmd:
 You need to recreate your secret:
 
 ```shell
-kubectl delete secret {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit 
-kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --from-file=userdata=cloudinit-userdata.yaml
+kubectl delete secret {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --namespace=$USER
+kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --from-file=userdata={{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/cloudinit-userdata.yaml --namespace=$USER
 ```
 
 Next we need to restart our vm to pick up the changes in the cloud-init configuration.
 
 ```shell
-virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit 
+virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --namespace=$USER
 ```
 
 
@@ -403,7 +435,7 @@ virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}
 It may take some minutes until your server is fully provisioned. While booting you may watch out for the message `Reached target cloud-init.target` in your VMs console.
 
 ```shell
-virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit 
+virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --namespace=$USER
 ```
 {{% /alert %}}
 
@@ -412,7 +444,7 @@ virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}
 
 We have spawn a Virtual Machine which uses cloud-init and installs a simple nginx webserver. Let us test the webserver:
 
-Create the following kubernetes service:
+Create the following kubernetes service (file: `service-cloudinit.yaml` folder: `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}`):
 
 ```yaml
 apiVersion: v1
@@ -428,6 +460,12 @@ spec:
     kubevirt.io/domain: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit
   type: ClusterIP
 ```
+And create it:
+
+```shell
+kubectl apply -f  {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/service-cloudinit.yaml --namespace=$USER
+```
+
 
 Test your working webserver from your webshell.
 ```shell
@@ -439,6 +477,64 @@ Hello from {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-clo
 GMT time:   Thursday, 22-Aug-2024 14:13:17 GMT
 Local time: Thursday, 22-Aug-2024 16:13:17 CEST
 ```
+
+
+## {{% task %}} (Optional) Expose the Service over an ingress
+
+The nginx webserver is now only accessible within our kubernetes cluster. In this optional lab we expose it via ingress to the internet.
+
+For that we need to create an ingress resource. Create a file `ingress-cloudinit.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
+
+```yaml
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit
+spec:
+  rules:
+    - host: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit-<user>.<appdomain>
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: 
+                name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit
+                port: 
+                  number: 80
+  tls:
+  - hosts:
+    - {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit-<user>.<appdomain>
+```
+
+Make sure all occurrences of
+
+* `<user>` - your Username (eg. `user4`)
+* `<appdomain>` - ask the trainer
+
+are replaced accordingly, before you create the ingress by
+
+
+```shell
+kubectl apply -f  {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/ingress-cloudinit.yaml --namespace=$USER
+```
+
+After that open a new Browser Tab and enter URL:
+`https://{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit-<user>.<appdomain>`
+
+Congratulations, you've successfully exposed nginx, running in a fedora VM, on Kubernetes to the internet.
+
+
+## End of lab
+
+{{% alert title="Cleanup resources" color="warning" %}}  {{% param "end-of-lab-text" %}}
+
+Stop your running VM with
+```shell
+virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --namespace=$USER
+```
+{{% /alert %}}
 
 
 ## Reference

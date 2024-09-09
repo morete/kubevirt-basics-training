@@ -107,7 +107,7 @@ container disks are ephemeral this fits this use case very well.
 
 ### {{% task %}} Create a VirtualMachineInstanceReplicaSet
 
-Create a file `vmirs_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros.yaml` and start with the following boilerplate config:
+Create a file `vmirs_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` and start with the following boilerplate config:
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachineInstanceReplicaSet
@@ -197,7 +197,7 @@ spec:
 {{% /details %}}
 
 ```shell
-kubectl create -f vmirs_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros.yaml
+kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vmirs_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros.yaml --namespace=$USER
 ```
 ```
 virtualmachineinstancereplicaset.kubevirt.io/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicaset created
@@ -210,7 +210,7 @@ There is not much the cirros disk image provides beside entering the VMs using t
 
 Check the availability of the `VirtualMachineInstanceReplicaSet` with:
 ```shell
-kubectl get vmirs
+kubectl get vmirs --namespace=$USER
 ```
 ```
 NAME                      DESIRED   CURRENT   READY   AGE
@@ -219,7 +219,7 @@ NAME                      DESIRED   CURRENT   READY   AGE
 
 List the created VirtualMachineInstances using:
 ```shell
-kubectl get vmi
+kubectl get vmi --namespace=$USER
 ```
 ```
 NAME                           AGE    PHASE     IP             NODENAME            READY
@@ -230,7 +230,7 @@ NAME                           AGE    PHASE     IP             NODENAME         
 
 You can access the console using the name of the vmi with `virtctl`:
 ````shell
-virtctl console lab06-cirros-replicasetnc5p5
+virtctl console lab06-cirros-replicasetnc5p5 --namespace=$USER
 ````
 
 
@@ -240,7 +240,7 @@ As the VirtualMachineInstanceReplicaSet implements the kubernetes standard `scal
 the `kubectl scale` command.
 
 ```shell
-kubectl scale vmirs {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicaset --replicas 1
+kubectl scale vmirs {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicaset --replicas 1 --namespace=$USER
 ```
 
 
@@ -267,7 +267,7 @@ This will ensure that the VirtualMachineInstanceReplicaSet is automatically scal
 
 You can check the consumption of your pods with:
 ```shell
-kubectl top pod
+kubectl top pod --namespace=$USER
 ```
 ```
 NAME                                               CPU(cores)   MEMORY(bytes)   
