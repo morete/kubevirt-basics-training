@@ -190,14 +190,14 @@ spec:
                           }
                         }
                       path: /etc/nginx/nginx.conf
-              - type: "text/x-shellscript"
-                content: |
-                  #!/bin/sh
-                  yum install -y nginx
-                  systemctl enable nginx
-                  # removing instances ensures cloud init will execute again after reboot
-                  rm -rf /var/lib/cloud/instances
-                  shutdown now
+            - type: "text/x-shellscript"
+              content: |
+                #!/bin/sh
+                yum install -y nginx
+                systemctl enable nginx
+                # removing instances ensures cloud init will execute again after reboot
+                rm -rf /var/lib/cloud/instances
+                shutdown now
   dataVolumeTemplates:
   - metadata:
       name: fedora-cloud-nginx-base
