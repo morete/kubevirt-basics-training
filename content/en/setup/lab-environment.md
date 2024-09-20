@@ -9,7 +9,7 @@ description: >
 
 ## Login
 
-{{% alert title="Note" color="info" %}} Authentication depends on the specific Kubernetes cluster environment. The **URL** and **credentials** to access the lab environment will be provided by your trainer. Use Chrome for the best experience.{{% /alert %}}
+Authentication depends on the specific Kubernetes cluster environment. The **URL** and **credentials** to access the lab environment will be provided by your trainer. Use Chrome for the best experience.
 
 
 ## Webshell
@@ -18,7 +18,7 @@ The first thing we are going to do is to explore our lab environment and and the
 
 The provided lab environment contains an _Eclipse Theia IDE_[^1]. Your IDE will look something like this:
 
-![Eclipse Theia IDE](theia.png)
+![Eclipse Theia IDE](../theia.png)
 
 * On the left side you can open the **Explorer** which you can use for managing files and directories
 * The terminal is accessible using the menubar on top, clicking **Terminal**, then **New Terminal** or using `Ctrl+Shit+^`
