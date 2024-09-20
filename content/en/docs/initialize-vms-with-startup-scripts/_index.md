@@ -1,8 +1,8 @@
 ---
-title: "5. Initialize VMs with startup scripts"
-weight: 1
-labfoldernumber: "05"
-sectionnumber: 5
+title: "Initialize VMs with startup scripts"
+weight: 4
+labfoldernumber: "04"
+sectionnumber: 4
 description: >
   Initialize and configure Virtual Machines using tools like cloud-init, Ignition or Sysprep.
 ---

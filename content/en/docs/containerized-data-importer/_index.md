@@ -1,8 +1,8 @@
 ---
-title: "3. Containerized Data Importer (CDI)"
-weight: 1
-labfoldernumber: "03"
-sectionnumber: 3
+title: "Containerized Data Importer (CDI)"
+weight: 2
+labfoldernumber: "02"
+sectionnumber: 2
 description: >
   Provision Virtual Machine Disk Images using the Containerized Data Importer
 ---
