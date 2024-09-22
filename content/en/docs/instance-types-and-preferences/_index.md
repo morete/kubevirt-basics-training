@@ -2,7 +2,6 @@
 title: "Instance Types and Preferences"
 weight: 3
 labfoldernumber: "03"
-sectionnumber: 3
 description: >
   Learn how to use and define Instance Types and Preferences.
 ---
