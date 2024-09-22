@@ -84,7 +84,7 @@ labsubfolderprefix = "lab"
 maxlabnumber = 7
 
 end-of-lab-title = "Cleaning up resources"
-end-of-lab-text = "You have reached the end of this lab. Please stop your running VirtualMachines to safe resources on the kubernetes cluster."
+end-of-lab-text = "You have reached the end of this lab. Please stop your running virtual machines to save resources on the Kubernetes cluster."
 
 # Cloud-init - Fedora Cloud
 #fedoraCloudCDI = "kubevirt/fedora-cloud-container-disk-demo:latest" # fedora cloud 32

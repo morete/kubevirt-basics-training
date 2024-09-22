@@ -104,9 +104,9 @@ This simple escape sequence `^` does not work within the webshell terminal. You 
 
 ### Hints
 
-We usually provide help for a task you have to complete. For example, if you have to implement a method you most likely find the solution in a _Hints_ like this one:
+We usually provide help for a task you have to complete. For example, if you have to implement a method you most likely find the solution in a _Task hint_ like this one:
 
-{{% details title="Hints" %}}
+{{% details title="Task hint" %}}
 Your yaml should look like this:
 
 ```yaml

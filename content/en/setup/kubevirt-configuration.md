@@ -37,7 +37,7 @@ spec:
 ```
 
 
-### Enabled FeatureFlags
+### Enabled Kubernetes feature flags
 
 In the cluster, the following KubeVirt feature flags are enabled:
 
