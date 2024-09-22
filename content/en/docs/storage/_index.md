@@ -2,7 +2,6 @@
 title: "Storage"
 weight: 6
 labfoldernumber: "06"
-sectionnumber: 6
 description: >
  Configuring Kubernetes Storage for Virtual Machines
 ---
