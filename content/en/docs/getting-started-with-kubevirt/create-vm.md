@@ -2,7 +2,6 @@
 title: "Create a VM"
 weight: 11
 labfoldernumber: "01"
-sectionnumber: 1.1
 description: >
   Create your first virtual machine
 ---

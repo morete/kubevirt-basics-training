@@ -2,7 +2,6 @@
 title: "Getting started with KubeVirt"
 weight: 1
 labfoldernumber: "01"
-sectionnumber: 1
 description: >
   Create and run your first Virtual Machine.
 ---

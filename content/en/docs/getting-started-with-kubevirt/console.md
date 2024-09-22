@@ -2,7 +2,6 @@
 title: "Accessing the console"
 weight: 13
 labfoldernumber: "01"
-sectionnumber: 1.3
 description: >
   Opening a console on your virtual machine
 ---

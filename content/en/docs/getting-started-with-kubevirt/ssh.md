@@ -2,7 +2,6 @@
 title: "Exposing VM Ports"
 weight: 14
 labfoldernumber: "01"
-sectionnumber: 1.4
 description: >
   Accessing ports of the running virtual machine
 ---

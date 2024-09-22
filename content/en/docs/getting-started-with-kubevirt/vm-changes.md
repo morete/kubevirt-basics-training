@@ -2,7 +2,6 @@
 title: "Changing files"
 weight: 15
 labfoldernumber: "01"
-sectionnumber: 1.5
 description: >
   Changing files in your running VM
 ---

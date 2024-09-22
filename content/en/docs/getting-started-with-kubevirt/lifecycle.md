@@ -2,7 +2,6 @@
 title: "Start and stop a VM"
 weight: 12
 labfoldernumber: "01"
-sectionnumber: 1.2
 description: >
   Start and stop your virtual machine using kubectl and virtctl
 ---
