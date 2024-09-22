@@ -2,7 +2,6 @@
 title: "Scaling VMs"
 weight: 5
 labfoldernumber: "05"
-sectionnumber: 5
 description: >
   Managing multiple instances of a Virtual Machine
 
