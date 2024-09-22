@@ -4,7 +4,7 @@ weight: 2
 labfoldernumber: "02"
 sectionnumber: 2
 description: >
-  Provision Virtual Machine Disk Images using the Containerized Data Importer
+  Provision virtual machine disk images using the Containerized Data Importer
 ---
 
 In this section we will get familiar with the Containerized Data Importer to provision PVCs which can be used as Disks
