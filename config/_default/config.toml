@@ -71,6 +71,7 @@ copyright = "acend gmbh"
 github_repo = "https://github.com/acend/kubevirt-basics-training"
 github_branch = "main"
 
+automaticSectionNumbers = true
 enabledModule = "base"
 
 # Enable Lunr.js offline search
