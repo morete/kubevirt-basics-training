@@ -283,7 +283,10 @@ You can query instance types as follows:
 ```bash
 kubectl get virtualmachineclusterinstancetype \
    --selector instancetype.kubevirt.io/cpu=1,instancetype.kubevirt.io/memory=2Gi
+```
 
+Will return something like:
+```bash
 NAME         AGE
 cx1.medium   10m
 o1.small     10m
@@ -332,6 +335,11 @@ Deploy two VMs with different instance types:
 * Deploy a cirros VM using an `o` class instancetype and the same preference.
   * rite the VM specification in `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros.yaml`
 
+
+{{% alert title="Tolerations" color="warning" %}}
+Don't forget the `tolerations` from lab01, to make sure the VM will be scheduled on one of the baremetal nodes.
+{{% /alert %}}
+
 {{% details title="Task Hint: Solution" %}}
 `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros.yaml` specification:
 ```yaml
@@ -364,6 +372,11 @@ spec:
       networks:
         - name: default
           pod: {}
+      tolerations:
+        - effect: NoSchedule
+          key: baremetal
+          operator: Equal
+          value: "true"
       volumes:
         - name: containerdisk
           containerDisk:
@@ -404,6 +417,11 @@ spec:
       networks:
         - name: default
           pod: {}
+      tolerations:
+        - effect: NoSchedule
+          key: baremetal
+          operator: Equal
+          value: "true"
       volumes:
         - name: containerdisk
           containerDisk:
