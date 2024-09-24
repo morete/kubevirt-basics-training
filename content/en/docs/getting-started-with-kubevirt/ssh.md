@@ -130,7 +130,7 @@ Since the NodePort Service is accessible on any worker node, you can simply pick
 from within your webshell (make sure you replace the IP and the assigned NodPort to match your details):
 
 ```bash
-ssh cirros@188.245.73.202 -p 32664
+ssh cirros@<on-of-the-node-ips> -p <port>
 ```
 
 You should be able to use the same command from outside your webshell, e.g., from your computer.

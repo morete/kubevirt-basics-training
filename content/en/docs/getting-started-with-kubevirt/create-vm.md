@@ -137,12 +137,12 @@ spec:
 
 It is now time to create the VM on the Kubernetes cluster using the definition you just created:
 
-```shell
-kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/firstvm.yaml --namespace=$USER
+```bash
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/firstvm.yaml --namespace=$USER
 ```
 
 The output should be:
 
-```shell
+```bash
 virtualmachine.kubevirt.io/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm created
 ```
