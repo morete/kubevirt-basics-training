@@ -51,7 +51,7 @@ spec:
 ```
 
 Create the data volume with:
-```shell
+```bash
 kubectl create -f dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-disk.yaml --namespace=$USER
 ```
 
@@ -102,12 +102,12 @@ spec:
 ```
 
 Create the virtual machine with:
-```shell
+```bash
 kubectl create -f vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot.yaml --namespace=$USER
 ```
 
 Start your virtual machine with:
-```shell
+```bash
 virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot --namespace=$USER
 ```
 
@@ -122,7 +122,7 @@ virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}
 ```
 
 Whenever you see the login prompt CirrOS shows the user and the default password.
-```shell
+```bash
   ____               ____  ____
  / __/ __ ____ ____ / __ \/ __/
 / /__ / // __// __// /_/ /\ \ 
@@ -134,13 +134,13 @@ login as 'cirros' user. default password: 'gocubsgo'. use 'sudo' for root.
 ```
 
 Let's get rid of this message and replace it with our own. Login with the credentials and change our `/etc/issue` file.
-```shell
+```bash
 sudo cp /etc/issue /etc/issue.orig
 echo "Greetings from the KubeVirt Training. This is a CirrOS virtual machine." | sudo tee /etc/issue
 ```
 
 Check that the greeting is printed correctly by logging out:
-```shell
+```bash
 exit
 ```
 ```
@@ -149,7 +149,7 @@ Greetings from the KubeVirt Training. This is a CirrOS virtual machine.
 ```
 
 Now restart the virtual machine to verify the change was persistent.
-```shell
+```bash
 sudo reboot
 ```
 After the restart completed you should see your new Greeting message.
@@ -189,7 +189,7 @@ kubectl create -f vmsnapshot_{{% param "labsubfolderprefix" %}}{{% param "labfol
 ```
 
 Make sure you wait until the snapshot is ready. You can issue the following command to wait until the snapshot is ready:
-```shell
+```bash
 kubectl wait vmsnapshot {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot-snap --for condition=Ready
 ```
 It should complete with:
@@ -198,7 +198,7 @@ virtualmachinesnapshot.snapshot.kubevirt.io/{{% param "labsubfolderprefix" %}}{{
 ```
 
 You can list your snapshots with:
-```shell
+```bash
 kubectl get virtualmachinesnapshot --namespace=$USER
 ```
 The output should be similar to:
@@ -209,7 +209,7 @@ NAME                  SOURCEKIND       SOURCENAME       PHASE       READYTOUSE  
 
 You can describe the resource and have a look at the status of the `VirtualMachineSnapshot` and its
 subresource `VirtualMachineSnapshotContent`.
-```shell
+```bash
 kubectl describe virtualmachinesnapshot --namespace=$USER
 kubectl describe virtualmachinesnapshotcontent --namespace=$USER
 ```
@@ -255,13 +255,13 @@ virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}
 ```
 
 Change the Greeting message again:
-```shell
+```bash
 sudo cp /etc/issue /etc/issue.bak
 echo "Hello" | sudo tee /etc/issue
 ```
 
 Now restart the virtual machine again and verify the change was persistent.
-```shell
+```bash
 sudo reboot
 ```
 After the restart completed you should see your new Hello message.
@@ -269,7 +269,7 @@ After the restart completed you should see your new Hello message.
 Beside changing a file we add a label `acend.ch/training: kubevirt` to our VirtualMachine metadata `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot`.
 
 You can do this by patching your virtual machine with:
-```shell
+```bash
 kubectl patch virtualmachine {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot --type='json' -p='[{"op": "add", "path": "/spec/template/metadata/labels/acend.ch~1training", "value":"kubevirt"}]' --namespace=$USER
 ```
 ```
@@ -277,7 +277,7 @@ virtualmachine.kubevirt.io/{{% param "labsubfolderprefix" %}}{{% param "labfolde
 ```
 
 Describe the virtual machine to check if the label is present:
-```shell
+```bash
 kubectl describe virtualmachine {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot --namespace=$USER
 ```
 ```
@@ -300,7 +300,7 @@ Spec:
 
 Now you decide to restore your snapshot. Make sure your virtual machine is stopped.
 
-```shell
+```bash
 virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot --namespace=$USER
 ```
 
@@ -319,12 +319,12 @@ spec:
 ```
 
 Start the restore process by creating the VirtualMachineRestore:
-```shell
+```bash
 kubectl create -f vmsnapshot_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot-restore.yaml --namespace=$USER
 ```
 
 Make sure you wait until the restore is done. You can use the following command to wait until the restore is finished:
-```shell
+```bash
 kubectl wait vmrestore {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot-restore --for condition=Ready --namespace=$USER
 ```
 It should complete with:
@@ -336,7 +336,7 @@ virtualmachinerestore.snapshot.kubevirt.io/{{% param "labsubfolderprefix" %}}{{%
 ## {{% task %}} Check the restored virtual machine
 
 Start the virtual machine again with:
-```shell
+```bash
 virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot --namespace=$USER
 ```
 
@@ -354,7 +354,7 @@ Greetings from the KubeVirt Training. This is a CirrOS virtual machine.
 ```
 
 What about the label on the virtual machine manifest? Describe the virtual machine with and validate that it has been removed as well:
-```shell
+```bash
 kubectl describe virtualmachine {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot --namespace=$USER
 ```
 ```

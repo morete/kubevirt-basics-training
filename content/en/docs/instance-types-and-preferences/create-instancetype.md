@@ -54,13 +54,13 @@ spec:
 {{% /details %}}
 
 Create your resource with:
-```shell
+```bash
 kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vmf_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-pico.yaml --namespace=$USER
 ```
 
 And verify whether the creation was successful:
 
-```shell
+```bash
 kubectl get vmf {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-pico --namespace=$USER
 ```
 
@@ -68,17 +68,17 @@ kubectl get vmf {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}
 ## {{% task %}} Create your own Instancetype with virtctl
 
 The `virtctl` tool is also capable of creating Instancetypes. You can define and create a similar Instancetype `u1.pico` with:
-```shell
+```bash
 virtctl create instancetype --namespaced --cpu 1 --memory 256Mi --name {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-pico --namespace=$USER | kubectl create --namespace=$USER -f -
 ```
 
 Show the created Instancetype with
-```shell
+```bash
 kubectl get vmf {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-pico -o yaml --namespace=$USER
 ```
 
 The output will be similar to this one:
-```shell
+```bash
 apiVersion: instancetype.kubevirt.io/v1beta1
 kind: VirtualMachineInstancetype
 metadata:

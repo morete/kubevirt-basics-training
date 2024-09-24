@@ -14,11 +14,11 @@ The KubeVirt project [Common Instancetypes and Preferences](https://github.com/k
 The common Instancetypes and Preferences are not available by default. They have to be deployed manually or using a feature gate of the KubeVirt operator.
 
 You can check the configuration on the KubeVirt CustomResource:
-```shell
+```bash
 kubectl get kubevirt kubevirt --namespace=kubevirt -o jsonpath={.spec.configuration.developerConfiguration.featureGates}
 ```
 or
-```shell
+```bash
 kubectl get kubevirt kubevirt --namespace=kubevirt -o yaml
 ```
 
@@ -51,12 +51,12 @@ Be aware that the common instancetypes and preferences are cluster wide. Therefo
 `VirtualMachineClusterInstancetype` and `VirtualMachineClusterPreference`.
 
 You can list the available instance types using:
-```shell
+```bash
 kubectl get virtualmachineclusterinstancetype
 ```
 
 Shortened output of the command above:
-```shell
+```bash
 NAME          AGE
 cx1.2xlarge   10m
 [...]
@@ -81,7 +81,7 @@ u1.xlarge     10m
 
 As you see the instancetypes follow the naming schema:
 
-```shell
+```bash
 instanceTypeName = seriesName , "." , size;
 
 seriesName = ( class | vendorClass ) , version;
@@ -108,7 +108,7 @@ We therefore can say that the classes `u` and `o` are agnostic to the workload. 
 specific workload.
 
 You may see the details of an instancetype by describing the resource
-```shell
+```bash
 kubectl describe virtualmachineclusterinstancetype o1.nano
 ```
 
@@ -145,7 +145,7 @@ Spec:
 
 ## List and inspect Preferences
 
-```shell
+```bash
 kubectl get virtualmachineclusterpreference
 ```
 
@@ -158,7 +158,7 @@ centos.7                 10m
 ```
 
 You may see the details of a preference by describing the resource:
-```shell
+```bash
 kubectl describe virtualmachineclusterpreference cirros
 ```
 
@@ -216,7 +216,7 @@ instancetype.kubevirt.io/gpus: If GPUs are requested by the instance type.
 ```
 
 As an example you can query for 4 CPUs:
-```shell
+```bash
 kubectl get virtualmachineclusterinstancetype --selector instancetype.kubevirt.io/cpu=4
 ```
 
@@ -246,7 +246,7 @@ instancetype.kubevirt.io/arch: The underlying architecture of the workload suppo
 ```
 
 We can use these labels to query preferences:
-```shell
+```bash
 kubectl get virtualmachineclusterpreference --selector instancetype.kubevirt.io/os-type=linux
 ```
 
@@ -280,7 +280,7 @@ Try to find the best matching instancetype and preference for a Windows 10 minim
 
 {{% details title="Task Hint" %}}
 You can query instance types as follows:
-```shell
+```bash
 kubectl get virtualmachineclusterinstancetype \
    --selector instancetype.kubevirt.io/cpu=1,instancetype.kubevirt.io/memory=2Gi
 
@@ -294,7 +294,7 @@ You would most likely pick `o1.small` or `u1.small` as your instancetype.
 
 
 For preferences, you can use the following query:
-```shell
+```bash
 kubectl get virtualmachineclusterpreference --selector instancetype.kubevirt.io/os-type=windows
 ```
 
@@ -414,7 +414,7 @@ spec:
 ```
 
 Apply and start both VMs with
-```shell
+```bash
 kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_lab04-u1-cirros.yaml --namespace=$USER
 kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_lab04-o1-cirros.yaml --namespace=$USER
 virtctl start lab04-u1-cirros
@@ -443,7 +443,7 @@ and `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros
 
 {{% details title="Task Hint" %}}
 Describe both VirtualMachine instances using:
-```shell
+```bash
 kubectl get vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros -o yaml --namespace=$USER
 kubectl get vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros -o yaml --namespace=$USER
 ```

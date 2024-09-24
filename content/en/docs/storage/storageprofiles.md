@@ -81,7 +81,7 @@ spec:
 ```
 
 The DataVolume will not get created. Whenever we describe the DataVolume with:
-```shell
+```bash
 kubectl describe datavolume my-dv
 ```
 
@@ -148,7 +148,7 @@ spec:
 ```
 
 It is now successfully provisioned using the defaults from the storage profile.
-```shell
+```bash
 kubectl describe datavolume my-dv
 ```
 ```

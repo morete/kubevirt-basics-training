@@ -143,7 +143,7 @@ to never expire.
 
 From this configuration we need to create the secret. You can use the following command to create the secret in the kubernetes cluster.
 
-```shell
+```bash
 kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --from-file=userdata={{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/cloudinit-userdata.yaml --namespace=$USER
 ```
 
@@ -153,7 +153,7 @@ secret/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudin
 ```
 
 You can inspect the secret with:
-```shell
+```bash
 kubectl get secret {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit -o yaml --namespace=$USER
 ```
 
@@ -257,7 +257,7 @@ spec:
 {{% /details %}}
 
 Make sure you create your VM with:
-```shell
+```bash
 kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit.yaml --namespace=$USER
 ```
 
@@ -265,17 +265,17 @@ Start the VM and verify whether logging in with the defined user and password wo
 
 {{% details title="Solution" %}}
 Start the newly created VM, this might take a while(a couple of minutes), due to the lab environment
-```shell
+```bash
 virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --namespace=$USER
 ```
 Connect to the console, and login as soon as the prompt shows up
 
-```shell
+```bash
 virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --namespace=$USER
 ```
 
 You will also see the cloud-init executions in the console log during startup
-```shell
+```bash
 [...]
 [  OK  ] Started systemd-logind.service - User Login Management.
 [  147.604999] cloud-init[796]: Cloud-init v. 23.4.4 running 'init-local' at Fri, 06 Sep 2024 11:42:25 +0000. Up 147.17 seconds.
@@ -418,14 +418,14 @@ runcmd:
 
 You need to recreate your secret:
 
-```shell
+```bash
 kubectl delete secret {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --namespace=$USER
 kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --from-file=userdata={{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/cloudinit-userdata.yaml --namespace=$USER
 ```
 
 Next we need to restart our vm to pick up the changes in the cloud-init configuration.
 
-```shell
+```bash
 virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --namespace=$USER
 ```
 
@@ -433,7 +433,7 @@ virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}
 {{% alert title="Note" color="info" %}}
 It may take some minutes until your server is fully provisioned. While booting you may watch out for the message `Reached target cloud-init.target` in your VMs console.
 
-```shell
+```bash
 virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --namespace=$USER
 ```
 {{% /alert %}}
@@ -461,13 +461,13 @@ spec:
 ```
 And create it:
 
-```shell
+```bash
 kubectl apply -f  {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/service-cloudinit.yaml --namespace=$USER
 ```
 
 
 Test your working webserver from your webshell.
-```shell
+```bash
 curl -s {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit.$USER.svc.cluster.local
 ```
 
@@ -515,7 +515,7 @@ Make sure all occurrences of
 are replaced accordingly, before you create the ingress by
 
 
-```shell
+```bash
 kubectl apply -f  {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/ingress-cloudinit.yaml --namespace=$USER
 ```
 
@@ -530,7 +530,7 @@ Congratulations, you've successfully exposed nginx, running in a fedora VM, on K
 {{% alert title="Cleanup resources" color="warning" %}}  {{% param "end-of-lab-text" %}}
 
 Stop your running VM with
-```shell
+```bash
 virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --namespace=$USER
 ```
 {{% /alert %}}

@@ -81,12 +81,12 @@ spec:
 ## {{% task %}} Create and start the VM
 
 Create the vm in the kubernetes cluster:
-```shell
+```bash
 kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine.yaml --namespace=$USER
 ```
 
 Start your vm with:
-```shell
+```bash
 virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine --namespace=$USER
 ```
 
@@ -94,7 +94,7 @@ virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-
 ## {{% task %}} Testing the VM
 
 Open the console of your VM:
-```shell
+```bash
 virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine --namespace=$USER
 ```
 
@@ -107,12 +107,12 @@ You should be able to successfully login with user `alpine` and the configured p
 {{% alert title="Cleanup resources" color="warning" %}}  {{% param "end-of-lab-text" %}}
 
 Stop your running VM with
-```shell
+```bash
 virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine --namespace=$USER
 ```
 
 Delete your DataVolume which will delete the PVC and free the diskspace.
-```shell
+```bash
 kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpinedisk --namespace=$USER
 ```
 {{% /alert %}}

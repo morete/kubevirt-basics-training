@@ -89,7 +89,7 @@ of `passwordHash` is. Actually it needs to be a hash understandable by the Linux
 generate a password hash to be used for this lab. Two of them are:
 
 OpenSSL
-```shell
+```bash
 openssl passwd -salt xyz <PASSWORD>
 ```
 ```
@@ -97,7 +97,7 @@ $1$xyz$I30aA[...]
 ```
 
 Pythons Crypt Module
-```shell
+```bash
 python -c 'import crypt,getpass; print(crypt.crypt(getpass.getpass(), crypt.mksalt(crypt.METHOD_SHA512)))'
 ```
 ```
@@ -111,7 +111,7 @@ After that don't forget to create the kubernetes secret containing the ignition 
 {{% details title="Solution" %}}
 To create the kubernetes secret run the following command:
 
-```shell
+```bash
 kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --from-file=userdata={{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/ignition-data.yaml --namespace=$USER
 ```
 
@@ -202,7 +202,7 @@ spec:
 {{% /details %}}
 
 Create your VM with:
-```shell
+```bash
 kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition.yaml --namespace=$USER
 ```
 
@@ -210,12 +210,12 @@ Start the VM and verify whether logging in with the defined user and password wo
 
 {{% details title="Solution" %}}
 Start the newly created VM, this might take a while (a couple of minutes), due to the lab environment
-```shell
+```bash
 virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --namespace=$USER
 ```
 Connect to the console and login as soon as the prompt shows up with the defined credentials.
 
-```shell
+```bash
 virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --namespace=$USER
 ```
 
@@ -239,12 +239,12 @@ With the help of the Documentation and Examples (See Section References below), 
   * Allow only group `ssh-users` to login through ssh.
 
 Generate your ssh key with the following command:
-```shell
+```bash
 ssh-keygen
 ```
 
 Your ssh key to be used in the `sshAuthorizedKeys` is located in `/home/theia/.ssh/id_rsa.pub`. Get your key with:
-```shell
+```bash
 cat /home/theia/.ssh/id_rsa.pub
 ```
 
@@ -311,14 +311,14 @@ Make sure you replace the `<user>` and the `passwordHash` and `sshAuthorizedKeys
 
 You need to recreate your secret:
 
-```shell
+```bash
 kubectl delete secret {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --namespace=$USER
 kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --from-file=userdata={{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/ignition-data.yaml --namespace=$USER
 ```
 
 Next we need to restart our vm to pick up the changes in the ignition configuration.
 
-```shell
+```bash
 virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --namespace=$USER
 ```
 
@@ -348,12 +348,12 @@ spec:
 
 And create it:
 
-```shell
+```bash
 kubectl apply -f  {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/service-ignition.yaml --namespace=$USER
 ```
 
 You may now be able to login with SSH from your webshell to your VM:
-```shell
+```bash
 ssh core@{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition.$USER.svc.cluster.local
 ```
 
@@ -373,7 +373,7 @@ Our SSH Deamon is configured to only allow logins:
 * Using keys and not username/password (`PasswordAuthentication no` in default config).
 
 You may verify the presence of the two configurations with:
-```shell
+```bash
 ls /etc/ssh/sshd_config.d/*.conf
 ```
 
@@ -384,7 +384,7 @@ Which should list the two files `30-disable-rootlogin` and `30-allow-groups.conf
 
 
 Verify your assigned groups with:
-```shell
+```bash
 groups
 ```
 You should see the assigned groups docker and ssh-users:
@@ -394,7 +394,7 @@ core adm wheel sudo systemd-journal docker ssh-users
 
 The default hostname would be the VM name `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition`.
 Show the configured hostname:
-```shell
+```bash
 hostname
 ```
 We should see our postfix `-<user>` added to our hostname:
@@ -416,26 +416,26 @@ Similar to what we did in lab 2.4.
 {{% details title="Solution" %}}
 
 Create the NodePort
-```shell
+```bash
 virtctl expose vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --name={{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition-ssh-np --port=22 --type=NodePort --namespace=$USER
 ```
 
 Find out the Port
-```shell
+```bash
 kubectl get service --namespace=$USER
 ```
 
 Get the IP Address of one of the Kubernetes Nodes
-```shell
+```bash
 kubectl get nodes --selector=node-role.kubernetes.io/master!=true -o jsonpath={.items[*].status.addresses[?\(@.type==\"ExternalIP\"\)].address} --namespace=$USER
 ```
 or
-```shell
+```bash
 kubectl get nodes -o wide
 ```
 
 ssh to the service.
-```shell
+```bash
 ssh core@188.245.73.202 -p <port>
 ```
 
@@ -448,7 +448,7 @@ ssh core@188.245.73.202 -p <port>
 {{% alert title="Cleanup resources" color="warning" %}}  {{% param "end-of-lab-text" %}}
 
 Stop your running VM with
-```shell
+```bash
 virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition --namespace=$USER
 ```
 {{% /alert %}}

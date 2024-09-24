@@ -27,7 +27,7 @@ spec:
 ```
 
 Use the following command to list all available `controllerrevision`:
-```shell
+```bash
 kubectl get controllerrevision --namespace=$USER
 ```
 
@@ -41,12 +41,12 @@ NAME                                                                            
 If we want to explicitly change the Instancetype or preference we have to remove the `revisionName` attribute completely otherwise it will reject the change.
 
 The easies way is to edit the resource directly is:
-```shell
+```bash
 kubectl edit vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros --namespace=$USER
 ```
 
 An alternative would be patching the resource directly with:
-```shell
+```bash
 kubectl patch vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros --type merge --patch '{"spec":{"instancetype":{"kind":"<KIND>","name":"<NAME>","revisionName":null}}}' --namespace=$USER
 ```
 
@@ -81,21 +81,21 @@ spec:
 {{% /details %}}
 
 Make sure you restart both VMs to reflect the change of their instancetype:
-```shell
+```bash
 virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros --namespace=$USER
 virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros --namespace=$USER
 ```
 
 Verify whether the two VMIs are running again properly:
-```shell
+```bash
 kubectl get vmi --namespace=$USER
 ```
 
 Describe both VirtualMachine instances and observe the effect:
-```shell
+```bash
 kubectl get vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros -o yaml --namespace=$USER
 ```
-```shell
+```bash
 kubectl get vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros -o yaml --namespace=$USER
 ```
 
@@ -137,7 +137,7 @@ spec:
 {{% alert title="Cleanup resources" color="warning" %}}  {{% param "end-of-lab-text" %}}
 
 Stop your running VM with
-```shell
+```bash
 virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros --namespace=$USER
 virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros --namespace=$USER
 ```

@@ -236,7 +236,6 @@ NAME            AGE   STATUS    READY
 ```
 
 
-
 Stopping the VM is similar to starting. Just set `spec.running` back to `false`:
 
 ```bash

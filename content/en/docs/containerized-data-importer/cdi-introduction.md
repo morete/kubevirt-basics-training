@@ -19,12 +19,12 @@ The operator has already been installed in the namespace `cdi`. If you want to d
 {{% /alert %}}
 
 You may see the cdi operator components with:
-```shell
+```bash
 kubectl get pods --namespace cdi
 ```
 
 The output should similar to:
-```shell
+```bash
 NAME                               READY   STATUS    RESTARTS   AGE
 cdi-apiserver-5d565ddb6-lrrrk      1/1     Running   0          1d
 cdi-deployment-fb59bcc87-xm6dx     1/1     Running   0          1d

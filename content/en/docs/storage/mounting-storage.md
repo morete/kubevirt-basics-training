@@ -187,7 +187,7 @@ spec:
         storage: 128Mi
 ```
 Create the filesystem backed disk in the kubernetes cluster:
-```shell
+```bash
 kubectl create -f dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-fs-disk.yaml --namespace=$USER
 ```
 
@@ -209,7 +209,7 @@ spec:
         storage: 128Mi
 ```
 Create the block storage disk in the kubernetes cluster:
-```shell
+```bash
 kubectl create -f dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-block-disk.yaml --namespace=$USER
 ```
 
@@ -221,7 +221,7 @@ chpasswd: { expire: False }
 timezone: Europe/Zurich
 ```
 Create the secret in the kubernetes cluster:
-```shell
+```bash
 kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --from-file=userdata=cloudinit-userdata.yaml --namespace=$USER
 ```
 
@@ -239,7 +239,7 @@ data:
 ```
 
 Now create the ConfigMap in the kubernetes cluster:
-```shell
+```bash
 kubectl create -f cm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-application.yaml --namespace=$USER
 ```
 
@@ -343,22 +343,22 @@ spec:
 ```
 
 Create the virtual machine in the kubernetes cluster:
-```shell
+```bash
 kubectl create -f vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage.yaml --namespace=$USER
 ```
 
 Start the virtual machine with:
-```shell
+```bash
 virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage
 ```
 
 Open a console to the virtual machine:
-```shell
+```bash
 virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage
 ```
 
 After logging in you can examine the virtual machine. First you may check the block device output with `lsblk`:
-```shell
+```bash
 lsblk
 ```
 ```
@@ -377,7 +377,7 @@ vdd    252:48   0  257M  0 disk /disks/fs
 ```
 
 Another variant to also include the other mounts like is for example listing device usage:
-```shell
+```bash
 df -h
 ```
 ```
@@ -401,13 +401,13 @@ configmap-fs       226G  123G   94G  57% /configmaps/application
 
 Next try to edit the config map within kubernetes. You can open a new terminal in your webshell or leave the console
 and head back later. Issue the following command to alter the ConfigMap:
-```shell
+```bash
 kubectl patch cm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-application --type json --patch '[{ "op": "replace", "path": "/data/singlevalue", "value": "kubevirt-training" }]'
 ```
 
 After some time the change should be seamlessly be propagated to your vm. Head back to the console and check the value
 of your mounted config map:
-```shell
+```bash
 cat /configmaps/application/singlevalue
 ```
 ```
@@ -419,7 +419,7 @@ kubevirt-training
 
 Another thing to note is how our virtual machine pods is set up. Leave the console and describe the `virt-launcher` pod
 responsible for your vm:
-```shell
+```bash
 kubectl describe pod virt-launcher-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage-qfmlk --namespace=$USER
 ```
 ```
