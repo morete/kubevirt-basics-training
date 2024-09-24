@@ -35,6 +35,10 @@ Block needed to reference the pvc as a disk and the `cloudinitdisk`:
 
 You will have to reference the `cloudinitdisk` as a second disk in `spec.template.spec.domain.devices.disks`
 
+{{% alert title="Tolerations" color="warning" %}}
+Don't forget the `tolerations` from lab01, to make sure the VM will be scheduled on one of the baremetal nodes.
+{{% /alert %}}
+
 {{% details title="Task Hint" %}}
 Your yaml should look like this:
 ```yaml
@@ -64,6 +68,11 @@ spec:
       networks:
         - name: default
           pod: {}
+      tolerations:
+        - effect: NoSchedule
+          key: baremetal
+          operator: Equal
+          value: "true"
       volumes:
         - name: alpinedisk
           persistentVolumeClaim:
@@ -82,7 +91,7 @@ spec:
 
 Create the vm in the kubernetes cluster:
 ```bash
-kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine.yaml --namespace=$USER
 ```
 
 Start your vm with:

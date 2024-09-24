@@ -81,7 +81,7 @@ $USER-webshell-docker   Bound    pvc-86e4bc75-396f-4630-940e-b0a4b0cf23fa   10Gi
 
 Now create the DataVolume in the kubernetes cluster with:
 ```bash
-kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpinedisk.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpinedisk.yaml --namespace=$USER
 ```
 
 The output should be:
