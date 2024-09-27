@@ -14,7 +14,6 @@ for our KubeVirt VMs.
 ## Lab Goals
 
 * Know what the Containerized Data Importer is
-* Why do we use the Containerized Data Importer
+* Understand why we use the Containerized Data Importer
 * Import a disk image from a webserver
 * Start a VM with an Alpine Cloud Disk Image
-
