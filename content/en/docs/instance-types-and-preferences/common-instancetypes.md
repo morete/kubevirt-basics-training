@@ -413,6 +413,7 @@ spec:
         - name: containerdisk
           containerDisk:
             image: quay.io/kubevirt/cirros-container-disk-demo
+{{% /details %}}
 
 {{% /onlyWhenNot %}}
 
