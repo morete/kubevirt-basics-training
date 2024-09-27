@@ -429,7 +429,7 @@ Don't forget the `tolerations` from the setup chapter to make sure the VM will b
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name: lab04-u1-cirros
+  name: u1-cirros
 spec:
   running: false
   instancetype:
@@ -442,7 +442,7 @@ spec:
     metadata:
       labels:
         kubevirt.io/size: nano
-        kubevirt.io/domain: lab04-u1-cirros
+        kubevirt.io/domain: u1-cirros
     spec:
       domain:
         devices:
@@ -474,7 +474,7 @@ spec:
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name: lab04-o1-cirros
+  name: o1-cirros
 spec:
   running: false
   instancetype:
@@ -487,7 +487,7 @@ spec:
     metadata:
       labels:
         kubevirt.io/size: nano
-        kubevirt.io/domain: lab04-o1-cirros
+        kubevirt.io/domain: o1-cirros
     spec:
       domain:
         devices:
@@ -517,11 +517,12 @@ spec:
 {{% /onlyWhen %}}
 
 Apply and start both VMs with
+
 ```bash
-kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_lab04-u1-cirros.yaml --namespace=$USER
-kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_lab04-o1-cirros.yaml --namespace=$USER
-virtctl start lab04-u1-cirros
-virtctl start lab04-o1-cirros
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_u1-cirros.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_o1-cirros.yaml --namespace=$USER
+virtctl start u1-cirros
+virtctl start o1-cirros
 ```
 {{% /details %}}
 
@@ -551,7 +552,8 @@ kubectl get vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}
 kubectl get vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros -o yaml --namespace=$USER
 ```
 
-The `lab04-u1-cirros` instance:
+The `u1-cirros` instance:
+
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachineInstance
@@ -567,7 +569,8 @@ spec:
 [...]
 ```
 
-`lab04-o1-cirros` instance:
+`o1-cirros` instance:
+
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachineInstance
