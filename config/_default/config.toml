@@ -72,7 +72,7 @@ github_repo = "https://github.com/acend/kubevirt-basics-training"
 github_branch = "main"
 
 automaticSectionNumbers = true
-enabledModule = "base"
+enabledModule = "base tolerations"
 
 # Enable Lunr.js offline search
 offlineSearch = true

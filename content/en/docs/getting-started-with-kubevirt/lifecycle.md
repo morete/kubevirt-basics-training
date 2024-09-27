@@ -97,6 +97,8 @@ Now check the state of your VM again:
 kubectl get vm --namespace=$USER
 ```
 
+{{% onlyWhen tolerations %}}
+
 You should see that the VM is now in `Running` state right, wait what it's `ErrorUnschedulable`?
 
 ```bash
@@ -227,6 +229,8 @@ Now check the state of your VM again:
 ```bash
 kubectl get vm --namespace=$USER
 ```
+
+{{% /onlyWhen %}}
 
 You should see that the VM is now in `Running` state:
 
