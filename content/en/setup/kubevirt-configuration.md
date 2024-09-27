@@ -1,9 +1,10 @@
 ---
 title: "KubeVirt configuration"
-weight: 11
+weight: 12
 type: docs
 description: >
   Getting to know the lab environment.
+  KubeVirt-specific configuration on the lab cluster.
 ---
 
 
