@@ -55,17 +55,17 @@ spec:
 ```
 
 Create and start the virtual machine with:
-```shell
+```bash
 kubectl create -f vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros.yaml
 ```
 
 Start the VM with:
-```shell
+```bash
 virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros
 ```
 
 Open a console with:
-```shell
+```bash
 virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros
 ```
 
@@ -75,7 +75,7 @@ virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}
 Depending on the system you use you have different ways of listing devices. Here is a set of possibilities:
 
 Listing block devices with `lsblk`:
-```shell
+```bash
 lsblk -a
 ```
 ```
@@ -89,7 +89,7 @@ loop0     7:0    0       0 loop
 ```
 
 Listing devices in the `/dev` folder:
-```shell
+```bash
 ls -d -- /dev/[sv]d[a-z]
 ```
 ```
@@ -98,7 +98,7 @@ ls -d -- /dev/[sv]d[a-z]
 
 Some operating systems also list disk devices in `/dev/disk` with subfolders representing different views to your disks. For example
 on a Fedora virtual machine:
-```shell
+```bash
 ls -lR /dev/disk/*
 ```
 ```
@@ -150,7 +150,7 @@ spec:
 ```
 
 Create the data volume with:
-```shell
+```bash
 kubectl create -f dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk.yaml
 ```
 
@@ -159,7 +159,7 @@ kubectl create -f dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumbe
 
 Hotplug the disk by using `virtctl`:
 
-```shell
+```bash
 virtctl addvolume {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros --volume-name={{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk
 ```
 ```
@@ -169,7 +169,7 @@ Successfully submitted add volume request to VM {{% param "labsubfolderprefix" %
 After some time the device will be hot plugged to your virtual machine. You may get a first hint where your new disk is
 plugged in with `dmesg`:
 
-```shell
+```bash
 dmesg
 ```
 ```
@@ -191,7 +191,7 @@ limited to 32 slots on a system. Further PCIe slots need to be reserved ahead of
 {{% /alert %}}
 
 Check with list block devices:
-```shell
+```bash
 lsblk -a
 ```
 ```
@@ -206,7 +206,7 @@ loop0     7:0    0       0 loop
 ```
 
 Check listing the devices:
-```shell
+```bash
 ls -d -- /dev/[sv]d[a-z]
 ```
 ```
@@ -225,7 +225,7 @@ When hot plugging volumes and formatting devices always make sure you know where
 {{% /alert %}}
 
 
-```shell
+```bash
 sudo mkfs.ext4 /dev/sda
 ```
 ```
@@ -243,17 +243,17 @@ Writing superblocks and filesystem accounting information: done
 ```
 
 Next we have to create mount points for our new disk:
-```shell
+```bash
 sudo mkdir /mnt/disk
 ```
 
 And finally mount the disk:
-```shell
+```bash
 sudo mount /dev/sda /mnt/disk/
 ```
 
 We can start to use the disk:
-```shell
+```bash
 sudo touch /mnt/disk/myfile
 ```
 
@@ -261,7 +261,7 @@ sudo touch /mnt/disk/myfile
 ### {{% task %}} Removing a disk
 
 You can remove a hot plugged disk with:
-```shell
+```bash
 virtctl removevolume {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros --volume-name={{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk
 ```
 ```
@@ -275,7 +275,7 @@ After hot plugging and mounting the volume again the file is still present. Ther
 However, the mounting needs to be done again. You may mount disks with startup scripts like cloud-init.
 
 Mount the disk again with:
-```shell
+```bash
 sudo mkdir /mnt/disk
 sudo mount /dev/sda /mnt/disk/
 ```
@@ -287,7 +287,7 @@ sudo mount /dev/sda /mnt/disk/
 With the above steps we have hot plugged a disk into the vm. This mount is not persistent. Whenever the VM is restarted
 or shutdown the disk is not attached. When you want to mount the disk persistently you can use the `--persist` flag.
 
-```shell
+```bash
 virtctl addvolume {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros --volume-name={{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk --persist
 ```
 ```
@@ -296,10 +296,10 @@ Successfully submitted add volume request to VM {{% param "labsubfolderprefix" %
 
 This will add the relevant sections to your `VirtualMachine` manifest. You can show the modified configuration with:
 
-```shell
+```bash
 kubectl get vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros -o yaml
 ```
-```shell
+```bash
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:

@@ -95,7 +95,7 @@ timezone: Europe/Zurich
 ```
 
 Create the secret:
-```shell
+```bash
 kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --from-file=userdata={{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/cloudinit-userdata.yaml --namespace=$USER
 ```
 {{% /details %}}
@@ -204,7 +204,7 @@ spec:
 {{% /details %}}
 
 Create the VirtualMachinePool with:
-```shell
+```bash
 kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vmpool_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver.yaml --namespace=$USER
 ```
 ```
@@ -216,7 +216,7 @@ instance in the pool. As we have configured our replicas to be `2` there should 
 sequential id as postfix of the disk.
 
 Investigate the availability of our pvc for the webserver instances
-```shell
+```bash
 kubectl get pvc --namespace=$USER
 ```
 
@@ -250,7 +250,7 @@ spec:
 ```
 
 Apply the service with:
-```shell
+```bash
 kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/svc_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver.yaml --namespace=$USER
 ```
 ```
@@ -258,7 +258,7 @@ service/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webser
 ```
 
 From within your webshell try to access the service using (make sure you replace `$USER` with your username):
-```shell
+```bash
 curl -s {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver.$USER.svc.cluster.local
 ```
 ```
@@ -288,7 +288,7 @@ secrets with the postfixes.
 As the VirtualMachinePool implements the kubernetes standard `scale` subresource you could scale the VirtualMachinePool using
 the `kubectl scale` command.
 
-```shell
+```bash
 kubectl scale vmpool {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver --replicas 1 --namespace=$USER
 ```
 
@@ -318,7 +318,7 @@ This will ensure that the VirtualMachinePool is automatically scaled depending o
 ## {{% task %}} Scale down the VirtualMachinePool
 
 Scale down the VM pool with:
-```shell
+```bash
 kubectl scale vmpool {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver --replicas 0 --namespace=$USER
 ```
 

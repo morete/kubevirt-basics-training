@@ -58,35 +58,35 @@ spec:
 ```
 
 Create the DataVolume with the following command
-```shell
+```bash
 kubectl apply -f  {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/dv_fedora-cloud-base.yaml --namespace=$USER
 ```
 
 This will download the container disk `{{% param "fedoraCloudCDI" %}}` and store it in a pvc named `fedora-cloud-base`.
 
-```shell
+```bash
 kubectl get datavolume --namespace=$USER
 ```
 
 Will result in something like:
-```shell
+```bash
 NAME                PHASE             PROGRESS   RESTARTS   AGE
 fedora-cloud-base   ImportScheduled   N/A
 ```
 
 and when the import process is completed
-```shell
+```bash
 NAME                PHASE       PROGRESS   RESTARTS   AGE
 fedora-cloud-base   Succeeded   100.0%                105s
 ```
 
 with the following command, you can verify the existence of the PVC, containing the imported images.
 
-```shell
+```bash
 kubectl get pvc --namespace=$USER
 ```
 
-```shell
+```bash
 NAME                    STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
 fedora-cloud-base       Bound    pvc-4c617a10-24f5-427c-8d11-da45723593e9   6Gi        RWO            longhorn       <unset>                 2m56s
 [...]
@@ -213,7 +213,7 @@ spec:
 ```
 
 Create the VM with the following command:
-```shell
+```bash
 kubectl apply -f  {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-fedora-nginx-provisioner.yaml --namespace=$USER
 ```
 
@@ -225,12 +225,12 @@ There are the following important details in this VM manifest:
 
 As mentioned, the VM has been scheduled due to the `runStrategy: "RerunOnFailure"` and there fore the VMI should be running, use the following command to verify that:
 
-```shell
+```bash
 kubectl get vmi --namespace=$USER
 ```
 or
 
-```shell
+```bash
 kubectl get pod --namespace=$USER
 ```
 
@@ -245,7 +245,7 @@ As specified above we delete the data in `/var/lib/cloud/instances`. As this is 
 
 After the provisioning was successfully the VM will terminate itself due to the `shutdown now` statement.
 
-```shell
+```bash
 kubectl get vm --namespace=$USER
 ```
 
@@ -256,7 +256,7 @@ lab06-fedora-nginx-provisioner   8m52s   Stopped   False
 ```
 
 After the was shutdown we will see a `fedora-cloud-nginx-base` pvc in our namespace:
-```shell
+```bash
 kubectl get pvc
 ```
 
@@ -271,7 +271,7 @@ careful as the fedora-cloud-nginx-base belongs to the VM and would be removed wh
 `--cascade=orphan` to not delete our provisioned disk.
 
 Delete the VM without deleting the newly created pvc.
-```shell
+```bash
 kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-fedora-nginx-provisioner --cascade=orphan
 ```
 

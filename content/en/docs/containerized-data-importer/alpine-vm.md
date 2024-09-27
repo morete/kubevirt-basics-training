@@ -35,8 +35,11 @@ Block needed to reference the pvc as a disk and the `cloudinitdisk`:
 
 You will have to reference the `cloudinitdisk` as a second disk in `spec.template.spec.domain.devices.disks`
 
+{{% onlyWhenNot tolerations %}}
+
 {{% details title="Task Hint" %}}
-Your yaml should look like this:
+Your VM definition should look like this:
+
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
@@ -77,16 +80,73 @@ spec:
 ```
 {{% /details %}}
 
+{{% /onlyWhenNot %}}
+
+{{% onlyWhen tolerations %}}
+
+{{% alert title="Tolerations" color="warning" %}}
+Don't forget the `tolerations` from the setup chapter to make sure the VM will be scheduled on one of the baremetal nodes.
+{{% /alert %}}
+
+{{% details title="Task Hint" %}}
+Your yaml should look like this:
+```yaml
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine
+spec:
+  running: false
+  template:
+    spec:
+      domain:
+        devices:
+          disks:
+            - name: alpinedisk
+              disk:
+                bus: virtio
+            - name: cloudinitdisk
+              disk:
+                bus: virtio
+          interfaces:
+            - name: default
+              masquerade: {}
+        resources:
+          requests:
+            memory: 256M
+      networks:
+        - name: default
+          pod: {}
+      tolerations:
+        - effect: NoSchedule
+          key: baremetal
+          operator: Equal
+          value: "true"
+      volumes:
+        - name: alpinedisk
+          persistentVolumeClaim:
+            claimName: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpinedisk
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+            userData: |-
+              #cloud-config
+              password: {{% param "dummypwd" %}}
+              chpasswd: { expire: False }
+```
+{{% /details %}}
+
+{{% /onlyWhen %}}
+
 
 ## {{% task %}} Create and start the VM
 
 Create the vm in the kubernetes cluster:
-```shell
-kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine.yaml --namespace=$USER
+```bash
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine.yaml --namespace=$USER
 ```
 
 Start your vm with:
-```shell
+```bash
 virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine --namespace=$USER
 ```
 
@@ -94,7 +154,7 @@ virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-
 ## {{% task %}} Testing the VM
 
 Open the console of your VM:
-```shell
+```bash
 virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine --namespace=$USER
 ```
 
@@ -107,12 +167,12 @@ You should be able to successfully login with user `alpine` and the configured p
 {{% alert title="Cleanup resources" color="warning" %}}  {{% param "end-of-lab-text" %}}
 
 Stop your running VM with
-```shell
+```bash
 virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine --namespace=$USER
 ```
 
 Delete your DataVolume which will delete the PVC and free the diskspace.
-```shell
+```bash
 kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpinedisk --namespace=$USER
 ```
 {{% /alert %}}

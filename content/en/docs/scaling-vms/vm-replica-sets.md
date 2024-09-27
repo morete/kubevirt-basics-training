@@ -195,7 +195,7 @@ spec:
 ```
 {{% /details %}}
 
-```shell
+```bash
 kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vmirs_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros.yaml --namespace=$USER
 ```
 ```
@@ -208,7 +208,7 @@ virtualmachineinstancereplicaset.kubevirt.io/{{% param "labsubfolderprefix" %}}{
 There is not much the cirros disk image provides beside entering the VMs using the console.
 
 Check the availability of the `VirtualMachineInstanceReplicaSet` with:
-```shell
+```bash
 kubectl get vmirs --namespace=$USER
 ```
 ```
@@ -217,7 +217,7 @@ NAME                      DESIRED   CURRENT   READY   AGE
 ```
 
 List the created VirtualMachineInstances using:
-```shell
+```bash
 kubectl get vmi --namespace=$USER
 ```
 ```
@@ -228,7 +228,7 @@ NAME                           AGE    PHASE     IP             NODENAME         
 ```
 
 You can access the console using the name of the vmi with `virtctl`:
-````shell
+```bash
 virtctl console lab06-cirros-replicasetnc5p5 --namespace=$USER
 ````
 
@@ -238,7 +238,7 @@ virtctl console lab06-cirros-replicasetnc5p5 --namespace=$USER
 As the VirtualMachineInstanceReplicaSet implements the kubernetes standard `scale` subresource you could scale the VirtualMachineInstanceReplicaSet using
 the `kubectl scale` command.
 
-```shell
+```bash
 kubectl scale vmirs {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicaset --replicas 1 --namespace=$USER
 ```
 
@@ -265,7 +265,7 @@ spec:
 This will ensure that the VirtualMachineInstanceReplicaSet is automatically scaled depending on the CPU utilization.
 
 You can check the consumption of your pods with:
-```shell
+```bash
 kubectl top pod --namespace=$USER
 ```
 ```
@@ -295,7 +295,7 @@ spec:
 ```
 
 Create the Horizontal Pod Autoscaler in the cluster:
-```shell
+```bash
 kubectl create -f hpa_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros.yaml
 ```
 ```
@@ -303,7 +303,7 @@ horizontalpodautoscaler.autoscaling/{{% param "labsubfolderprefix" %}}{{% param 
 ```
 
 Check the status of the Horizontal Pod Autoscaler with:
-```shell
+```bash
 kubectl describe hpa
 ```
 ```
@@ -312,7 +312,7 @@ NAME                      REFERENCE                                             
 ```
 
 Open a second webshell and connect to the console of one of your vm instances:
-```shell
+```bash
 kubectl get vmis
 ```
 ```
@@ -321,17 +321,17 @@ NAME                           AGE     PHASE     IP             NODENAME        
 ```
 
 Pick one vmi and open the console:
-```shell
+```bash
 virtctl console virt-launcher-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicasetck6rw
 ```
 
 Start to generate some load. Issue the following command in your webshell:
-```shell
+```bash
 load() { dd if=/dev/zero of=/dev/null & }; load; read; killall dd
 ```
 
 In the other webshell check the following commands regularly:
-```shell
+```bash
 kubectl top pod
 kubectl describe hpa
 ```
@@ -354,17 +354,17 @@ the [Horizontal Pod Autoscaler documentation](https://kubernetes.io/docs/tasks/r
 {{% alert title="Cleanup resources" color="warning" %}}  {{% param "end-of-lab-text" %}}
 
 Delete your `VirtualMachinePool`:
-```shell
+```bash
 kubectl delete vmpool {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver
 ```
 
 Delete your `VirtualMachineInstanceReplicaSet`:
-```shell
+```bash
 kubectl delete vmirs {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicaset
 ```
 
 Delete the horizontal pod autoscaler
-```shell
+```bash
 kubectl delete hpa {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicaset
 ```
 {{% /alert %}}

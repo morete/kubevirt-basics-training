@@ -60,7 +60,7 @@ There are two ways of starting and stopping your virtual machines. You can patch
 start the VM. Try starting and stopping your VM with both methods.
 
 
-### Start/stop with kubectl
+### Start VM with kubectl
 
 Your VirtualMachine resource contains a field `spec.running` which indicates the desired state of the VM. You can check
 the resource with:
@@ -97,12 +97,148 @@ Now check the state of your VM again:
 kubectl get vm --namespace=$USER
 ```
 
+{{% onlyWhen tolerations %}}
+
+You should see that the VM is now in `Running` state. Wait, why does it say `ErrorUnschedulable`?
+
+```bash
+NAME            AGE     STATUS               READY
+{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm   2m15s   ErrorUnschedulable   False
+```
+
+Our `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm` has not been able to get scheduled.
+
+The reason for this is simple:
+
+Use `kubectl describe vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm --namespace=$USER` to find the reason under `Status`.
+
+```bash
+[...]
+Status:
+  Conditions:
+    Last Probe Time:       <date>
+    Last Transition Time:  <date>
+    Message:               Guest VM is not reported as running
+    Reason:                GuestNotRunning
+    Status:                False
+    Type:                  Ready
+    Last Probe Time:       <nil>
+    Last Transition Time:  2024-09-24T13:20:15Z
+    Message:               0/7 nodes are available: 1 node(s) had untolerated taint {baremetal: true}, 3 Insufficient devices.kubevirt.io/kvm, 3 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: true}. preemption: 0/7 nodes are available: 3 No preemption victims found for incoming pod, 4 Preemption is not helpful for scheduling.
+    Reason:                Unschedulable
+    Status:                False
+    Type:                  PodScheduled
+[...]
+```
+
+With the current configuration, there is no node available to run our VirtualMachine.
+
+Our lab setup consists of:
+
+* 3 control plane nodes (virtual machines)
+* multiple worker nodes (virtual machines) to run the lab infrastructure
+* multiple baremetal nodes to run our VMs
+
+Our baremetal nodes (labels: `baremetal: true`) are tainted to make sure that only VM workload runs on those nodes.
+
+To find out more about taints and tolerations, have a look in the official [documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/).
+
+Therefore, to run our VMs, we need to specify a so-called `toleration` in our VirtualMachnie manifest, to make sure it gets scheduled on the correct node.
+
+
+### Define toleration on the virtual machine
+
+As you have already seen mentioned in the setup chapter, add the following `toleration` to the VM manifest (`firstvm.yaml`):
+
+```yaml
+[...]
+      tolerations:
+        - effect: NoSchedule
+          key: baremetal
+          operator: Equal
+          value: "true"
+[...]
+```
+
+{{% details title="Task hint: Resulting VM manifest" %}}
+Your VirtualMachine definition should look like this:
+
+```yaml
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm
+spec:
+  running: false
+  template:
+    metadata:
+      labels:
+        kubevirt.io/size: small
+        kubevirt.io/domain: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm
+    spec:
+      domain:
+        devices:
+          disks:
+            - name: containerdisk
+              disk:
+                bus: virtio
+          interfaces:
+            - name: default
+              masquerade: {}
+        resources:
+          requests:
+            memory: 64M
+      networks:
+        - name: default
+          pod: {}
+      tolerations:
+        - effect: NoSchedule
+          key: baremetal
+          operator: Equal
+          value: "true"
+      volumes:
+        - name: containerdisk
+          containerDisk:
+            image: {{% param "cirrosCDI" %}}
+```
+{{% /details %}}
+
+And apply the changes again with:
+
+```bash
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/firstvm.yaml --namespace=$USER
+```
+
+
+### Start/stop with kubectl again
+
+Use the following command to start your VM:
+
+```bash
+kubectl patch vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm --type merge -p '{"spec":{"running":true}}' --namespace=$USER
+```
+
+The output should be:
+
+```bash
+virtualmachine.kubevirt.io/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm patched
+```
+
+Now check the state of your VM again:
+
+```bash
+kubectl get vm --namespace=$USER
+```
+
+{{% /onlyWhen %}}
+
 You should see that the VM is now in `Running` state:
 
 ```bash
 NAME            AGE   STATUS    READY
 {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm   11m   Running   True
 ```
+
 
 Stopping the VM is similar to starting. Just set `spec.running` back to `false`:
 
@@ -256,7 +392,7 @@ Note that `vmi` is the shortname for `VirtualMachineInstance` just like `vm` for
 The output will be similar to:
 
 ```bash
-NAME            AGE     PHASE     IP             NODENAME            READY
+NAME            AGE     PHASE     IP             NODENAME               READY
 {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm   3m59s   Running   10.244.3.144   training-worker-0   True
 ```
 
@@ -275,7 +411,7 @@ The output of a paused VM will be:
 
 ```bash
 NAME           AGE     PHASE     IP             NODENAME            READY   LIVE-MIGRATABLE   PAUSED
-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm  7m52s   Running   10.244.3.144   training-worker-0   False   True              True
+{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm  7m52s   Running   10.244.3.144   training-worker-0   True    True              
 ```
 {{% /alert %}}
 
@@ -291,13 +427,13 @@ In its core, the virt-launcher Pod runs a `libvirtd` instance, which manages the
 With the following command, we can have a look at the Pod's manifest (replace the Pod name with the actual Pod's name from `kubectl get pods --namespace=$USER`):
 
 ```bash
-kubectl get pod virt-launcher-lab02-firstvm-<pod> -o yaml --namespace=$USER
+kubectl get pod virt-launcher-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm-<pod> -o yaml --namespace=$USER
 ```
 
 Or simply use the describe command:
 
 ```bash
-kubectl describe pod virt-launcher-lab02-firstvm-<pod> --namespace=$USER
+kubectl describe pod virt-launcher-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm-<pod> --namespace=$USER
 ```
 
 Explore the Pod definition or use the describe command:
@@ -317,7 +453,7 @@ Explore the Pod definition or use the describe command:
 You can even exec into the Pod and list the running processes, where you can find the running libvirt and qemu-kvm processes:
 
 ```bash
-kubectl exec --stdin --tty --namespace=$USER virt-launcher-lab02-firstvm-<pod> -- /bin/bash
+kubectl exec --stdin --tty --namespace=$USER virt-launcher-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm-<pod> -- /bin/bash
 ```
 
 ```bash

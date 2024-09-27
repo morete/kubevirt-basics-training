@@ -40,7 +40,7 @@ spec:
 ```
 
 Create the data volume in the cluster:
-```shell
+```bash
 kubectl create -f dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk.yaml --namespace=$USER
 ```
 
@@ -88,12 +88,12 @@ spec:
 ```
 
 Create the virtual machine with:
-```shell
+```bash
 kubectl create -f vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand.yaml --namespace=$USER
 ```
 
 Start the virtual machine with:
-```shell
+```bash
 virtclt start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand --namespace=$USER
 ```
 
@@ -101,12 +101,12 @@ virtclt start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-
 ### Check the disk size
 
 Enter your virtual machine with:
-```shell
+```bash
 virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand --namespace=$USER
 ```
 
 Check your block devices with:
-```shell
+```bash
 lsblk
 ```
 ```s
@@ -126,7 +126,7 @@ vdb    252:16   0    1M  0 disk
 ## {{% task %}} Resize the disk
 
 Triggering a resize of a pvc in kubernetes can be done with editing the pvc size request. Get the PersistentVolumeClaim manifest with:
-```shell
+```bash
 kubectl get pvc {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk -o yaml
 ```
 ```yaml
@@ -143,7 +143,7 @@ spec:
 ```
 
 Now patch the pvc to increase the disk size to `8Gi`.
-```shell
+```bash
 kubectl patch pvc {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk --type='json' -p='[{"op": "replace", "path": "/spec/resources/requests/storage", "value":"8Gi"}]'
 ```
 ```
@@ -152,7 +152,7 @@ persistentvolumeclaim/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumb
 
 It might take some time for the storage provider to resize the persistent volume. You can see details about the process
 in the events section when describing the PersistentVolumeClaim:
-```shell
+```bash
 kubectl describe pvc {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk
 ```
 ```
@@ -166,13 +166,13 @@ Events:
 ```
 
 If you still have a console open in your virtual machine you see that there was a message about the capacity change:
-```shell
+```bash
 [  896.201742] virtio_blk virtio3: [vda] new size: 15853568 512-byte logical blocks (8.12 GB/7.56 GiB)
 [  896.202409] vda: detected capacity change from 11890688 to 15853568
 ```
 
 Recheck your block devices:
-```shell
+```bash
 lsblk
 ```
 ```
@@ -192,12 +192,12 @@ You will see that the capacity change is visible from within the virtual machine
 have the same size and do not use all available diskspace.
 
 Issue a reboot to let the system expand the partitions:
-```shell
+```bash
 sudo reboot
 ```
 
 After the reboot you have to login again and check `lsblk` again:
-```shell
+```bash
 lsblk
 ```
 
@@ -209,7 +209,7 @@ You can see that for example `vda4` has been resized from `5.7G` to `7.6G`.
 {{% alert title="Cleanup resources" color="warning" %}}  {{% param "end-of-lab-text" %}}
 
 Delete your VirtualMachines:
-```shell
+```bash
 kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage
 kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros
 kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot
@@ -217,7 +217,7 @@ kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" 
 ```
 
 Delete your disks:
-```shell
+```bash
 kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-fs-disk
 kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-block-disk
 kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-disk
@@ -226,7 +226,7 @@ kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" 
 ```
 
 Delete your VirtualMachineSnapshots:
-```shell
+```bash
 kubectl delete vmsnapshot {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot-snap
 ```
 

@@ -14,11 +14,11 @@ The KubeVirt project [Common Instancetypes and Preferences](https://github.com/k
 The common Instancetypes and Preferences are not available by default. They have to be deployed manually or using a feature gate of the KubeVirt operator.
 
 You can check the configuration on the KubeVirt CustomResource:
-```shell
+```bash
 kubectl get kubevirt kubevirt --namespace=kubevirt -o jsonpath={.spec.configuration.developerConfiguration.featureGates}
 ```
 or
-```shell
+```bash
 kubectl get kubevirt kubevirt --namespace=kubevirt -o yaml
 ```
 
@@ -51,12 +51,12 @@ Be aware that the common instancetypes and preferences are cluster wide. Therefo
 `VirtualMachineClusterInstancetype` and `VirtualMachineClusterPreference`.
 
 You can list the available instance types using:
-```shell
+```bash
 kubectl get virtualmachineclusterinstancetype
 ```
 
 Shortened output of the command above:
-```shell
+```bash
 NAME          AGE
 cx1.2xlarge   10m
 [...]
@@ -81,7 +81,7 @@ u1.xlarge     10m
 
 As you see the instancetypes follow the naming schema:
 
-```shell
+```bash
 instanceTypeName = seriesName , "." , size;
 
 seriesName = ( class | vendorClass ) , version;
@@ -108,7 +108,7 @@ We therefore can say that the classes `u` and `o` are agnostic to the workload. 
 specific workload.
 
 You may see the details of an instancetype by describing the resource
-```shell
+```bash
 kubectl describe virtualmachineclusterinstancetype o1.nano
 ```
 
@@ -145,7 +145,7 @@ Spec:
 
 ## List and inspect Preferences
 
-```shell
+```bash
 kubectl get virtualmachineclusterpreference
 ```
 
@@ -158,7 +158,7 @@ centos.7                 10m
 ```
 
 You may see the details of a preference by describing the resource:
-```shell
+```bash
 kubectl describe virtualmachineclusterpreference cirros
 ```
 
@@ -216,7 +216,7 @@ instancetype.kubevirt.io/gpus: If GPUs are requested by the instance type.
 ```
 
 As an example you can query for 4 CPUs:
-```shell
+```bash
 kubectl get virtualmachineclusterinstancetype --selector instancetype.kubevirt.io/cpu=4
 ```
 
@@ -246,7 +246,7 @@ instancetype.kubevirt.io/arch: The underlying architecture of the workload suppo
 ```
 
 We can use these labels to query preferences:
-```shell
+```bash
 kubectl get virtualmachineclusterpreference --selector instancetype.kubevirt.io/os-type=linux
 ```
 
@@ -280,10 +280,13 @@ Try to find the best matching instancetype and preference for a Windows 10 minim
 
 {{% details title="Task Hint" %}}
 You can query instance types as follows:
-```shell
+```bash
 kubectl get virtualmachineclusterinstancetype \
    --selector instancetype.kubevirt.io/cpu=1,instancetype.kubevirt.io/memory=2Gi
+```
 
+Will return something like:
+```bash
 NAME         AGE
 cx1.medium   10m
 o1.small     10m
@@ -294,7 +297,7 @@ You would most likely pick `o1.small` or `u1.small` as your instancetype.
 
 
 For preferences, you can use the following query:
-```shell
+```bash
 kubectl get virtualmachineclusterpreference --selector instancetype.kubevirt.io/os-type=windows
 ```
 
@@ -332,13 +335,15 @@ Deploy two VMs with different instance types:
 * Deploy a cirros VM using an `o` class instancetype and the same preference.
   * rite the VM specification in `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros.yaml`
 
+{{% onlyWhenNot tolerations %}}
+
 {{% details title="Task Hint: Solution" %}}
 `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros.yaml` specification:
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name: lab04-u1-cirros
+  name: u1-cirros
 spec:
   running: false
   instancetype:
@@ -351,7 +356,7 @@ spec:
     metadata:
       labels:
         kubevirt.io/size: nano
-        kubevirt.io/domain: lab04-u1-cirros
+        kubevirt.io/domain: u1-cirros
     spec:
       domain:
         devices:
@@ -378,7 +383,7 @@ spec:
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name: lab04-o1-cirros
+  name: o1-cirros
 spec:
   running: false
   instancetype:
@@ -391,7 +396,7 @@ spec:
     metadata:
       labels:
         kubevirt.io/size: nano
-        kubevirt.io/domain: lab04-o1-cirros
+        kubevirt.io/domain: o1-cirros
     spec:
       domain:
         devices:
@@ -408,17 +413,116 @@ spec:
         - name: containerdisk
           containerDisk:
             image: quay.io/kubevirt/cirros-container-disk-demo
+{{% /details %}}
+
+{{% /onlyWhenNot %}}
+
+{{% onlyWhen tolerations %}}
+
+{{% alert title="Tolerations" color="warning" %}}
+Don't forget the `tolerations` from the setup chapter to make sure the VM will be scheduled on one of the baremetal nodes.
+{{% /alert %}}
+
+{{% details title="Task Hint: Solution" %}}
+`{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros.yaml` specification:
+```yaml
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: u1-cirros
+spec:
+  running: false
+  instancetype:
+    kind: VirtualMachineClusterInstancetype
+    name: u1.nano
+  preference:
+    kind: VirtualMachineClusterPreference
+    name: cirros
+  template:
+    metadata:
+      labels:
+        kubevirt.io/size: nano
+        kubevirt.io/domain: u1-cirros
+    spec:
+      domain:
+        devices:
+          disks:
+            - name: containerdisk
+            - name: cloudinitdisk
+          interfaces:
+            - name: default
+              masquerade: {}
+      networks:
+        - name: default
+          pod: {}
+      tolerations:
+        - effect: NoSchedule
+          key: baremetal
+          operator: Equal
+          value: "true"
+      volumes:
+        - name: containerdisk
+          containerDisk:
+            image: quay.io/kubevirt/cirros-container-disk-demo
         - name: cloudinitdisk
           cloudInitNoCloud:
             userDataBase64: SGkuXG4=
 ```
 
+`{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros.yaml` specification:
+```yaml
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: o1-cirros
+spec:
+  running: false
+  instancetype:
+    kind: VirtualMachineClusterInstancetype
+    name: o1.nano
+  preference:
+    kind: VirtualMachineClusterPreference
+    name: cirros
+  template:
+    metadata:
+      labels:
+        kubevirt.io/size: nano
+        kubevirt.io/domain: o1-cirros
+    spec:
+      domain:
+        devices:
+          disks:
+            - name: containerdisk
+            - name: cloudinitdisk
+          interfaces:
+            - name: default
+              masquerade: {}
+      networks:
+        - name: default
+          pod: {}
+      tolerations:
+        - effect: NoSchedule
+          key: baremetal
+          operator: Equal
+          value: "true"
+      volumes:
+        - name: containerdisk
+          containerDisk:
+            image: quay.io/kubevirt/cirros-container-disk-demo
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+            userDataBase64: SGkuXG4=
+```
+
+{{% /onlyWhen %}}
+
 Apply and start both VMs with
-```shell
-kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_lab04-u1-cirros.yaml --namespace=$USER
-kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_lab04-o1-cirros.yaml --namespace=$USER
-virtctl start lab04-u1-cirros
-virtctl start lab04-o1-cirros
+
+```bash
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_u1-cirros.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_o1-cirros.yaml --namespace=$USER
+virtctl start u1-cirros
+virtctl start o1-cirros
 ```
 {{% /details %}}
 
@@ -443,12 +547,13 @@ and `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros
 
 {{% details title="Task Hint" %}}
 Describe both VirtualMachine instances using:
-```shell
+```bash
 kubectl get vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros -o yaml --namespace=$USER
 kubectl get vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros -o yaml --namespace=$USER
 ```
 
-The `lab04-u1-cirros` instance:
+The `u1-cirros` instance:
+
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachineInstance
@@ -464,7 +569,8 @@ spec:
 [...]
 ```
 
-`lab04-o1-cirros` instance:
+`o1-cirros` instance:
+
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachineInstance
@@ -480,7 +586,8 @@ spec:
 [...]
 ```
 
-As we can see in the difference between `spec.domain.memory.guest` and `spec.domain.resources.requests.memory` the `o` class actually overcommits of 50% as defined in the `o1.nano` instance type.
+As we can see in the difference between `spec.domain.memory.guest` and `spec.domain.resources.requests.memory` the `o` class actually overcommits by 50% as defined in the `o1.nano` instance type:
+
 ```yaml
 apiVersion: instancetype.kubevirt.io/v1beta1
 kind: VirtualMachineClusterInstancetype
@@ -496,6 +603,7 @@ spec:
 ```
 
 The `.status.memory` of both VirtualMachine instance show that the guest was assigned 512Mi memory.
+
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachineInstance
@@ -506,6 +614,7 @@ status:
     guestRequested: 512Mi
 [...]
 ```
+
 {{% /details %}}
 
 

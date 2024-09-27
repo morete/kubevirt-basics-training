@@ -68,34 +68,34 @@ spec:
 
 Before you apply your DataVolume to the cluster check the currently available pvcs.
 
-```shell
+```bash
 kubectl get pvc --namespace=$USER
 ```
 
 The output should be similar to:
-```shell
+```bash
 NAME                    STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
 $USER-webshell          Bound    pvc-594cf281-4c34-4e7c-b345-2bf2692bbb78   1Gi        RWO            longhorn       <unset>                 1d
 $USER-webshell-docker   Bound    pvc-86e4bc75-396f-4630-940e-b0a4b0cf23fa   10Gi       RWO            longhorn       <unset>                 1d
 ```
 
 Now create the DataVolume in the kubernetes cluster with:
-```shell
-kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpinedisk.yaml --namespace=$USER
+```bash
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpinedisk.yaml --namespace=$USER
 ```
 
 The output should be:
-```shell
+```bash
 datavolume.cdi.kubevirt.io/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpinedisk created
 ```
 
 This will trigger the CDI operator which will start an importer pod to provision your pvc. If you are fast enough you may see the pod with:
-```shell
+```bash
 kubectl get pods --namespace=$USER
 ```
 
 The output should be similar to:
-```shell
+```bash
 NAME                                                  READY   STATUS              RESTARTS   AGE
 importer-prime-36720196-c64a-42d8-8db5-af31b75de034   0/1     ContainerCreating   0          9s
 $USER-webshell-885dbc579-lwhtd                        2/2     Running             0          1d
@@ -103,13 +103,13 @@ $USER-webshell-885dbc579-lwhtd                        2/2     Running           
 
 After some time the pod will complete and your pvc should be provisioned. Let's check for the existence of the pvc.
 
-```shell
+```bash
 kubectl get pvc --namespace=$USER
 ```
 
 The output should be similar to:
 
-```shell
+```bash
 NAME                    STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
 {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpinedisk        Bound    pvc-fe1faa27-048b-4270-a3ac-c2abf4a24aca   272Mi      RWO            longhorn       <unset>                 72s
 user4-webshell          Bound    pvc-594cf281-4c34-4e7c-b345-2bf2692bbb78   1Gi        RWO            longhorn       <unset>                 1d
