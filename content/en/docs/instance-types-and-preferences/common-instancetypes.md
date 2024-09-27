@@ -583,7 +583,8 @@ spec:
 [...]
 ```
 
-As we can see in the difference between `spec.domain.memory.guest` and `spec.domain.resources.requests.memory` the `o` class actually overcommits of 50% as defined in the `o1.nano` instance type.
+As we can see in the difference between `spec.domain.memory.guest` and `spec.domain.resources.requests.memory` the `o` class actually overcommits by 50% as defined in the `o1.nano` instance type:
+
 ```yaml
 apiVersion: instancetype.kubevirt.io/v1beta1
 kind: VirtualMachineClusterInstancetype
@@ -599,6 +600,7 @@ spec:
 ```
 
 The `.status.memory` of both VirtualMachine instance show that the guest was assigned 512Mi memory.
+
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachineInstance
@@ -609,6 +611,7 @@ status:
     guestRequested: 512Mi
 [...]
 ```
+
 {{% /details %}}
 
 
