@@ -99,7 +99,7 @@ kubectl get vm --namespace=$USER
 
 {{% onlyWhen tolerations %}}
 
-You should see that the VM is now in `Running` state right, wait what it's `ErrorUnschedulable`?
+You should see that the VM is now in `Running` state. Wait, why does it say `ErrorUnschedulable`?
 
 ```bash
 NAME            AGE     STATUS               READY
@@ -108,9 +108,9 @@ NAME            AGE     STATUS               READY
 
 Our `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm` has not been able to get scheduled.
 
-The reason for that is simple:
+The reason for this is simple:
 
-Use `kubectl describe vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm --namespace=$USER` to find the reason under `status`.
+Use `kubectl describe vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm --namespace=$USER` to find the reason under `Status`.
 
 ```bash
 [...]
@@ -131,24 +131,24 @@ Status:
 [...]
 ```
 
-With the current configuration there is no node available to run our VirtualMachine.
+With the current configuration, there is no node available to run our VirtualMachine.
 
-Our Lab Setup consist out of:
+Our lab setup consists of:
 
 * 3 control plane nodes (virtual machines)
 * multiple worker nodes (virtual machines) to run the lab infrastructure
-* multiple baremetal nodes to run our kubevirt VMs
+* multiple baremetal nodes to run our VMs
 
-Our baremetal nodes (labels: `baremetal: true`) are tainted, to make sure that only VM Workload runs on those specific nodes.
+Our baremetal nodes (labels: `baremetal: true`) are tainted to make sure that only VM workload runs on those nodes.
 
-Find out more about Taints and Tolerations in the official [documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/).
+To find out more about taints and tolerations, have a look in the official [documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/).
 
-Therefore, to run our VirtualMachines we need to specify a so called `toleration` in our Virtual Machnie Manifest, to make sure the VM gets scheduled on the correct node.
+Therefore, to run our VMs, we need to specify a so-called `toleration` in our VirtualMachnie manifest, to make sure it gets scheduled on the correct node.
 
 
-### Define toleration on the VirtualMachine
+### Define toleration on the virtual machine
 
-Add the following `toleration` to the VM Manifest (`firstvm.yaml`):
+As you have already seen mentioned in the setup chapter, add the following `toleration` to the VM manifest (`firstvm.yaml`):
 
 ```yaml
 [...]
@@ -160,7 +160,7 @@ Add the following `toleration` to the VM Manifest (`firstvm.yaml`):
 [...]
 ```
 
-{{% details title="Task hint: Resulting yaml" %}}
+{{% details title="Task hint: Resulting VM manifest" %}}
 Your VirtualMachine definition should look like this:
 
 ```yaml
@@ -393,10 +393,10 @@ The output will be similar to:
 
 ```bash
 NAME            AGE     PHASE     IP             NODENAME               READY
-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm   3m59s   Running   10.244.3.144   training-baremetal-0   True
+{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm   3m59s   Running   10.244.3.144   training-worker-0   True
 ```
 
-Above output also indicates that our {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm is running on Kubernetes node `training-baremetal-0`.
+Above output also indicates that our {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm is running on Kubernetes node `training-worker-0`.
 
 {{% alert title="Note" color="info" %}}
 You may use `-o wide` to get more details about the VM.
