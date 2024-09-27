@@ -127,10 +127,10 @@ kubectl get nodes -o wide
 {{% /alert %}}
 
 Since the NodePort Service is accessible on any worker node, you can simply pick one IP address and issue the following command
-from within your webshell (make sure you replace the IP and the assigned NodPort to match your details):
+from within your webshell (make sure you replace the IP address and the assigned NodePort to match your details):
 
 ```bash
-ssh cirros@<on-of-the-node-ips> -p <port>
+ssh cirros@<node's IP address> -p <port number>
 ```
 
 You should be able to use the same command from outside your webshell, e.g., from your computer.
