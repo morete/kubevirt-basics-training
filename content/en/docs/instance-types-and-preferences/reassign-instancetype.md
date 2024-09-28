@@ -15,6 +15,11 @@ Whenever a VM referencing an instancetype or preference is created, the definiti
 
 This field ensures that our VirtualMachine knows the original specification even when the type or preference would be changed. This ensures that there are no accidental changes of the VM resources or preferences.
 
+Use the following command to display the vm resource, you will find the reference to the revision under `spec.instancetype.revisionName`:
+```bash
+kubectl get vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros -o yaml --namespace=$USER
+```
+
 Example of a VM with a `revisionName`:
 ```yaml
 [...]
@@ -33,19 +38,35 @@ kubectl get controllerrevision --namespace=$USER
 
 ```
 NAME                                                                                     CONTROLLER                                   REVISION   AGE
-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros-cirros-v1beta1-fa1da1cd-7e10-4e89-a8ac-5bded8f7129e-1                    virtualmachine.kubevirt.io/lab04-o1-cirros   0          2h
-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros-cirros-v1beta1-fa1da1cd-7e10-4e89-a8ac-5bded8f7129e-1                    virtualmachine.kubevirt.io/lab04-u1-cirros   0          2h
+{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros-cirros-v1beta1-fa1da1cd-7e10-4e89-a8ac-5bded8f7129e-1                    virtualmachine.kubevirt.io/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros   0          2h
+{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros-cirros-v1beta1-fa1da1cd-7e10-4e89-a8ac-5bded8f7129e-1                    virtualmachine.kubevirt.io/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros   0          2h
 [...]
 ```
 
 If we want to explicitly change the Instancetype or preference we have to remove the `revisionName` attribute completely otherwise it will reject the change.
 
-The easies way is to edit the resource directly is:
+```bash
+The request is invalid: spec.instancetype.revisionName: the Matcher Name has been updated without updating the RevisionName
+```
+
+If we want to change the Instancetype in the resource and reapply the changes using `kubectl apply -f` we need to set the RevisionName to `null`
+
+```yaml
+[...]
+spec:
+  instancetype:
+    kind: VirtualMachineClusterInstancetype
+    name: u1.nano
+    revisionName: null
+[...]
+```
+
+When editing the resource directly, we can simply remove the `revisionName`:
 ```bash
 kubectl edit vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros --namespace=$USER
 ```
 
-An alternative would be patching the resource directly with:
+Or alternatively, patch the resource directly with:
 ```bash
 kubectl patch vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros --type merge --patch '{"spec":{"instancetype":{"kind":"<KIND>","name":"<NAME>","revisionName":null}}}' --namespace=$USER
 ```
@@ -53,7 +74,12 @@ kubectl patch vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %
 
 ## {{% task %}} Adapt your VMs to use the new instancetype
 
-Edit the VM `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros` and reference the `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-pico` and do the same for the VM `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros` and reference `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-pico`
+Change the InstanceTypes of the two VMs from the current VirtualMachineClusterInstancetype (`u1.nano`) to the InstanceType (`{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-pico` and `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-pico`)
+
+* `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros`
+* `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros`
+
+Use one of the mentioned methods above, to change the resource.
 
 {{% alert title="Note" color="info" %}}
 Since so far we were referencing a `VirtualMachineClusterPreference` also change the kind to `VirtualMachineInstancetype` for our new InstanceTypes.
@@ -68,7 +94,7 @@ The relevant section for the VM `{{% param "labsubfolderprefix" %}}{{% param "la
 spec:
   instancetype:
     kind: VirtualMachineInstancetype
-    name: lab04-u1-pico
+    name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-pico
 ```
 
 For `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros` it will be:
@@ -78,6 +104,7 @@ spec:
     kind: VirtualMachineInstancetype
     name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-pico
 ```
+
 {{% /details %}}
 
 Make sure you restart both VMs to reflect the change of their instancetype:

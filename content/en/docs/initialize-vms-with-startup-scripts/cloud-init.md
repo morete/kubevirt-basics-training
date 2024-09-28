@@ -204,6 +204,11 @@ spec:
       networks:
       - name: default
         pod: {}
+      tolerations:
+        - effect: NoSchedule
+          key: baremetal
+          operator: Equal
+          value: "true"
       volumes:
         - name: containerdisk
           containerDisk:
@@ -245,6 +250,11 @@ spec:
       networks:
       - name: default
         pod: {}
+      tolerations:
+        - effect: NoSchedule
+          key: baremetal
+          operator: Equal
+          value: "true"
       volumes:
         - name: containerdisk
           containerDisk:
@@ -258,7 +268,7 @@ spec:
 
 Make sure you create your VM with:
 ```bash
-kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit.yaml --namespace=$USER
 ```
 
 Start the VM and verify whether logging in with the defined user and password works as expected.
@@ -353,7 +363,7 @@ http {
 ```
 
 {{% details title="Solution" %}}
-Your cloud-init configuration will look like this:
+Your cloud-init configuration (`cloudinit-userdata.yaml`) will look like this:
 ```yaml
 #cloud-config
 password: kubevirt
