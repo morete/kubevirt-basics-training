@@ -36,58 +36,13 @@ Block needed to reference the PVC as a disk and the `cloudinitdisk`:
 
 You will have to reference the `cloudinitdisk` as a second disk in `spec.template.spec.domain.devices.disks`.
 
-{{% onlyWhenNot tolerations %}}
-
-{{% details title="Task Hint" %}}
-Your VM definition should look like this:
-
-```yaml
-apiVersion: kubevirt.io/v1
-kind: VirtualMachine
-metadata:
-  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpine
-spec:
-  running: false
-  template:
-    spec:
-      domain:
-        devices:
-          disks:
-            - name: alpinedisk
-              disk:
-                bus: virtio
-            - name: cloudinitdisk
-              disk:
-                bus: virtio
-          interfaces:
-            - name: default
-              masquerade: {}
-        resources:
-          requests:
-            memory: 256M
-      networks:
-        - name: default
-          pod: {}
-      volumes:
-        - name: alpinedisk
-          persistentVolumeClaim:
-            claimName: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpinedisk
-        - name: cloudinitdisk
-          cloudInitNoCloud:
-            userData: |-
-              #cloud-config
-              password: {{% param "dummypwd" %}}
-              chpasswd: { expire: False }
-```
-{{% /details %}}
-
-{{% /onlyWhenNot %}}
-
 {{% onlyWhen tolerations %}}
 
 {{% alert title="Tolerations" color="warning" %}}
 Don't forget the `tolerations` from the setup chapter to make sure the VM will be scheduled on one of the baremetal nodes.
 {{% /alert %}}
+
+{{% /onlyWhen %}}
 
 {{% details title="Task Hint" %}}
 Your yaml should look like this:
@@ -118,12 +73,12 @@ spec:
       networks:
         - name: default
           pod: {}
-      tolerations:
+      {{< onlyWhen tolerations >}}tolerations:
         - effect: NoSchedule
           key: baremetal
           operator: Equal
           value: "true"
-      volumes:
+      {{< /onlyWhen >}}volumes:
         - name: alpinedisk
           persistentVolumeClaim:
             claimName: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpinedisk
@@ -135,8 +90,6 @@ spec:
               chpasswd: { expire: False }
 ```
 {{% /details %}}
-
-{{% /onlyWhen %}}
 
 
 ## {{% task %}} Create and start the VM

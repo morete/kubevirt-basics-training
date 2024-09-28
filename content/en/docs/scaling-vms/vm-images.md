@@ -130,12 +130,12 @@ spec:
           requests:
             memory: 1Gi
       terminationGracePeriodSeconds: 0 
-      tolerations:
+      {{< onlyWhen tolerations >}}tolerations:
         - effect: NoSchedule
           key: baremetal
           operator: Equal
           value: "true"
-      volumes:
+      {{< /onlyWhen >}}volumes:
       - name: datavolumedisk
         dataVolume:
           name: fedora-cloud-nginx-base

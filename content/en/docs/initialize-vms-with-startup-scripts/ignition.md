@@ -171,12 +171,12 @@ spec:
       networks:
       - name: default
         pod: {}
-      tolerations:
+      {{< onlyWhen tolerations >}}tolerations:
         - effect: NoSchedule
           key: baremetal
           operator: Equal
           value: "true"
-      volumes:
+      {{< /onlyWhen >}}volumes:
         - name: containerdisk
           containerDisk:
             image: {{% param "fedoraCoreOSCDI" %}}
@@ -216,12 +216,12 @@ spec:
       networks:
         - name: default
           pod: {}
-      tolerations:
+      {{< onlyWhen tolerations >}}tolerations:
         - effect: NoSchedule
           key: baremetal
           operator: Equal
           value: "true"
-      volumes:
+      {{< /onlyWhen >}}volumes:
         - name: containerdisk
           containerDisk:
             image: {{% param "fedoraCoreOSCDI" %}}

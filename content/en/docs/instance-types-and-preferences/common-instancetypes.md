@@ -335,95 +335,14 @@ Deploy two VMs with different instance types:
 * Deploy a cirros VM using an `o` class instancetype and the same preference.
   * rite the VM specification in `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros.yaml`
 
-
-{{% onlyWhenNot tolerations %}}
-
-{{% details title="Solution" %}}
-`{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros.yaml` specification:
-```yaml
-apiVersion: kubevirt.io/v1
-kind: VirtualMachine
-metadata:
-  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros
-spec:
-  running: false
-  instancetype:
-    kind: VirtualMachineClusterInstancetype
-    name: u1.nano
-  preference:
-    kind: VirtualMachineClusterPreference
-    name: cirros
-  template:
-    metadata:
-      labels:
-        kubevirt.io/size: nano
-        kubevirt.io/domain: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros
-    spec:
-      domain:
-        devices:
-          disks:
-            - name: containerdisk
-            - name: cloudinitdisk
-          interfaces:
-            - name: default
-              masquerade: {}
-      networks:
-        - name: default
-          pod: {}
-      volumes:
-        - name: containerdisk
-          containerDisk:
-            image: quay.io/kubevirt/cirros-container-disk-demo
-        - name: cloudinitdisk
-          cloudInitNoCloud:
-            userDataBase64: SGkuXG4=
-```
-
-`{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros.yaml` specification:
-```yaml
-apiVersion: kubevirt.io/v1
-kind: VirtualMachine
-metadata:
-  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros
-spec:
-  running: false
-  instancetype:
-    kind: VirtualMachineClusterInstancetype
-    name: o1.nano
-  preference:
-    kind: VirtualMachineClusterPreference
-    name: cirros
-  template:
-    metadata:
-      labels:
-        kubevirt.io/size: nano
-        kubevirt.io/domain: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros
-    spec:
-      domain:
-        devices:
-          disks:
-            - name: containerdisk
-            - name: cloudinitdisk
-          interfaces:
-            - name: default
-              masquerade: {}
-      networks:
-        - name: default
-          pod: {}
-      volumes:
-        - name: containerdisk
-          containerDisk:
-            image: quay.io/kubevirt/cirros-container-disk-demo
-{{% /details %}}
-
-{{% /onlyWhenNot %}}
-
 {{% onlyWhen tolerations %}}
 
 {{% alert title="Tolerations" color="warning" %}}
 Don't forget the `tolerations` from the setup chapter to make sure the VM will be scheduled on one of the baremetal nodes.
 {{% /alert %}}
 
+{{% /onlyWhen %}}
+
 {{% details title="Solution" %}}
 `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros.yaml` specification:
 ```yaml
@@ -456,12 +375,12 @@ spec:
       networks:
         - name: default
           pod: {}
-      tolerations:
+      {{< onlyWhen tolerations >}}tolerations:
         - effect: NoSchedule
           key: baremetal
           operator: Equal
           value: "true"
-      volumes:
+      {{< /onlyWhen >}}volumes:
         - name: containerdisk
           containerDisk:
             image: quay.io/kubevirt/cirros-container-disk-demo
@@ -501,12 +420,12 @@ spec:
       networks:
         - name: default
           pod: {}
-      tolerations:
+      {{< onlyWhen tolerations >}}tolerations:
         - effect: NoSchedule
           key: baremetal
           operator: Equal
           value: "true"
-      volumes:
+      {{< /onlyWhen >}}volumes:
         - name: containerdisk
           containerDisk:
             image: quay.io/kubevirt/cirros-container-disk-demo
@@ -515,7 +434,6 @@ spec:
             userDataBase64: SGkuXG4=
 ```
 
-{{% /onlyWhen %}}
 
 Apply and start both VMs with
 
