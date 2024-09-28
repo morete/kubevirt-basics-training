@@ -6,24 +6,26 @@ description: >
   Introduction to the Containerized Data Importer
 ---
 
-The Containerized Data Importer Project[^1] is an independent installed operator. It is primary used to provide a declarative way
-to build Virtual Machine Disks on PVCs for KubeVirt VMs. Since the CDI Operator provides the custom resource `DataVolume`
-which is an abstraction above a PVC.
+The Containerized Data Importer Project[^1] is an independently installed Operator. It is primarily used to provide a declarative way
+to build Virtual Machine Disks on PVCs for KubeVirt VMs. The CDI Operator provides the custom resource `DataVolume`
+which is an abstraction above the PVC.
 
 
 ## CDI Operator components
 
 {{% alert title="Note" color="info" %}}
-The operator has already been installed in the namespace `cdi`. If you want to deploy the operator check the
+The Operator has already been installed in Namespace `cdi`. If you want to deploy the Operator, check the
 [Deploy](https://github.com/kubevirt/containerized-data-importer?tab=readme-ov-file#deploy-it) section of the CDI documentation.
 {{% /alert %}}
 
-You may see the cdi operator components with:
+You may see the CDI Operator components with:
+
 ```bash
 kubectl get pods --namespace cdi
 ```
 
-The output should similar to:
+The output should be similar to the following:
+
 ```bash
 NAME                               READY   STATUS    RESTARTS   AGE
 cdi-apiserver-5d565ddb6-lrrrk      1/1     Running   0          1d
@@ -32,11 +34,11 @@ cdi-operator-595bfb44cd-j5s4h      1/1     Running   0          1d
 cdi-uploadproxy-7657d8d89d-qth44   1/1     Running   0          1d
 ```
 
-* **cdi-deployment** - Long-lived cdi controller pod managing the cdi operations.
-* **cdi-operator** - the operator pod managing the cdi components.
-* **cdi-apiserver** - Issues secure tokens and manages authorization to upload VM disks into pvcs.
-* **cdi-uploadproxy** - Handles upload traffic and writes content to correct pvc.
-* **cdi-importer** - Short-lived helper pod that imports a VM image to a pvc.
+* **cdi-deployment** - Long-lived CDI controller Pod managing the CDI operations
+* **cdi-operator** - the Operator Pod managing the CDI components
+* **cdi-apiserver** - Issues secure tokens and manages authorization to upload VM disks into PVCs
+* **cdi-uploadproxy** - Handles upload traffic and writes content to the correct PVC
+* **cdi-importer** - Short-lived helper Pod that imports a VM image to a PVC
 
 
 ## DataVolume manifest
@@ -67,13 +69,13 @@ spec:
 
 The source location of the data.
 
-* `http` - Download data from a given URL.
-* `registry` - Download a Container Disk from a given URL.
-* `pvc` - Clone a given pvc referenced by name and namespace to a new pvc.
-* `upload` - Provide an upload proxy to receive data from an authenticated client.
-* `blank` - Create an empty VM disk.
-* `imageio` - Import a VM disk from a running oVirt installation.
-* `vddk` - Import a VMware VM disk using vCenter/ESX API.
+* `http` - Download data from a given URL
+* `registry` - Download a Container Disk from a given URL
+* `pvc` - Clone a given PVC referenced by name and Namespace to a new PVC
+* `upload` - Provide an upload proxy to receive data from an authenticated client
+* `blank` - Create an empty VM disk
+* `imageio` - Import a VM disk from a running oVirt installation
+* `vddk` - Import a VMware VM disk using vCenter/ESX API
 
 
 ### ContentType
@@ -87,13 +89,13 @@ Type of the source data. Either `kubevirt` (default) or `archive`.
 
 ### Target (Storage/PVC)
 
-You can define the target as `pvc` or `storage`. Both will result in a PVC but there are differences how they work.
+You can define the target as `pvc` or `storage`. Both will result in a PVC but there are differences in how they work.
 
-* `pvc` defines that the following configuration is passed directly to the pvc.
-* `storage` is similar to pvc but provides some logic to fill in fields for the pvc request. As an example we could omit the storageClassName parameter and CDI will detect the default virtualization storage class if there is one which is annotated by `storageclass.kubevirt.io/is-default-virt-class`.
+* `pvc` defines that the following configuration is passed directly to the PVC.
+* `storage` is similar to PVC but provides some logic to fill in fields for the PVC request. As an example we could omit the storageClassName parameter and CDI will detect the default virtualization storage class if there is one which is annotated with `storageclass.kubevirt.io/is-default-virt-class`.
 
 This basic configuration provides the flexibility to use CDI as a provisioner for KubeVirt Virtual Machine Disk Images
-as well as a provisioner for regular pvcs used with containers.
+as well as a provisioner for regular PVCs used with containers.
 
 
 ### Limitations
