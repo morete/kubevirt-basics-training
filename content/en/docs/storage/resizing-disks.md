@@ -21,7 +21,7 @@ the space it is available. This makes it very handy choice for virtual machines 
 
 ## {{% task %}} Create a volume and a virtual machine
 
-In a first step have to create a fedora disk. Create the file `dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk.yaml` with the following content:
+In a first step have to create a fedora disk. Create the file `dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
 ```yaml
 apiVersion: cdi.kubevirt.io/v1beta1
 kind: DataVolume
@@ -41,10 +41,10 @@ spec:
 
 Create the data volume in the cluster:
 ```bash
-kubectl create -f dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk.yaml --namespace=$USER
 ```
 
-Create the file `vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand.yaml` and use the following yaml specification:
+Create the file `vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` and use the following yaml specification:
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
@@ -77,7 +77,12 @@ spec:
       networks:
       - name: default
         pod: {}
-      volumes:
+      {{< onlyWhen tolerations >}}tolerations:
+        - effect: NoSchedule
+          key: baremetal
+          operator: Equal
+          value: "true"
+      {{< /onlyWhen >}}volumes:
         - name: datavolumedisk
           persistentVolumeClaim:
             claimName: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk
@@ -89,18 +94,18 @@ spec:
 
 Create the virtual machine with:
 ```bash
-kubectl create -f vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand.yaml --namespace=$USER
 ```
 
 Start the virtual machine with:
 ```bash
-virtclt start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand --namespace=$USER
+virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand --namespace=$USER
 ```
 
 
 ### Check the disk size
 
-Enter your virtual machine with:
+Start the console of the virtual machine and login (user: `fedora`, password: `kubevirt`):
 ```bash
 virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand --namespace=$USER
 ```
@@ -127,7 +132,7 @@ vdb    252:16   0    1M  0 disk
 
 Triggering a resize of a pvc in kubernetes can be done with editing the pvc size request. Get the PersistentVolumeClaim manifest with:
 ```bash
-kubectl get pvc {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk -o yaml
+kubectl get pvc {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk -o yaml --namespace=$USER
 ```
 ```yaml
 apiVersion: v1
@@ -144,7 +149,7 @@ spec:
 
 Now patch the pvc to increase the disk size to `8Gi`.
 ```bash
-kubectl patch pvc {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk --type='json' -p='[{"op": "replace", "path": "/spec/resources/requests/storage", "value":"8Gi"}]'
+kubectl patch pvc {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk --type='json' -p='[{"op": "replace", "path": "/spec/resources/requests/storage", "value":"8Gi"}]' --namespace=$USER
 ```
 ```
 persistentvolumeclaim/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk patched
@@ -153,7 +158,7 @@ persistentvolumeclaim/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumb
 It might take some time for the storage provider to resize the persistent volume. You can see details about the process
 in the events section when describing the PersistentVolumeClaim:
 ```bash
-kubectl describe pvc {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk
+kubectl describe pvc {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk --namespace=$USER
 ```
 ```
 Events:
@@ -210,24 +215,24 @@ You can see that for example `vda4` has been resized from `5.7G` to `7.6G`.
 
 Delete your VirtualMachines:
 ```bash
-kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage
-kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros
-kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot
-kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand
+kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage --namespace=$USER
+kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros --namespace=$USER
+kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot --namespace=$USER
+kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand --namespace=$USER
 ```
 
 Delete your disks:
 ```bash
-kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-fs-disk
-kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-block-disk
-kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-disk
-kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk
-kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk
+kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-fs-disk --namespace=$USER
+kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-block-disk --namespace=$USER
+kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-disk --namespace=$USER
+kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk --namespace=$USER
+kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-hotplug-disk --namespace=$USER
 ```
 
 Delete your VirtualMachineSnapshots:
 ```bash
-kubectl delete vmsnapshot {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot-snap
+kubectl delete vmsnapshot {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot-snap --namespace=$USER
 ```
 
 {{% /alert %}}
