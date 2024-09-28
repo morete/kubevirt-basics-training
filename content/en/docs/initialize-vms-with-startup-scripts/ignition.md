@@ -109,6 +109,27 @@ Generate a hash for `kubevirt` and add the generated `passwordHash` to the Ignit
 After that don't forget to create the kubernetes secret containing the ignition configuration, similar to the previous lab.
 
 {{% details title="Solution" %}}
+
+If you generated the pw hash using the openssl command `openssl passwd -salt xyz kubevirt`, then the `ignition-data.yaml` should look like:
+
+
+```yaml
+{
+  "ignition": {
+    "version": "3.4.0"
+  },
+  "passwd": {
+    "users": [
+      {
+        "name": "core",
+        "passwordHash": "$1$xyz$I30aASnHH5bA2yVRoRlsI1"
+      }
+    ]
+  }
+}
+```
+
+
 To create the kubernetes secret run the following command:
 
 ```bash
@@ -266,7 +287,7 @@ ssh-rsa AAAAB3NzaC[...] theia@$USER-webshell-554b45d885-b79ks
 Make sure the key starts with ssh-rsa and copy the key to the `sshAuthorizedKeys` attribute.
 
 {{% details title="Task Hint" %}}
-Make sure you replace the `<user>` and the `passwordHash` and `sshAuthorizedKeys` hashes. Your Ignition configuration will look like this:
+Make sure you replace the `<user>` (line 32), the `passwordHash` (line 19) and `sshAuthorizedKeys` (line 21) hashes. Your Ignition configuration will look like this:
 ```yaml
 {
   "ignition": {
@@ -337,7 +358,7 @@ It may take some minutes until your server is fully provisioned.
 {{% /alert %}}
 
 
-## {{% task %}} Testing your webserver on your Virtual Machine
+## {{% task %}} Testing your ssh server on your Virtual Machine
 
 To access our VM from the webshell we need to create a kubernetes service. Create a file
 `service-ignition.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
@@ -367,6 +388,8 @@ You may now be able to login with SSH from your webshell to your VM:
 ssh core@{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-ignition.$USER.svc.cluster.local
 ```
 
+And hit `yes` to confirm the the authenticity of host.
+
 ```
 Fedora CoreOS 40.20240728.3.0
 Tracker: https://github.com/coreos/fedora-coreos-tracker
@@ -376,7 +399,7 @@ Last login: Fri Aug 23 12:21:09 2024
 ```
 
 {{% alert title="Note" color="info" %}}
-Our SSH Deamon is configured to only allow logins:
+Our SSH daemon is configured to only allow logins:
 
 * Not from root (`PermitRootLogin no` in `30-disable-rootlogin.conf`)
 * Only from users which are a member of the `ssh-users` group (`AllowGroups ssh-users` in `30-allow-groups.conf`)
@@ -393,11 +416,11 @@ Which should list the two files `30-disable-rootlogin` and `30-allow-groups.conf
 {{% /alert %}}
 
 
-Verify your assigned groups with:
+Verify your assigned groups with, make sure to switch back to the user `core`:
 ```bash
 groups
 ```
-You should see the assigned groups docker and ssh-users:
+You should see the assigned groups `docker` and `ssh-users`:
 ```
 core adm wheel sudo systemd-journal docker ssh-users
 ```
@@ -446,7 +469,7 @@ kubectl get nodes -o wide
 
 ssh to the service.
 ```bash
-ssh core@188.245.73.202 -p <port>
+ssh core@<node-ip> -p <port>
 ```
 
 
