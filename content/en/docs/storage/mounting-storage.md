@@ -36,7 +36,7 @@ spec:
             claimName: harddisk-pvc
 ```
 
-The following types are the most important volume type which KubeVirt supports:
+The following types are the most important volume types which KubeVirt supports:
 
 * cloudInitNoCloud: Attach a cloud-init data source. Requires a proper setup of cloud-init.
 * cloudInitConfigDrive: Attach a cloud-init data source. Similar to cloudInitNoCloud this requires a proper setup of cloud-init. The config-drive can be used for Ignition.
@@ -111,7 +111,7 @@ to know that a volume mounted as a filesystem does not allow Live Migration.
 
 ## PersistentVolumeClaims as block or filesystem devices
 
-It might be a confusing as the name filesystem is overloaded. In this section we are talking about the storage mode of a
+It might be a bit confusing as the name filesystem is overloaded. In this section we are talking about the storage mode of a
 PersistentVolumeClaim and not the mounting inside our guest. Kubernetes supports the `volumeMode` type `block` and
 `filesystem` (default). Whether you can use `block` devices or not depends on your CSI driver supporting block volumes.
 
@@ -169,7 +169,7 @@ tool like cloud-init.
 
 ### {{% task %}} Prepare and create disks and configmaps
 
-First we create a disk using the default `Filesystem` volumeMode. Create the file `dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-fs-disk.yaml` with the following content:
+First we create a disk using the default `Filesystem` volumeMode. Create the file `dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-fs-disk.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
 ```yaml
 apiVersion: cdi.kubevirt.io/v1beta1
 kind: DataVolume
@@ -188,10 +188,10 @@ spec:
 ```
 Create the filesystem backed disk in the kubernetes cluster:
 ```bash
-kubectl create -f dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-fs-disk.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-fs-disk.yaml --namespace=$USER
 ```
 
-Second we create a disk using the `Block` volumeMode. Create the file `dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-block-disk.yaml` with the following content:
+Second we create a disk using the `Block` volumeMode. Create the file `dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-block-disk.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
 ```yaml
 apiVersion: cdi.kubevirt.io/v1beta1
 kind: DataVolume
@@ -210,10 +210,10 @@ spec:
 ```
 Create the block storage disk in the kubernetes cluster:
 ```bash
-kubectl create -f dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-block-disk.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-block-disk.yaml --namespace=$USER
 ```
 
-Next we create a cloud-init configuration secret. Create a file `cloudinit-userdata.yaml` with the following content:
+Next we create a cloud-init configuration secret. Create a file `cloudinit-userdata.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
 ```yaml
 #cloud-config
 password: kubevirt
@@ -222,10 +222,10 @@ timezone: Europe/Zurich
 ```
 Create the secret in the kubernetes cluster:
 ```bash
-kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --from-file=userdata=cloudinit-userdata.yaml --namespace=$USER
+kubectl create secret generic {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit --from-file=userdata={{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/cloudinit-userdata.yaml --namespace=$USER
 ```
 
-Last we create a ConfigMap with some values for an application. Create a file `cm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-application.yaml` with the following content:
+Last we create a ConfigMap with some values for an application. Create a file `cm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-application.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
 ```yaml
 kind: ConfigMap 
 apiVersion: v1 
@@ -240,7 +240,7 @@ data:
 
 Now create the ConfigMap in the kubernetes cluster:
 ```bash
-kubectl create -f cm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-application.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/cm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-application.yaml --namespace=$USER
 ```
 
 
@@ -257,7 +257,7 @@ We create a virtual machine mounting the following storage:
 * ServiceAccount to /serviceaccounts/default
 * ConfigMap to /configmaps/application
 
-The VirtualManifest for this looks like the following snipped. Create a file `vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage.yaml` with the following content:
+The VirtualManifest for this looks like the following snipped. Create a file `vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
@@ -301,6 +301,11 @@ spec:
       networks:
         - name: default
           pod: {}
+      tolerations:
+        - effect: NoSchedule
+          key: baremetal
+          operator: Equal
+          value: "true"
       volumes:
         - name: containerdisk
           containerDisk:
@@ -344,20 +349,20 @@ spec:
 
 Create the virtual machine in the kubernetes cluster:
 ```bash
-kubectl create -f vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage.yaml --namespace=$USER
 ```
 
 Start the virtual machine with:
 ```bash
-virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage
+virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage --namespace=$USER
 ```
 
 Open a console to the virtual machine:
 ```bash
-virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage
+virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage --namespace=$USER
 ```
 
-After logging in you can examine the virtual machine. First you may check the block device output with `lsblk`:
+After logging in (user: `fedora`, passowrd: `kubevirt`) you can examine the virtual machine. First you may check the block device output with `lsblk`:
 ```bash
 lsblk
 ```
@@ -399,10 +404,21 @@ tmpfs              197M  4.0K  197M   1% /run/user/1000
 configmap-fs       226G  123G   94G  57% /configmaps/application
 ```
 
+Explore how the cloud init secret and the config map have been mounted in the VM by using the following commands:
+```bash
+ls -l /secrets/cloudinit/
+cat /secrets/cloudinit/userdata
+```
+```bash
+ls -l /configmaps/application/
+cat /configmaps/application/singlevalue
+cat /configmaps/application/application.properties
+```
+
 Next try to edit the config map within kubernetes. You can open a new terminal in your webshell or leave the console
 and head back later. Issue the following command to alter the ConfigMap:
 ```bash
-kubectl patch cm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-application --type json --patch '[{ "op": "replace", "path": "/data/singlevalue", "value": "kubevirt-training" }]'
+kubectl patch cm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-application --type json --patch '[{ "op": "replace", "path": "/data/singlevalue", "value": "kubevirt-training" }]' --namespace=$USER
 ```
 
 After some time the change should be seamlessly be propagated to your vm. Head back to the console and check the value
@@ -420,10 +436,11 @@ kubevirt-training
 Another thing to note is how our virtual machine pods is set up. Leave the console and describe the `virt-launcher` pod
 responsible for your vm:
 ```bash
-kubectl describe pod virt-launcher-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage-qfmlk --namespace=$USER
+kubectl describe pod virt-launcher-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage-<pod> --namespace=$USER
 ```
-```
-Name:             virt-launcher-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage-qfmlk
+
+```bash
+Name:             virt-launcher-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage-<pod>
 [...]
 Containers:
   [...]
@@ -477,7 +494,7 @@ Volumes:
     Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
   kube-api-access-mmf6t:
     Type:                    Projected (a volume that contains injected data from multiple sources)
-````
+```
 
 This is a highly shortened output of the pod description showing the relevant sections. Our virt-launcher pod has multiple
 helper containers managing the mounts. Every storage is shown in the volumes block. The ServiceAccount is actually in
@@ -489,8 +506,8 @@ should be available.
 
 Our two PersistentVolumeClaims - one backed by Filesystem and one beeing a raw block device - are mounted differently.
 
-* **fsdisk**: Is in the Mount block of the `compute` container.
-* **blockdisk**: Our block storage disk is not show in the Mount block of the `compute` container. However, we see the `blockdisk` as `/dev/blockdisk` in the Devices section in the `compute` container. This means that our block storage is indeed passed as a device.
+* **fsdisk**: Is in the mount block () of the `compute` container.
+* **blockdisk**: Our block storage disk is not show in the mount block of the `compute` container. However, we see the `blockdisk` as `/dev/blockdisk` in the devices section in the `compute` container. This means that our block storage is indeed passed as a device.
 
 
 #### Filesystem Mounts: Virtiofs volumes
@@ -501,7 +518,7 @@ For each mounted filesystem there is a supporting container `virtiofs-<volume>`.
 
 Let's analyze the `virtiofs-serviceaccount-fs` and `compute` container.
 
-```
+```bash
 Containers:
   compute:
     [...]
@@ -537,6 +554,6 @@ communicate with `virtiofsd` in `virtiofs-serviceaccount-fs`.
 ## Stop your VM
 
 As we are at the end of this section it is time to stop your running virtual machine with:
-```yaml
-virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage
+```bash
+virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage --namespace=$USER
 ```

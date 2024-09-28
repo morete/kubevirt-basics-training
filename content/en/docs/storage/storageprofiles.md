@@ -7,7 +7,11 @@ description: >
 ---
 
 When working with storage and the containerized data importer one usually wants to have meaningful defaults. Let us have a look
-how we can configure storage classes to be used with KubeVirt.
+how we can configure storage profiles to be used with KubeVirt.
+
+{{% alert title="Note" color="info" %}}
+Due to the cluster wide configuration of storage classes, the resources and command in this lab are not meant to be created and executed.
+{{% /alert %}}
 
 
 ## What are StorageProfiles
@@ -18,7 +22,7 @@ defined centrally in a StorageProfile reduces the complexity of your DataVolume 
 
 You can check the StorageProfiles with:
 ```yaml
-kubectl get storageprofiles
+kubectl get storageprofiles --namespace=$USER
 ```
 ```
 NAME             AGE
@@ -28,7 +32,7 @@ longhorn         38d
 
 You may check the configuration of the StorageProfile with:
 ```yaml
-kubectl describe storageprofile longhorn
+kubectl describe storageprofile longhorn --namespace=$USER
 ```
 ```
 Name:         longhorn
@@ -66,6 +70,7 @@ Events:                            <none>
 ## Create a DataVolume
 
 Let's have a look how this works. Assume we create a DataVolume `my-dv` with the following specification and apply it to the cluster:
+
 ```yaml
 apiVersion: cdi.kubevirt.io/v1beta1
 kind: DataVolume
@@ -82,7 +87,7 @@ spec:
 
 The DataVolume will not get created. Whenever we describe the DataVolume with:
 ```bash
-kubectl describe datavolume my-dv
+kubectl describe datavolume my-dv --namespace=$USER
 ```
 
 We see that CDI is lacking some information to create the PVC and return with an error.
@@ -149,7 +154,7 @@ spec:
 
 It is now successfully provisioned using the defaults from the storage profile.
 ```bash
-kubectl describe datavolume my-dv
+kubectl describe datavolume my-dv --namespace=$USER
 ```
 ```
 Status:

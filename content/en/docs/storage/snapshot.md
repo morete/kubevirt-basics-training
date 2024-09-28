@@ -30,8 +30,7 @@ snapshotted.
 ### {{% task %}} Prepare persistent disk
 
 First, we need to create a persistent disk. We use a DataVolume which imports a container disk and saves it to a persistent
-volume. Create a file `dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros.yaml` with the
-following specification:
+volume. Create a file `dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-disk.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following specification:
 
 ```yaml
 apiVersion: cdi.kubevirt.io/v1beta1
@@ -52,14 +51,13 @@ spec:
 
 Create the data volume with:
 ```bash
-kubectl create -f dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-disk.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-disk.yaml --namespace=$USER
 ```
 
 
 ### {{% task %}} Create a virtual machine using the provisioned disk
 
-Create a file `vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot.yaml` for your virtual
-machine and add the following content:
+Create a file `vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` for your virtual machine and add the following content:
 
 ```yaml
 apiVersion: kubevirt.io/v1
@@ -91,7 +89,12 @@ spec:
       networks:
         - name: default
           pod: {}
-      volumes:
+      {{< onlyWhen tolerations >}}tolerations:
+        - effect: NoSchedule
+          key: baremetal
+          operator: Equal
+          value: "true"
+      {{< /onlyWhen >}}volumes:
         - name: harddisk
           persistentVolumeClaim:
             claimName: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-disk
@@ -103,7 +106,7 @@ spec:
 
 Create the virtual machine with:
 ```bash
-kubectl create -f vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot.yaml --namespace=$USER
 ```
 
 Start your virtual machine with:
@@ -148,7 +151,7 @@ Greetings from the KubeVirt Training. This is a CirrOS virtual machine.
 {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot login:
 ```
 
-Now restart the virtual machine to verify the change was persistent.
+Login again and restart the virtual machine to verify the change was persistent.
 ```bash
 sudo reboot
 ```
@@ -169,7 +172,7 @@ Greetings from the KubeVirt Training. This is a CirrOS virtual machine.
 
 This is our configuration we want to save. We now create a snapshot of the virtual machine at this time.
 
-Create a file `vmsnapshot_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot-snap.yaml` with the following content:
+Create a file `vmsnapshot_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot-snap.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
 
 ```yaml
 apiVersion: snapshot.kubevirt.io/v1beta1
@@ -185,7 +188,7 @@ spec:
 
 Start the snapshot process by creating the VirtualMachineSnapshot:
 ```yaml
-kubectl create -f vmsnapshot_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot-snap.yaml
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vmsnapshot_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot-snap.yaml
 ```
 
 Make sure you wait until the snapshot is ready. You can issue the following command to wait until the snapshot is ready:
@@ -250,7 +253,7 @@ Snapshots also include your virtual machine metadata `spec.template.metadata` an
 ## {{% task %}} Changing our Greeting message again
 
 Enter the virtual machine with:
-```yaml
+```bash
 virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot --namespace=$USER
 ```
 
@@ -264,9 +267,9 @@ Now restart the virtual machine again and verify the change was persistent.
 ```bash
 sudo reboot
 ```
-After the restart completed you should see your new Hello message.
+After the restart completed you should see your new `Hello` message.
 
-Beside changing a file we add a label `acend.ch/training: kubevirt` to our VirtualMachine metadata `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot`.
+In addition to the changed file, containing the Greeting message, add a label `acend.ch/training: kubevirt` to our VirtualMachine metadata `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot`. This will allow us to see what happens to the labels, once we restore the previous snapshot.
 
 You can do this by patching your virtual machine with:
 ```bash
@@ -298,13 +301,20 @@ Spec:
 
 ## {{% task %}} Restoring a Virtual Machine
 
-Now you decide to restore your snapshot. Make sure your virtual machine is stopped.
+Before we now restore the Virtual Machine from the Snapshot, let us do a quick recap:
+
+1. We provisioned a cirros VM with an attached persistent volume.
+1. We then changed the Greeting Message to `Greetings from the KubeVirt Training. This is a CirrOS virtual machine.`
+1. We created a snapshot from that Volume
+1. We change the Greeting Message to `Hello` and added a label `acend.ch/training: kubevirt`
+
+Now ywe want restore the snapshot from step 3. Make sure your virtual machine is stopped.
 
 ```bash
 virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot --namespace=$USER
 ```
 
-Create the file `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot-restore.yaml` with the following content:
+Create the file `vmsnapshot_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot-restore.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
 ```yaml
 apiVersion: snapshot.kubevirt.io/v1beta1
 kind: VirtualMachineRestore
@@ -320,7 +330,7 @@ spec:
 
 Start the restore process by creating the VirtualMachineRestore:
 ```bash
-kubectl create -f vmsnapshot_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot-restore.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vmsnapshot_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot-restore.yaml --namespace=$USER
 ```
 
 Make sure you wait until the restore is done. You can use the following command to wait until the restore is finished:
@@ -340,8 +350,13 @@ Start the virtual machine again with:
 virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot --namespace=$USER
 ```
 
-Whenever the restore was successful out `Hello` greeting should be gone and we should see the following Greeting again.
+Whenever the restore was successful the `Hello` greeting should be gone and we should see the following Greeting again.
 Open the console to check the greeting:
+
+```bash
+virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot --namespace=$USER
+```
+
 ```
   ____               ____  ____
  / __/ __ ____ ____ / __ \/ __/
