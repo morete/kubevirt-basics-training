@@ -29,7 +29,7 @@ Your Instancetype should look like this (labels and annotations are optional):
 apiVersion: instancetype.kubevirt.io/v1beta1
 kind: VirtualMachineInstancetype
 metadata:
-  name: lab04-o1-pico
+  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-pico
   annotations:
     instancetype.kubevirt.io/description: |-
       The O Series is based on the U Series, with the only difference
@@ -55,7 +55,7 @@ spec:
 
 Create your resource with:
 ```bash
-kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vmf_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-pico.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vmf_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-pico.yaml --namespace=$USER
 ```
 
 And verify whether the creation was successful:
@@ -78,36 +78,16 @@ kubectl get vmf {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}
 ```
 
 The output will be similar to this one:
-```bash
+```yaml
 apiVersion: instancetype.kubevirt.io/v1beta1
 kind: VirtualMachineInstancetype
 metadata:
-  annotations:
-    instancetype.kubevirt.io/description: |-
-      The U Series is quite neutral and provides resources for
-      general purpose applications.
-
-      *U* is the abbreviation for "Universal", hinting at the universal
-      attitude towards workloads.
-
-      VMs of instance types will share physical CPU cores on a
-      time-slice basis with other VMs.
-    instancetype.kubevirt.io/displayName: General Purpose
-    kubectl.kubernetes.io/last-applied-configuration: |
-      {"apiVersion":"instancetype.kubevirt.io/v1beta1","kind":"VirtualMachineInstancetype","metadata":{"annotations":{"instancetype.kubevirt.io/description":"The U Series is quite neutral and provides resources for\ngeneral purpose applications.\n\n*U* is the abbreviation for \"Universal\", hinting at the universal\nattitude towards workloads.\n\nVMs of instance types will share physical CPU cores on a\ntime-slice basis with other VMs.","instancetype.kubevirt.io/displayName":"General Purpose"},"labels":{"instancetype.kubevirt.io/class":"general.purpose","instancetype.kubevirt.io/cpu":"1","instancetype.kubevirt.io/icon-pf":"pficon-server-group","instancetype.kubevirt.io/memory":"256Mi","instancetype.kubevirt.io/vendor":"kubevirt-basics-training","instancetype.kubevirt.io/version":"1"},"name":"lab04-u1-pico","namespace":"user4"},"spec":{"cpu":{"guest":1},"memory":{"guest":"256Mi"}}}
-  creationTimestamp: "2024-08-14T12:10:36Z"
+  creationTimestamp: "2024-09-25T09:25:35Z"
   generation: 1
-  labels:
-    instancetype.kubevirt.io/class: general.purpose
-    instancetype.kubevirt.io/cpu: "1"
-    instancetype.kubevirt.io/icon-pf: pficon-server-group
-    instancetype.kubevirt.io/memory: 256Mi
-    instancetype.kubevirt.io/vendor: kubevirt-basics-training
-    instancetype.kubevirt.io/version: "1"
-  name: lab04-u1-pico
-  namespace: user4
-  resourceVersion: "16264315"
-  uid: 33cfc789-d041-4a56-bb28-26605759a890
+  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-pico
+  namespace: <user>
+  resourceVersion: "55713159"
+  uid: 14d414b7-b1f8-4b0d-af48-fb84340545c9
 spec:
   cpu:
     guest: 1

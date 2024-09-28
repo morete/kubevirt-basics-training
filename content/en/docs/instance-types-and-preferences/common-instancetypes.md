@@ -335,15 +335,16 @@ Deploy two VMs with different instance types:
 * Deploy a cirros VM using an `o` class instancetype and the same preference.
   * rite the VM specification in `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros.yaml`
 
+
 {{% onlyWhenNot tolerations %}}
 
-{{% details title="Task Hint: Solution" %}}
+{{% details title="Solution" %}}
 `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros.yaml` specification:
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name: u1-cirros
+  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros
 spec:
   running: false
   instancetype:
@@ -356,7 +357,7 @@ spec:
     metadata:
       labels:
         kubevirt.io/size: nano
-        kubevirt.io/domain: u1-cirros
+        kubevirt.io/domain: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros
     spec:
       domain:
         devices:
@@ -383,7 +384,7 @@ spec:
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name: o1-cirros
+  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros
 spec:
   running: false
   instancetype:
@@ -396,7 +397,7 @@ spec:
     metadata:
       labels:
         kubevirt.io/size: nano
-        kubevirt.io/domain: o1-cirros
+        kubevirt.io/domain: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros
     spec:
       domain:
         devices:
@@ -423,13 +424,13 @@ spec:
 Don't forget the `tolerations` from the setup chapter to make sure the VM will be scheduled on one of the baremetal nodes.
 {{% /alert %}}
 
-{{% details title="Task Hint: Solution" %}}
+{{% details title="Solution" %}}
 `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros.yaml` specification:
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name: u1-cirros
+  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros
 spec:
   running: false
   instancetype:
@@ -442,7 +443,7 @@ spec:
     metadata:
       labels:
         kubevirt.io/size: nano
-        kubevirt.io/domain: u1-cirros
+        kubevirt.io/domain: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros
     spec:
       domain:
         devices:
@@ -474,7 +475,7 @@ spec:
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name: o1-cirros
+  name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros
 spec:
   running: false
   instancetype:
@@ -487,7 +488,7 @@ spec:
     metadata:
       labels:
         kubevirt.io/size: nano
-        kubevirt.io/domain: o1-cirros
+        kubevirt.io/domain: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros
     spec:
       domain:
         devices:
@@ -519,10 +520,10 @@ spec:
 Apply and start both VMs with
 
 ```bash
-kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_u1-cirros.yaml --namespace=$USER
-kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_o1-cirros.yaml --namespace=$USER
-virtctl start u1-cirros
-virtctl start o1-cirros
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros.yaml --namespace=$USER
+virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros
+virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros
 ```
 {{% /details %}}
 
