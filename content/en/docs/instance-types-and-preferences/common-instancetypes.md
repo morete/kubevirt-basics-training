@@ -435,7 +435,6 @@ spec:
 ```
 
 
-
 Apply and start both VMs with
 
 ```bash
