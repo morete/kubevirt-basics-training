@@ -129,7 +129,12 @@ spec:
         resources:
           requests:
             memory: 1Gi
-      terminationGracePeriodSeconds: 0
+      terminationGracePeriodSeconds: 0 
+      tolerations:
+        - effect: NoSchedule
+          key: baremetal
+          operator: Equal
+          value: "true"
       volumes:
       - name: datavolumedisk
         dataVolume:

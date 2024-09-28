@@ -144,6 +144,14 @@ Use this empty `cloudInitNoCloud` block to prevent cirros from trying to instant
             #cloud-config
 ```
 
+{{% onlyWhen tolerations %}}
+
+{{% alert title="Tolerations" color="warning" %}}
+Don't forget the `tolerations` from the setup chapter to make sure the VM will be scheduled on one of the baremetal nodes.
+{{% /alert %}}
+
+{{% /onlyWhen %}}
+
 {{% details title="Task Hint" %}}
 Your VirtualMachineInstanceReplicaSet should look like this:
 ```yaml
@@ -152,7 +160,7 @@ kind: VirtualMachineInstanceReplicaSet
 metadata:
   name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicaset
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       kubevirt.io/domain: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros
@@ -184,7 +192,12 @@ spec:
       networks:
       - name: default
         pod: {}
-      volumes:
+      {{< onlyWhen tolerations >}}tolerations:
+            - effect: NoSchedule
+              key: baremetal
+              operator: Equal
+              value: "true"
+      {{< /onlyWhen >}}volumes:
       - name: containerdisk
         containerDisk:
           image: {{% param "cirrosCDI" %}}
@@ -196,7 +209,7 @@ spec:
 {{% /details %}}
 
 ```bash
-kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vmirs_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vmirs_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros.yaml --namespace=$USER
 ```
 ```
 virtualmachineinstancereplicaset.kubevirt.io/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicaset created
@@ -230,7 +243,7 @@ NAME                           AGE    PHASE     IP             NODENAME         
 You can access the console using the name of the vmi with `virtctl`:
 ```bash
 virtctl console lab06-cirros-replicasetnc5p5 --namespace=$USER
-````
+```
 
 
 ## Scaling the VirtualMachineInstanceReplicaSet
@@ -277,7 +290,7 @@ virt-launcher-lab06-cirros-replicasetck6rw-9s8wd   3m           229Mi
 
 ### {{% task %}} Enable the Horizontal Pod Autoscaler
 
-Create a file `hpa_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros.yaml` with the following content:
+Create a file `hpa_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
 
 ```yaml
 apiVersion: autoscaling/v1
@@ -296,7 +309,7 @@ spec:
 
 Create the Horizontal Pod Autoscaler in the cluster:
 ```bash
-kubectl create -f hpa_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros.yaml
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/hpa_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros.yaml --namespace=$USER
 ```
 ```
 horizontalpodautoscaler.autoscaling/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicaset created
@@ -304,25 +317,25 @@ horizontalpodautoscaler.autoscaling/{{% param "labsubfolderprefix" %}}{{% param 
 
 Check the status of the Horizontal Pod Autoscaler with:
 ```bash
-kubectl describe hpa
+kubectl get hpa --namespace=$USER
 ```
 ```
 NAME                      REFERENCE                                                  TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
 {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicaset   VirtualMachineInstanceReplicaSet/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicaset   cpu: 2%/75%   1         2         1          7m44s
 ```
 
-Open a second webshell and connect to the console of one of your vm instances:
+Open a second termional in the webshell and connect to the console of one of your vm instances:
 ```bash
-kubectl get vmis
+kubectl get vmi --namespace=$USER
 ```
 ```
 NAME                           AGE     PHASE     IP             NODENAME            READY
 {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicasetck6rw   9m47s   Running   10.244.3.171   training-worker-0   True
 ```
 
-Pick one vmi and open the console:
+Pick the vmi and open the console:
 ```bash
-virtctl console virt-launcher-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicasetck6rw
+virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicaset<pod> --namespace=$USER
 ```
 
 Start to generate some load. Issue the following command in your webshell:
@@ -332,14 +345,22 @@ load() { dd if=/dev/zero of=/dev/null & }; load; read; killall dd
 
 In the other webshell check the following commands regularly:
 ```bash
-kubectl top pod
-kubectl describe hpa
+kubectl top pod --namespace=$USER
+```
+```bash
+kubectl get hpa --namespace=$USER
 ```
 
 After a short delay the Horizontal Pod Autoscaler kicks in and scales your replica set to `2`.
 ```
 NAME                      REFERENCE                                                  TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
 {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicaset   VirtualMachineInstanceReplicaSet/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicaset   cpu: 283%/75%   1         2         2          11m
+```
+
+And you'll see a second VMI will be started:
+
+```bash
+kubectl get vmi --namespace=$USER
 ```
 
 After the Horizontal Pod Autoscaler scaled up your instances head over to the console where you generated the load.
@@ -355,17 +376,17 @@ the [Horizontal Pod Autoscaler documentation](https://kubernetes.io/docs/tasks/r
 
 Delete your `VirtualMachinePool`:
 ```bash
-kubectl delete vmpool {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver
+kubectl delete vmpool {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver --namespace=$USER
 ```
 
 Delete your `VirtualMachineInstanceReplicaSet`:
 ```bash
-kubectl delete vmirs {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicaset
+kubectl delete vmirs {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicaset --namespace=$USER
 ```
 
 Delete the horizontal pod autoscaler
 ```bash
-kubectl delete hpa {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicaset
+kubectl delete hpa {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros-replicaset --namespace=$USER
 ```
 {{% /alert %}}
 

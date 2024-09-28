@@ -135,6 +135,14 @@ vm from the previous lab. Make sure the vm has the following characteristics:
 * Mount this pvc as the `datavolumedisk`
 * Use a `cloudInitNoCloud` named `cloudinitdisk` and reference the created secret to initialize our credentials.
 
+{{% onlyWhen tolerations %}}
+
+{{% alert title="Tolerations" color="warning" %}}
+Don't forget the `tolerations` from the setup chapter to make sure the VM will be scheduled on one of the baremetal nodes.
+{{% /alert %}}
+
+{{% /onlyWhen %}}
+
 {{% details title="Task Hint" %}}
 Your VirtualMachinePool should look like this (Make sure you replace `<user>` to your username):
 ```yaml
@@ -178,7 +186,12 @@ spec:
           networks:
           - name: default
             pod: {}
-          volumes:
+          {{< onlyWhen tolerations >}}tolerations:
+            - effect: NoSchedule
+              key: baremetal
+              operator: Equal
+              value: "true"
+          {{< /onlyWhen >}}volumes:
             - name: datavolumedisk
               persistentVolumeClaim:
                 claimName: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver-disk
@@ -205,10 +218,21 @@ spec:
 
 Create the VirtualMachinePool with:
 ```bash
-kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vmpool_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vmpool_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver.yaml --namespace=$USER
 ```
 ```
 virtualmachinepool.pool.kubevirt.io/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver created
+```
+
+This will also automatically create two VMs and two VMIs
+
+```bash
+kubectl get vm --namespace=$USER
+```
+or
+
+```bash
+kubectl get vmi --namespace=$USER
 ```
 
 As we used `spec.virtualMachineTemplate.spec.dataVolumeTemplates` the VirtualMachinePool will create a disk for each
@@ -251,7 +275,7 @@ spec:
 
 Apply the service with:
 ```bash
-kubectl create -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/svc_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver.yaml --namespace=$USER
+kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/svc_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver.yaml --namespace=$USER
 ```
 ```
 service/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webserver created
