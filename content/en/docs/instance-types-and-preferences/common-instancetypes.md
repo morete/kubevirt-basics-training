@@ -336,9 +336,7 @@ Deploy two VMs with different instance types:
   * rite the VM specification in `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros.yaml`
 
 
-{{% alert title="Tolerations" color="warning" %}}
-Don't forget the `tolerations` from the setup chapter to make sure the VM will be scheduled on one of the baremetal nodes.
-{{% /alert %}}
+{{% onlyWhenNot tolerations %}}
 
 {{% details title="Solution" %}}
 `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros.yaml` specification:
