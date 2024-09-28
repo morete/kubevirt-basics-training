@@ -259,9 +259,45 @@ The process of starting and stopping VMs takes a bit of time. Make sure the VM i
 
 ### Start/stop with `virtctl`
 
-The binary `virtctl` provides an easier way of interacting with KubeVirt VMs.
+The binary `virtctl` provides an easier way of interacting with KubeVirt VMs. And adds additional features like:
 
-Start your VM with:
+* Serial and graphical console access
+* Starting and stopping VirtualMachineInstances
+* Live migrating VirtualMachineInstances
+* Uploading virtual machine disk images
+* Adding, removing volumes
+* Exposing services
+* Debugging features: creating memory dumps
+
+We will use some of those functionalities during the lab.
+
+`virtctl` uses the default `kubeconfig` to interact with the Kubernetes Cluster.
+
+Explore the capabilities of `virtctl` by executing the following commands:
+
+```bash
+virtctl --help
+```
+and
+
+```bash
+virtctl <command> --help
+```
+or the following to display all options
+```bash
+virtctl options
+```
+
+**Question:** What's the exact command to restart a VM (`vm-to-restart`) using the kubeconfig from (`~/.kube/prod-cluster` the config does not exist in the webshell, it's just an example)
+
+{{% details title="Solution" %}}
+```bash
+virtctl --kubeconfig ~/.kube/prod-cluster restart vm-to-restart --namespace=$USER
+```
+{{% /details %}}
+
+
+Let's now start the VM by using `virtctl` by executing the following command:
 
 ```bash
 virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm --namespace=$USER
@@ -286,7 +322,21 @@ NAME            AGE   STATUS    READY
 {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm   11m   Running   True
 ```
 
-To stop your VM, simply use:
+When using the `--dry-run` option, we can see what would happen, without really executing the actual command. This can be a helpful option when interacting with production workload.
+
+Let's dry-run the stop command:
+
+```bash
+virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm --dry-run --namespace=$USER
+```
+This will return the following:
+
+```bash
+Dry Run execution
+VM {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm was scheduled to stop
+```
+
+To stop your VM for real, remove the `--dry-run` option:
 
 ```bash
 virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm --namespace=$USER
