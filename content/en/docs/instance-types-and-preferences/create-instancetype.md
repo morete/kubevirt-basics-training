@@ -1,30 +1,32 @@
 ---
-title: "Create an Instancetype"
+title: "Create an instance type"
 weight: 33
 labfoldernumber: "03"
 description: >
-  Create your own Instance type and Preference
+  Create your own instance type and preference
 ---
 
-In this section we will create and use our own instance type.
+In this section, we will create and use our own instance type.
 
 
-## {{% task %}} Create your own Instancetype
+## {{% task %}} Create your own instance type
 
-In the previous section we have seen that the Cirros preference requests 256Mi of memory. However, the smallest Instancetype
-available requested 512Mi of memory. Let's create our own Instancetype and assign it to our VirtualMachines.
+In the previous section we have seen that the Cirros preference requests 256Mi of memory. However, the smallest instance type
+available requests 512Mi of memory. In order to adapt to this, let's create our own instance type and assign it to our VirtualMachines.
 
 Create a file `vmf_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-pico.yaml` under `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` and start with the
-definition of the `o1.nano` instancetype.
+definition of the `o1.nano` instance type.
 
-Define the Instancetype:
+Define the instance type:
 
 * Request 256Mi of memory
 * Reduce the overcommit percentage from 50% to 25%
-* Name the resource `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-pico`.
+* Name the resource `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-pico`
 
 {{% details title="Task Hint" %}}
-Your Instancetype should look like this (labels and annotations are optional):
+
+Your instance type should look like this (labels and annotations are optional):
+
 ```yaml
 apiVersion: instancetype.kubevirt.io/v1beta1
 kind: VirtualMachineInstancetype
@@ -54,6 +56,7 @@ spec:
 {{% /details %}}
 
 Create your resource with:
+
 ```bash
 kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vmf_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-pico.yaml --namespace=$USER
 ```
@@ -65,19 +68,22 @@ kubectl get vmf {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}
 ```
 
 
-## {{% task %}} Create your own Instancetype with virtctl
+## {{% task %}} Create your own instance type with virtctl
 
-The `virtctl` tool is also capable of creating Instancetypes. You can define and create a similar Instancetype `u1.pico` with:
+The `virtctl` tool is also capable of creating instance types. You can define and create a similar instance type `u1.pico` with:
+
 ```bash
 virtctl create instancetype --namespaced --cpu 1 --memory 256Mi --name {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-pico --namespace=$USER | kubectl create --namespace=$USER -f -
 ```
 
-Show the created Instancetype with
+Show the created instance type with:
+
 ```bash
 kubectl get vmf {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-pico -o yaml --namespace=$USER
 ```
 
 The output will be similar to this one:
+
 ```yaml
 apiVersion: instancetype.kubevirt.io/v1beta1
 kind: VirtualMachineInstancetype

@@ -1,19 +1,19 @@
 ---
-title: "Instance Types and Preferences"
+title: "Instance types and preferences"
 weight: 3
 labfoldernumber: "03"
 description: >
-  Learn how to use and define Instance Types and Preferences.
+  Learn how to use and define instance types and preferences
 ---
 
-In this section we will see how we can define Instance Types and Preferences. These provide a way to define a set of
+In this section we will see how we can define instance types and preferences. These provide a way to define a set of
 runtime characteristics like resources or performance settings which can then be reused.
 
 
-## Lab Goals
+## Lab goals
 
 * Know the benefit of `VirtualMachineInstancetype` and `VirtualMachinePreference`
-* Examine Common Instance types and Preferences.
-* Deploy VMs with a common Instance type.
-* Define your own Instance type and Preference settings.
-* Use your custom Instance types with your VMs.
+* Examine common instance types and preferences
+* Deploy VMs with a common instance type
+* Define your own instance type and preference settings
+* Use your custom instance types with your VMs
