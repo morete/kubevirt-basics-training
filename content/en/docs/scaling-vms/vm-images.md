@@ -3,43 +3,43 @@ title: "VM disk images"
 weight: 51
 labfoldernumber: "05"
 description: >
-  Creating disk images for scaling the virtual machines.
+  Creating disk images for scaling virtual machines
 ---
 
-If we want to run VMs at scale it makes sense to manage a set of base images used for the VMs. It is not very convenient
-for each VM to spin up and install requirements itself. There are several ways we can distribute VM images in our cluster.
+If we want to run VMs at scale it makes sense to manage a set of base images to use for these VMs. It is not very convenient
+to spin up and install some requirements for each single VM oneself. There are several ways we can distribute VM images in our cluster.
 
-* Distribute images as ephemeral container disks using a container registry.
+* Distribute images as ephemeral container disks using a container registry
   * Be aware of the non-persistent root disk
-  * Depending on the disk size this approach may not be the best choice.
-* Create a namespace (e.g. `vm-images`) with pre-provisioned pvcs containing base disk images.
-  * Each VM would then use CDI to clone the pvc from the `vm-images` namespace to the local namespace.
+  * Depending on the disk size, this approach may not be the best choice
+* Create a Namespace (e.g., `vm-images`) with pre-provisioned PVCs containing base disk images
+  * Each VM would then use CDI to clone the PVC from the `vm-images` Namespace to the local Namespace
 
-At the end of this section we will have two pvcs containing base disks in our namespace:
+At the end of this section, we will have two PVCs containing base disks in our Namespace:
 
 * `fedora-cloud-base`: Original Fedora Cloud
 * `fedora-cloud-nginx-base`: Fedora Cloud with nginx installed
 
 
-## Creating a Fedora cloud image with nginx
+## Creating a Fedora Cloud image with nginx
 
-In the previous section we created a VM using cloud-init to install nginx and start the webserver. This is not very
-useful as every VM in the pool would do the same initializing process and install nginx. Eventually there would be
-different versions of nginx in the vm pool depending on when the VM was started and when the installation took place.
+In the previous section, we created a VM using cloud-init to install nginx and start the webserver. If we created a pool based on this, each VM would go through the same initialization process and install nginx.
+This is obviously not very efficient. Additionally, there would eventually be different versions of nginx in the VM pool depending on when the VM was started and the installation took place.
 
-Let us a more generic process and create a base image with nginx already available.
+In order to optimize this, let's create a base image which has nginx already installed instead of installing it during the first boot.
 
 {{% alert title="Note" color="info" %}}
-Normally we would to this in a central namespace like `vm-images`. In this lab you will use your own namespace `<user>`.
+Normally we would to this in a central Namespace like `vm-images`. In this lab you will use your own namespace `<user>`.
 {{% /alert %}}
 
 
 ### {{% task %}} Create the fedora-cloud-base disk
 
-First we need to create our base disk for the Fedora Cloud 40. We will use a `DataVolume` and CDI to provision a PVC
-containing a disk bases on the container disk `{{% param "fedoraCloudCDI" %}}`.
+First we need to create our base disk for Fedora Cloud 40. We will use a `DataVolume` and CDI to provision a PVC
+containing a disk base on the container disk `{{% param "fedoraCloudCDI" %}}`.
 
-Create the following file `dv_fedora-cloud-base.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}`:
+Create the following file `dv_fedora-cloud-base.yaml` in folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}`:
+
 ```yaml
 apiVersion: cdi.kubevirt.io/v1beta1
 kind: DataVolume
@@ -57,30 +57,33 @@ spec:
         storage: 6Gi
 ```
 
-Create the DataVolume with the following command
+Create the DataVolume with the following command:
+
 ```bash
 kubectl apply -f  {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/dv_fedora-cloud-base.yaml --namespace=$USER
 ```
 
-This will download the container disk `{{% param "fedoraCloudCDI" %}}` and store it in a pvc named `fedora-cloud-base`.
+This will download the container disk `{{% param "fedoraCloudCDI" %}}` and store it in a PVC named `fedora-cloud-base`:
 
 ```bash
 kubectl get datavolume --namespace=$USER
 ```
 
-Will result in something like:
+This will result in something like this:
+
 ```bash
 NAME                PHASE             PROGRESS   RESTARTS   AGE
 fedora-cloud-base   ImportScheduled   N/A
 ```
 
-and when the import process is completed
+Note the `Succeeded` phase when the import process is completed:
+
 ```bash
 NAME                PHASE       PROGRESS   RESTARTS   AGE
 fedora-cloud-base   Succeeded   100.0%                105s
 ```
 
-with the following command, you can verify the existence of the PVC, containing the imported images.
+With the following command, you can verify the existence of the PVC which contains the imported images:
 
 ```bash
 kubectl get pvc --namespace=$USER
@@ -95,14 +98,15 @@ fedora-cloud-base       Bound    pvc-4c617a10-24f5-427c-8d11-da45723593e9   6Gi 
 
 ### {{% task %}} Create the provisioner VM
 
-Next we will create a VM which installs our packages and create the final provisioned PVC. This VM will:
+Next we will create a VM which installs our packages and creates the final provisioned PVC. This VM will:
 
 * Clone the Fedora base disk `fedora-cloud-base` to our provisioned disk `fedora-cloud-nginx-base`
-* Start VM and install nginx using cloud-init
-* Remove cloud-init config to rerun cloud-init in further VMs cloning this disk
+* Start a VM and install nginx using cloud-init
+* Remove the cloud-init configuration to make it possible for further VMs cloning this disk to rerun cloud-init
 * Shutdown the VM
 
 Create the file `vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-fedora-nginx-provisioner.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
+
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
@@ -218,22 +222,24 @@ spec:
 ```
 
 Create the VM with the following command:
+
 ```bash
 kubectl apply -f  {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-fedora-nginx-provisioner.yaml --namespace=$USER
 ```
 
 There are the following important details in this VM manifest:
 
-* `runStrategy: "RerunOnFailure"`: This tells KubeVirt to run the VM like a Kubernetes job. The VM will retry as long as the guest is not shutdown gracefully.
-* `cloudInitNoCloud`: These are the instructions to provision our disk. Please not the deletion of the cloud-init data to ensure it is rerun whenever we start a VM based on this disk. Further we shutdown the VM gracefully at the end of the script.
+* `runStrategy: "RerunOnFailure"`: This tells KubeVirt to run the VM like a Kubernetes Job. The VM will retry as long as the guest is not shut down gracefully.
+* `cloudInitNoCloud`: These are the instructions to provision our disk. Please note the deletion of the cloud-init data to ensure it is rerun whenever we start a VM based on this disk. Further we shutdown the VM gracefully at the end of the script.
 * `dataVolumeTemplate`: This creates a new PVC for the provisioned disk containing nginx.
 
-As mentioned, the VM has been scheduled due to the `runStrategy: "RerunOnFailure"` and there fore the VMI should be running, use the following command to verify that:
+As mentioned, the VM has been scheduled due to the `runStrategy: "RerunOnFailure"`, therefore the VMI should be running. Use the following command to verify that with:
 
 ```bash
 kubectl get vmi --namespace=$USER
 ```
-or
+
+or:
 
 ```bash
 kubectl get pod --namespace=$USER
@@ -241,14 +247,14 @@ kubectl get pod --namespace=$USER
 
 {{% alert title="Note" color="info" %}}
 Take your time to closely inspect the cloud-init provisioning. This is a more complex version of a `cloudInitNoCloud`
-configuration combining two available `userData` formats. To achieve this we used the `#cloud-config-archive` as the
+configuration combining two available `userData` formats. To achieve this, we used the `#cloud-config-archive` as the
 parent type. This allowed us to use multiple items with different types. The first type is the regular `#cloud-config`
 format. For the second item we used a shell script `#!/bin/sh`.
 
-As specified above we delete the data in `/var/lib/cloud/instances`. As this is a base image we want to run cloud-init again.
+As specified above, we delete the data in `/var/lib/cloud/instances`. As this is a base image, we want to run cloud-init again.
 {{% /alert %}}
 
-After the provisioning was successfully the VM will terminate itself due to the `shutdown now` statement.
+After the provisioning was successful, the VM will terminate itself due to the `shutdown now` statement.
 
 ```bash
 kubectl get vm --namespace=$USER
@@ -260,7 +266,8 @@ NAME                             AGE     STATUS    READY
 lab06-fedora-nginx-provisioner   8m52s   Stopped   False
 ```
 
-After the was shutdown we will see a `fedora-cloud-nginx-base` pvc in our namespace:
+After the VM has been shut down, we will see a `fedora-cloud-nginx-base` PVC in our Namespace:
+
 ```bash
 kubectl get pvc
 ```
@@ -271,14 +278,15 @@ fedora-cloud-base         Bound    pvc-c1541b25-2414-41b2-84a6-99872a19d7c4   6G
 fedora-cloud-nginx-base   Bound    pvc-27ba0e54-ff7d-4782-bd23-0823f5f3010f   6Gi        RWO            longhorn       <unset>                 9m59s
 ```
 
-The VM is still present in the namespace. As we do not need it anymore we can delete the VM. In this case we have to be
+The VM is still present in the Namespace. As we do not need it anymore, we can delete the VM. In this case, we have to be
 careful as the fedora-cloud-nginx-base belongs to the VM and would be removed when we just delete the VM. We have to use
 `--cascade=orphan` to not delete our provisioned disk.
 
-Delete the VM without deleting the newly created pvc.
+Delete the VM without deleting the newly created PVC:
+
 ```bash
 kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-fedora-nginx-provisioner --cascade=orphan
 ```
 
-Now we have our immutable custom VM image based on Fedora Cloud and nginx installed. We can create as many VMs as we
+Now we have our immutable custom VM image based on Fedora Cloud with nginx installed. We can now create as many VMs as we
 want using that custom image.
