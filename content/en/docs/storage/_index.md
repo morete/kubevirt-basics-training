@@ -3,18 +3,17 @@ title: "Storage"
 weight: 6
 labfoldernumber: "06"
 description: >
- Configuring Kubernetes Storage for Virtual Machines
+ Configuring Kubernetes storage for virtual machines
 ---
 
+In this section we focus on attaching storage volumes provided by Kubernetes storage drivers to our virtual machines.
+We also have a look at hotplugging and resizing disks.
 
-In this section we focus on attaching storage volumes provided by kubernetes storage drivers to our virtual machines.
-We also have a look at hot plugging and resizing disks.
 
-
-## Lab Goals
+## Lab goals
 
 * Mount storage as disks or filesystems
 * Use filesystem and block devices
-* Mount ConfigMaps and secrets
-* Hot plugging storage
-* Resizing disks
+* Mount ConfigMaps and Secrets
+* Hotplug storage
+* Resize disks
