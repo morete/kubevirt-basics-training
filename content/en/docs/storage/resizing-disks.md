@@ -220,7 +220,7 @@ sudo reboot
 ```
 
 After the reboot you have to log in and check `lsblk` again:
- 
+
 ```bash
 lsblk
 ```
