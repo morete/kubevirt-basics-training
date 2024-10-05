@@ -22,7 +22,7 @@ As the configuration and the required feature flags are subject to change, we do
 
 ### Emulation
 
-This cluster is using emulation. This has an impact on the VM performance.
+For local development and test environments, the emulation can be turned on. This may have a huge impact to the performance.
 
 ```yaml
 apiVersion: kubevirt.io/v1
@@ -36,6 +36,8 @@ spec:
       useEmulation: true
 [...]
 ```
+
+The Lab cluster is not using emulation.
 
 
 ### Enabled Kubernetes feature flags
@@ -59,4 +61,5 @@ spec:
       - ExpandDisks
       - Snapshot
       - VMExport
+      - BlockVolume
 ```
