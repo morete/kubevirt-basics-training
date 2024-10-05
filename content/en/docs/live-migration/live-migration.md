@@ -8,7 +8,7 @@ description: >
 
 ## Introduction
 
-The Live Migration feature (`LiveMigration`) needs enabled in the KubeVirt configuration running on the cluster (`kubectl get kubevirt kubevirt -n kubevirt -o yaml`).
+The Live Migration feature (`LiveMigration`) is eneable by default in recent KubeVirt Versions, previously it needed to be enabled in the KubeVirt configuration running on the cluster (`kubectl get kubevirt kubevirt -n kubevirt -o yaml`).
 
 ```yaml
 apiVersion: kubevirt.io/v1
