@@ -8,7 +8,7 @@ description: >
 
 ## Introduction
 
-The Live Migration feature (`LiveMigration`) is eneable by default in recent KubeVirt Versions, previously it needed to be enabled in the KubeVirt configuration running on the cluster (`kubectl get kubevirt kubevirt -n kubevirt -o yaml`).
+The Live Migration feature (`LiveMigration`) is enabled by default in recent KubeVirt Versions, previously it needed to be enabled in the KubeVirt configuration running on the cluster (`kubectl get kubevirt kubevirt -n kubevirt -o yaml`).
 
 ```yaml
 apiVersion: kubevirt.io/v1
@@ -28,7 +28,6 @@ spec:
       - Snapshot
       - VMExport
       - BlockVolume
-      - LiveMigration
 ```
 
 Additionally the LiveMigration feature can be configured under `spec.configuration.migrations` whit a set of configuration parameters. The full list can be found in the [API Reference](https://kubevirt.io/api-reference/v1.3.0/definitions.html#_v1_migrationconfiguration)
