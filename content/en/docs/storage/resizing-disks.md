@@ -6,22 +6,23 @@ description: >
   Resizing virtual machine disks
 ---
 
-In this section we will resize the root disk of our virtual machine.
+In this section we will resize the root disk of a virtual machine.
 
 
 ## Requirements
 
-Resizing depends on the Kubernetes Storage provider. The CSI driver must support resizing volumes as well as it must be configured to `AllowVolumeExpansion`.
+Resizing disks depends on the Kubernetes storage provider. The CSI driver must support resizing volumes and must be configured with `AllowVolumeExpansion`.
 
-Further it may depend on the operating system you use. Whenever the volume is resized your VM might see the change
-in disk size immediately. But there might still be the need to resize the partition and filesystem. For example Fedora Cloud
-uses has the package `cloud-utils-growpart` installed. This rewrites the partition table so that partition take up all
-the space it is available. This makes it very handy choice for virtual machines resizing disk images.
+Further, it may depend on the operating system you use. Whenever the volume is resized, your VM might see the change
+in disk size immediately. But there might still be the need to resize the partition and filesystem. Fedora Cloud for instance
+has the package `cloud-utils-growpart` installed. This rewrites the partition table so that the partition takes up all
+the space available. This makes it a very handy choice for resizing disk images.
 
 
 ## {{% task %}} Create a volume and a virtual machine
 
-In a first step have to create a fedora disk. Create the file `dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
+In a first step we are going to create a Fedora disk. Create the file `dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
+
 ```yaml
 apiVersion: cdi.kubevirt.io/v1beta1
 kind: DataVolume
@@ -40,11 +41,13 @@ spec:
 ```
 
 Create the data volume in the cluster:
+
 ```bash
 kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/dv_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk.yaml --namespace=$USER
 ```
 
 Create the file `vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` and use the following yaml specification:
+
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
@@ -93,11 +96,13 @@ spec:
 ```
 
 Create the virtual machine with:
+
 ```bash
 kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand.yaml --namespace=$USER
 ```
 
 Start the virtual machine with:
+
 ```bash
 virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand --namespace=$USER
 ```
@@ -105,16 +110,19 @@ virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-
 
 ### Check the disk size
 
-Start the console of the virtual machine and login (user: `fedora`, password: `kubevirt`):
+Start the virtual machines' console and log in (user: `fedora`, password: `kubevirt`):
+
 ```bash
 virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand --namespace=$USER
 ```
 
 Check your block devices with:
+
 ```bash
 lsblk
 ```
-```s
+
+```bash
 NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
 zram0  251:0    0  1.9G  0 disk [SWAP]
 vda    252:0    0  5.7G  0 disk 
@@ -130,10 +138,12 @@ vdb    252:16   0    1M  0 disk
 
 ## {{% task %}} Resize the disk
 
-Triggering a resize of a pvc in kubernetes can be done with editing the pvc size request. Get the PersistentVolumeClaim manifest with:
+Triggering a resize of a PVC in Kubernetes can be done with editing the PVC size request. Get the PersistentVolumeClaim manifest with:
+
 ```bash
 kubectl get pvc {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk -o yaml --namespace=$USER
 ```
+
 ```yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -147,19 +157,23 @@ spec:
 [...]
 ```
 
-Now patch the pvc to increase the disk size to `8Gi`.
+Now, patch the PVC to increase the disk size to `8Gi`:
+
 ```bash
 kubectl patch pvc {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk --type='json' -p='[{"op": "replace", "path": "/spec/resources/requests/storage", "value":"8Gi"}]' --namespace=$USER
 ```
+
 ```
 persistentvolumeclaim/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk patched
 ```
 
 It might take some time for the storage provider to resize the persistent volume. You can see details about the process
-in the events section when describing the PersistentVolumeClaim:
+in the events section when describing the PersistentVolumeClaim resource:
+
 ```bash
 kubectl describe pvc {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-expand-disk --namespace=$USER
 ```
+
 ```
 Events:
   Type     Reason                       Age                 From                                                                                      Message
@@ -171,15 +185,18 @@ Events:
 ```
 
 If you still have a console open in your virtual machine you see that there was a message about the capacity change:
+
 ```bash
 [  896.201742] virtio_blk virtio3: [vda] new size: 15853568 512-byte logical blocks (8.12 GB/7.56 GiB)
 [  896.202409] vda: detected capacity change from 11890688 to 15853568
 ```
 
 Recheck your block devices:
+
 ```bash
 lsblk
 ```
+
 ```
 NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
 zram0  251:0    0  1.9G  0 disk [SWAP]
@@ -194,26 +211,29 @@ vdb    252:16   0    1M  0 disk
 ```
 
 You will see that the capacity change is visible from within the virtual machine. But at this time our partitions still
-have the same size and do not use all available diskspace.
+have the same size and do not use all available disk space.
 
 Issue a reboot to let the system expand the partitions:
+
 ```bash
 sudo reboot
 ```
 
-After the reboot you have to login again and check `lsblk` again:
+After the reboot you have to log in and check `lsblk` again:
+
 ```bash
 lsblk
 ```
 
-You can see that for example `vda4` has been resized from `5.7G` to `7.6G`.
+You can see that, e.g., `vda4` has been resized from `5.7G` to `7.6G`.
 
 
 ## End of lab
 
 {{% alert title="Cleanup resources" color="warning" %}}  {{% param "end-of-lab-text" %}}
 
-Delete your VirtualMachines:
+Delete your VirtualMachine resources:
+
 ```bash
 kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-storage --namespace=$USER
 kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros --namespace=$USER
@@ -222,6 +242,7 @@ kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" 
 ```
 
 Delete your disks:
+
 ```bash
 kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-fs-disk --namespace=$USER
 kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-block-disk --namespace=$USER
@@ -231,6 +252,7 @@ kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" 
 ```
 
 Delete your VirtualMachineSnapshots:
+
 ```bash
 kubectl delete vmsnapshot {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-snapshot-snap --namespace=$USER
 ```
