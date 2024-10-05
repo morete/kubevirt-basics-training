@@ -59,4 +59,5 @@ spec:
       - ExpandDisks
       - Snapshot
       - VMExport
+      - BlockVolume
 ```
