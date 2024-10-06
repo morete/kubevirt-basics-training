@@ -117,9 +117,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-node-exporter
+  labels:
+    node-exporter: true
 spec:
   ports:
-  - port: 9100
+  - port: metrics
     protocol: TCP
     targetPort: 9100
   selector:
@@ -137,6 +139,40 @@ Test your working webserver from your webshell:
 
 ```bash
 curl -s http://{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-node-exporter.$USER.svc.cluster.local:9100/metrics
+```
+
+```bash
+# HELP go_gc_duration_seconds A summary of the pause duration of garbage collection cycles.
+# TYPE go_gc_duration_seconds summary
+go_gc_duration_seconds{quantile="0"} 0
+go_gc_duration_seconds{quantile="0.25"} 0
+go_gc_duration_seconds{quantile="0.5"} 0
+go_gc_duration_seconds{quantile="0.75"} 0
+go_gc_duration_seconds{quantile="1"} 0
+go_gc_duration_seconds_sum 0
+go_gc_duration_seconds_count 0
+# HELP go_goroutines Number of goroutines that currently exist.
+# TYPE go_goroutines gauge
+go_goroutines 7
+[...]
+```
+
+Those metrics are now easily integrated into prometheus with by deploying a ServiceMonitor, which would look similar to:
+
+```yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: node-exporter-servicemonitor
+  namespace: <user>
+spec:
+  endpoints:
+  - honorLabels: true
+    port: metrics
+    scheme: http
+  selector:
+    matchLabels:
+      node-exporter: true
 ```
 
 
