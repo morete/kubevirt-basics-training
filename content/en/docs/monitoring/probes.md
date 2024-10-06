@@ -233,7 +233,7 @@ spec:
         - name: cloudinitdisk
           cloudInitNoCloud:
             secretRef:
-              name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit-liveness
+              name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit-probe
 ```
 {{% /details %}}
 
@@ -244,7 +244,18 @@ kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %
 ```
 
 ```bash
-virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-probe --namespace=$USER
+virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-probe --namespace=$USER
+```
+
+Make sure to observe the `READY` state of the VMI, it should take around 3 minutes to become `TRUE`:
+
+```bash
+kubectl get vmi --namespace=$USER
+```
+```bash
+kubectl get vmi --namespace=$USER
+NAME              AGE     PHASE     IP              NODENAME               READY
+lab08-probe       2m32s   Running   10.244.20.230   training-baremetal-0   False
 ```
 
 
@@ -314,7 +325,7 @@ spec:
         - name: cloudinitdisk
           cloudInitNoCloud:
             secretRef:
-              name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit-liveness
+              name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit-probe
 ```
 
 ```bash
@@ -322,10 +333,19 @@ kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %
 ```
 
 ```bash
-virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-probe --namespace=$USER
+virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-probe --namespace=$USER
 ```
 
 {{% /details %}}
+
+
+## {{% task %}} Test out the behaviour when probes fail
+
+Experiment with the probes from the last couple of labs.
+
+* change the port to something different and observe the behaviour
+* change the configuration of the Probes and observe the behaviour
+* connect to the console and stop the running webserver process to see what that results in.
 
 
 ## {{% task %}} Guest Agent Liveness Probe
@@ -393,7 +413,7 @@ spec:
         - name: cloudinitdisk
           cloudInitNoCloud:
             secretRef:
-              name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit-liveness
+              name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit-probe
 ```
 
 ```bash
@@ -401,7 +421,7 @@ kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %
 ```
 
 ```bash
-virtctl restart {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-probe --namespace=$USER
+virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-probe --namespace=$USER
 ```
 
 {{% /details %}}
