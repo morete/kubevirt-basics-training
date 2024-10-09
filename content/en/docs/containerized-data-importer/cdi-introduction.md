@@ -14,7 +14,7 @@ which is an abstraction above the PVC.
 ## CDI Operator components
 
 {{% alert title="Note" color="info" %}}
-The Operator has already been installed in Namespace `cdi`. If you want to deploy the Operator, check the
+The Operator has already been installed in namespace `cdi`. If you want to deploy the Operator, check the
 [Deploy](https://github.com/kubevirt/containerized-data-importer?tab=readme-ov-file#deploy-it) section of the CDI documentation.
 {{% /alert %}}
 
@@ -34,11 +34,11 @@ cdi-operator-595bfb44cd-j5s4h      1/1     Running   0          1d
 cdi-uploadproxy-7657d8d89d-qth44   1/1     Running   0          1d
 ```
 
-* **cdi-deployment** - Long-lived CDI controller Pod managing the CDI operations
-* **cdi-operator** - the Operator Pod managing the CDI components
+* **cdi-deployment** - Long-lived CDI controller pod managing the CDI operations
+* **cdi-operator** - the Operator pod managing the CDI components
 * **cdi-apiserver** - Issues secure tokens and manages authorization to upload VM disks into PVCs
 * **cdi-uploadproxy** - Handles upload traffic and writes content to the correct PVC
-* **cdi-importer** - Short-lived helper Pod that imports a VM image to a PVC
+* **cdi-importer** - Short-lived helper pod that imports a VM image to a PVC
 
 
 ## DataVolume manifest
@@ -71,7 +71,7 @@ The source location of the data.
 
 * `http` - Download data from a given URL
 * `registry` - Download a Container Disk from a given URL
-* `pvc` - Clone a given PVC referenced by name and Namespace to a new PVC
+* `pvc` - Clone a given PVC referenced by name and namespace to a new PVC
 * `upload` - Provide an upload proxy to receive data from an authenticated client
 * `blank` - Create an empty VM disk
 * `imageio` - Import a VM disk from a running oVirt installation

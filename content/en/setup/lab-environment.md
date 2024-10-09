@@ -35,7 +35,7 @@ kubectl version
 The files in the home directory under `{{% param "projecthome" %}}` are stored in a persistent volume, so please make sure to store all your data in this directory and use it as starting point for all our lab files.
 You can create files within your webshell or using the explorer.
 
-If you have a terminal running you can interact with the Kubernetes cluster. For example, you can list your context or get the Pods of the current Namespace:
+If you have a terminal running you can interact with the Kubernetes cluster. For example, you can list your context or get the pods of the current namespace:
 
 ```bash
 kubectl config get-contexts
@@ -48,13 +48,13 @@ CURRENT   NAME    CLUSTER   AUTHINFO   NAMESPACE
           local   local     local      <user>
 ```
 
-With the following command will show that the current webshell is also running as a Pod within your Namespace:
+With the following command will show that the current webshell is also running as a pod within your namespace:
 
 ```bash
 kubectl get pods --namespace=$USER
 ```
 
-So the expected outcome is a webshell Pod:
+So the expected outcome is a webshell pod:
 
 ```bash
 NAME                             READY   STATUS    RESTARTS   AGE
@@ -64,11 +64,11 @@ NAME                             READY   STATUS    RESTARTS   AGE
 
 ## Namespace
 
-We are going to use the following Namespace for the labs
+We are going to use the following namespace for the labs
 
 * `<user>` where we deploy our Virtual Machines.
 
-Alternatively there is a Namespace `<user>-dev` available.
+Alternatively there is a namespace `<user>-dev` available.
 
 
 ## General lab notes
@@ -129,8 +129,8 @@ status: {}
 
 ### Using Kubernetes context
 
-In our labs we specify the Namespace for the commands by explicitly defining the `--namespace` parameter.
-We deem this best practice as it makes it harder to execute commands in the wrong Namespace.
+In our labs we specify the namespace for the commands by explicitly defining the `--namespace` parameter.
+We deem this best practice as it makes it harder to execute commands in the wrong namespace.
 
 However, some people prefer to use the context by, e.g., using the following commands:
 

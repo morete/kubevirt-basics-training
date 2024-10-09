@@ -300,7 +300,7 @@ virt-launcher-lab06-cirros-replicasetck6rw-9s8wd   3m           229Mi
 ```
 
 
-### {{% task %}} Enable the Horizontal Pod Autoscaler
+### {{% task %}} Enable the HorizontalPodAutoscaler
 
 Create a file `hpa_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cirros.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
 

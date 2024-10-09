@@ -12,10 +12,10 @@ to spin up and install some requirements for each single VM oneself. There are s
 * Distribute images as ephemeral container disks using a container registry
   * Be aware of the non-persistent root disk
   * Depending on the disk size, this approach may not be the best choice
-* Create a Namespace (e.g., `vm-images`) with pre-provisioned PVCs containing base disk images
-  * Each VM would then use CDI to clone the PVC from the `vm-images` Namespace to the local Namespace
+* Create a namespace (e.g., `vm-images`) with pre-provisioned PVCs containing base disk images
+  * Each VM would then use CDI to clone the PVC from the `vm-images` namespace to the local namespace
 
-At the end of this section, we will have two PVCs containing base disks in our Namespace:
+At the end of this section, we will have two PVCs containing base disks in our namespace:
 
 * `fedora-cloud-base`: Original Fedora Cloud
 * `fedora-cloud-nginx-base`: Fedora Cloud with nginx installed
@@ -29,7 +29,7 @@ This is obviously not very efficient. Additionally, there would eventually be di
 In order to optimize this, let's create a base image which has nginx already installed instead of installing it during the first boot.
 
 {{% alert title="Note" color="info" %}}
-Normally we would to this in a central Namespace like `vm-images`. In this lab you will use your own namespace `<user>`.
+Normally we would to this in a central namespace like `vm-images`. In this lab you will use your own namespace `<user>`.
 {{% /alert %}}
 
 
@@ -266,7 +266,7 @@ NAME                             AGE     STATUS    READY
 lab06-fedora-nginx-provisioner   8m52s   Stopped   False
 ```
 
-After the VM has been shut down, we will see a `fedora-cloud-nginx-base` PVC in our Namespace:
+After the VM has been shut down, we will see a `fedora-cloud-nginx-base` PVC in our namespace:
 
 ```bash
 kubectl get pvc
@@ -278,7 +278,7 @@ fedora-cloud-base         Bound    pvc-c1541b25-2414-41b2-84a6-99872a19d7c4   6G
 fedora-cloud-nginx-base   Bound    pvc-27ba0e54-ff7d-4782-bd23-0823f5f3010f   6Gi        RWO            longhorn       <unset>                 9m59s
 ```
 
-The VM is still present in the Namespace. As we do not need it anymore, we can delete the VM. In this case, we have to be
+The VM is still present in the namespace. As we do not need it anymore, we can delete the VM. In this case, we have to be
 careful as the fedora-cloud-nginx-base belongs to the VM and would be removed when we just delete the VM. We have to use
 `--cascade=orphan` to not delete our provisioned disk.
 
