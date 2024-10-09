@@ -1,31 +1,32 @@
 ---
-title: "Prometheus Monitoring"
+title: "Prometheus monitoring"
 weight: 83
 labfoldernumber: "08"
 description: >
-  Monitoring virtual machines with prometheus
+  Monitoring virtual machines with Prometheus
 ---
 
 
 Prometheus is an open-source monitoring and alerting toolkit designed for reliability and scalability. It collects real-time metrics from services and systems, stores them in a time-series database, and provides powerful querying capabilities. Prometheus operates with a pull-based model, scraping metrics from endpoints at regular intervals. It supports multi-dimensional data through labels, enabling flexible queries and insights. Paired with tools like Grafana for visualization, Prometheus is widely used for monitoring cloud-native applications, infrastructure, and system performance, with built-in alerting to notify users of potential issues.
 
-It is the defacto standard tool set for monitoring workload on Kubernetes.
+It is the de facto standard toolset for monitoring workload on Kubernetes.
 
-All KubeVirt components expose Prometheus metrics by default and are therefore easily integrable into an existing prometheus monitoring stack.
+All KubeVirt components expose Prometheus metrics by default and are therefore easily integrable into an existing Prometheus monitoring stack.
 
 
-## {{% task %}} Raw KubeVirt Prometheus Metrics
+## {{% task %}} Raw KubeVirt Prometheus metrics
 
 Prometheus is highly integrated into the Kubernetes ecosystem. It uses a concept called service discovery to discover components within a Kubernetes cluster which expose metrics. All discovered components will then be scraped and the metrics end up in the above mentioned time-series database.
 
-All Kubevirt pods which expose metrics are labeled with `prometheus.kubevirt.io` and contain a port which is called `metrics`. In addition to that all the pods are summarized in a Kubernetes Service `kubevirt-prometheus-metrics`.
+All KubeVirt pods that expose metrics are labeled with `prometheus.kubevirt.io` and contain a port which is called `metrics`. In addition to that, all these pods are summarized in a Kubernetes Service `kubevirt-prometheus-metrics`.
 
-Execute the following command to display the service.
+Execute the following command to display the service:
 
 ```bash
 kubectl describe service kubevirt-prometheus-metrics -n kubevirt
 ```
-You can see a long list of endpoint addresses. This is the collection of KubeVirt components which expose prometheus metrics.
+
+You can see a long list of endpoint addresses. This is the collection of KubeVirt components which expose Prometheus metrics:
 
 ```bash
 Name:                     kubevirt-prometheus-metrics
@@ -53,25 +54,26 @@ Internal Traffic Policy:  Cluster
 Events:                   <none>
 ```
 
-We can get the metrics provided by a pod, by simply sending an HTTP Get request to one of the endpoint addresses.
+We can get the metrics provided by a pod by simply sending an HTTP Get request to one of the endpoint addresses.
 
-Execute the following command
+Execute the following command:
+
 ```bash
 kubectl describe endpoints -n kubevirt kubevirt-prometheus-metrics
 ```
 
-and use the fist IP address in the Addresses list for the next command:
+Now use the fist IP address in the addresses list for the next command:
 
 ```bash
-curl -k https://<Endpoint IP Address>:8443/metrics
+curl -k https://<endpoint IP address>:8443/metrics
 ```
 
-The result will be a list of KubeVirt Metrics, this specific pod exposes.
+The result will be a list of KubeVirt metrics this specific pod exposes.
 
 
-## Configure Prometheus to scrape KubeVirt Metrics
+## Configure Prometheus to scrape KubeVirt metrics
 
-To integrate all those KubeVirt Components into a running Prometheus stack, the following configuration is required in the `KubeVirt` custom resource:
+To integrate all those KubeVirt components into a running Prometheus stack, the following configuration is required in the `KubeVirt` custom resource:
 
 * monitorAccount: `<prometheus-serviceaccount>`
 * monitorNamespace: `<prometheus-namesapce>`
@@ -92,9 +94,10 @@ spec:
 [...]
 ```
 
-This will then have the effect, that KubeVirt itself will deploy the necessary resources to be integrated into the prometheus stack.
+This will then have the effect that KubeVirt itself will deploy the necessary resources to be integrated into the Prometheus stack.
 
-One of the most important components is the ServiceMonitor, which tells Prometheus where to scrape the KubeVirt Metrics from, as we have learned in the previous lab.
+One of the most important components is the ServiceMonitor, which tells Prometheus where to scrape the KubeVirt metrics from, as we have learned in the previous lab.
+A ServiceMonitor looks like this:
 
 ```yaml
 apiVersion: monitoring.coreos.com/v1
@@ -120,58 +123,61 @@ spec:
       prometheus.kubevirt.io: "true"
 ```
 
-This integration has been done already on the lab cluster.
+This integration has already been done on the lab cluster.
 
-Alongside with the KubeVirt ServiceMonitor, KubeVirt also deployed a set of PrometheusRules (Alerts).
+Alongside with the KubeVirt ServiceMonitor, KubeVirt also deploys a set of PrometheusRules which trigger alerts.
 
-You can have a look at the Alerts by executing the following command:
+You can have a look at the alerts by executing the following command:
 
 ```bash
 kubectl get PrometheusRule prometheus-kubevirt-rules -n kubevirt -o yaml
 ```
 
-Those Alerts are a very good monitoring foundation for our workload. Make sure in a production environment, that firing alerts are monitored and fixed.
+Those alerts are a very good monitoring foundation for our workload. Make sure that, especially in a production environment, firing alerts are monitored and fixed.
 
 
-## {{% task %}} Explore Prometheus UI
+## {{% task %}} Explore the Prometheus web interface
 
-Ask the trainer for the correct prometheus URL and open the Prometheus UI in a separate browser tab.
+Ask the trainer for the correct Prometheus URL and open its web interface in a web browser.
 
-First navigate to the Service Discovery page under Status --> Service Discovery. You will find the discovered `kubevirt-servicemonitor` ServiceMonitor.
-The successful Service Discovery process will configure all the endpoints as seen above under Prometheus Targets, to scrape the metrics correctly. Check the Status --> Targets page to check on the KubeVirt Targets.
+First, navigate to the **Service Discovery** page in the **Status** dropdown. You will find the discovered `kubevirt-servicemonitor` ServiceMonitor.
+The successful service discovery process will configure all the endpoints as seen above under **Targets** to scrape the metrics correctly. Check the **Targets** page under the **Status** dropdown to check on the KubeVirt targets.
 
-On the Alerts page, you see an overview of all configured Alerts, including KubeVirt Alerts.
+On the **Alerts** page, you see an overview of all configured alerts, including KubeVirt alerts.
 
-Going back to the Main view, by clicking on the Prometheus Logo, start searching our data.
+Going back to the main view by clicking on the Prometheus logo, start searching our data.
 
 Execute the following queries:
 
-**What KubeVirt verion is running?**
+* What KubeVirt verion is running?
+
 ```promql
 kubevirt_info
 ```
 
-**How many VMs per namespace exist?**
+* How many VMs per namespace exist?
+
 ```promql
 kubevirt_number_of_vms
 ```
 
-**How much CPU time have the VMIs used?**
+* How much CPU time have the VMIs used?
+
 ```promql
 kubevirt_vmi_vcpu_seconds_total
 ```
 
-You can also use the Graph tab to display the data over time.
+You can also use the **Graph** page to display the data over time.
 
 
-## {{% task %}}  Explore the complete list of prometheus metrics in the documentation
+## {{% task %}}  Explore the complete list of Prometheus metrics
 
-The typeahead feature of the Prometheus UI allows you to search for metrics. All KubeVirt Metrics start with `kubevirt_`
+The typeahead feature of the Prometheus web interface allows you to search for metrics. All KubeVirt metrics start with `kubevirt_`.
 
-You can find the complete list of KubeVirt metrics here: <https://github.com/kubevirt/monitoring/blob/main/docs/metrics.md>
+You can find a complete list of KubeVirt metrics [on KubeVirt's GitHub page](https://github.com/kubevirt/monitoring/blob/main/docs/metrics.md).
 
-Try to answer questions like:
+Try to answer these questions:
 
-* how much memory do my VMIs use?
-* how many live migrations were successful?
-* how much network traffic was received by VMI xy?
+* How much memory do my VMIs use?
+* How many live migrations were successful?
+* How much network traffic was received by VMI xy?
