@@ -1,18 +1,17 @@
 ---
-title: "Perform Live Migration"
+title: "Perform a live migration"
 weight: 71
 labfoldernumber: "07"
 description: >
-  Migrate running VMs to other Nodes for maintenance or other reasons
+  Migrate running VMs to other nodes for maintenance or other reasons
 ---
 
-This Lab demonstrates how to perform a live migration of a running virutal machine.
+This lab demonstrates how to perform a live migration of a running virtual machine.
 
 
 ## {{% task %}} Creating a virtual machine
 
 Create a new file `livemigration.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/` with the following content:
-
 
 ```yaml
 apiVersion: kubevirt.io/v1
@@ -52,13 +51,15 @@ spec:
           containerDisk:
             image: {{% param "cirrosCDI" %}}
 ```
+
 Apply it to the cluster to create the virtual machine.
-and apply the manifest.
 
 {{% details title="Task hint: apply command" %}}
+
 ```bash
 kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/livemigration.yaml --namespace=$USER
 ```
+
 {{% /details %}}
 
 Start the virtual machine:
@@ -67,7 +68,7 @@ Start the virtual machine:
 virtctl start {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemigration --namespace=$USER
 ```
 
-Once the VM has started successfully execute the following command to get the node the VMI is running on:
+Once the VM has started successfully, execute the following command to get the node the VMI is running on:
 
 ```bash
 kubectl get vmi --namespace=$USER
@@ -80,13 +81,13 @@ NAME                   AGE    PHASE     IP              NODENAME                
 {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemigration    45m    Running   10.244.6.103    training-baremetal-<x>   True
 ```
 
-During the start up of the virtual machine, KubeVirt determines whether a VMI is live-migratable or not. The information can be found in the `status.conditions` section of the VMI resource.
+During the virtual machine's startup, KubeVirt determines whether a VMI is live-migratable or not. The information can be found in the `status.conditions` section of the VMI resource.
 
 ```bash
 kubectl get vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemigration --namespace=$USER -o yaml
 ```
 
-Should show:
+Above command's output should show:
 
 ```yaml
 [...]
@@ -105,7 +106,7 @@ Should show:
 
 ## {{% task %}} Start a simple process in your VM
 
-Create the following Kubernetes Service (file: `service-livemigration.yaml` folder: `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}`):
+Create the following Kubernetes Service resource (file: `service-livemigration.yaml` folder: `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}`):
 
 ```yaml
 apiVersion: v1
@@ -122,11 +123,13 @@ spec:
   type: ClusterIP
 ```
 
+Apply it using:
+
 ```bash
 kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/service-livemigration.yaml --namespace=$USER
 ```
 
-Open a console to the VM and login:
+Open a console to the VM and log in:
 
 ```bash
 virtctl console {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemigration --namespace=$USER
@@ -138,7 +141,7 @@ Start the following command:
 while true; do ( echo "HTTP/1.0 200 Ok"; echo; echo "Migration test" ) | nc -l -p 8080; done
 ```
 
-Go back to the webshell and open a new Terminal to test the service
+Go back to the webshell and open a new terminal to test the service:
 
 ```bash
 curl -s {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemigration.$USER.svc.cluster.local:8080
@@ -147,7 +150,7 @@ curl -s {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemi
 
 ## {{% task %}} Perform a live migration
 
-To perform a Live Migration we can simply create a `VirtualMachineInstanceMigration` resource on the cluster, referencing the VMI to migration.
+To perform a live migration, we can simply create a VirtualMachineInstanceMigration resource on the cluster, referencing the VMI to migrate.
 Create a new file `livemigration-job.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/` with the following content:
 
 ```yaml
@@ -160,49 +163,45 @@ spec:
 ```
 
 {{% alert title="Note" color="info" %}}  
-It's also possible to initiate a live migration of a VM by using `virtctl`
+It's also possible to initiate a live migration by using `virtctl`:
 
 ```bash
 virtctl migrate {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemigration --namespace=$USER
 ```
+
 {{% /alert %}}
 
-And apply it to the cluster:
+Apply VirtualMachineInstanceMigration manifest to the cluster:
 
 ```bash
 kubectl apply -f {{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}/livemigration-job.yaml --namespace=$USER
 ```
 
-This will automatically perform the live migration. Use the following command to see the status of the migration:
+This will automatically start and perform the live migration. Use the following command to see the migration's status:
 
 ```bash
 kubectl get VirtualMachineInstanceMigration {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemigration-job -w --namespace=$USER
 ```
 
-Once the migration was successful, the VMI should run on the other node. Use
+Once the migration finished successfully, the VMI should run on the other node. Verify this with:
 
 ```bash
 kubectl get vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemigration --namespace=$USER
 ```
 
-to verify that.
-
-
-Details about the migration state will be represented in the VMI or the corresponding `VirtualMachineInstanceMigration`
+Details about the migration state will be represented in the VMI:
 
 ```bash
 kubectl describe vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemigration --namespace=$USER
 ```
 
-or
+Or it can also be displayed in the corresponding VirtualMachineInstanceMigration resource:
 
 ```bash
 kubectl get VirtualMachineInstanceMigration {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemigration-job -o yaml --namespace=$USER
 ```
 
-To check on the migration status in the status section of the `VirtualMachineInstance`.
-
-And verify the running simple webserver by executing
+Verify the running webserver by sending a HTTP request using curl:
 
 ```bash
 curl -s {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemigration.$USER.svc.cluster.local
@@ -211,20 +210,21 @@ curl -s {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemi
 
 ## Cancel a live migration
 
+{{% alert title="Warning" color="warning" %}}
 This lab is not meant to be executed.
+{{% /alert %}}
 
-A live migration can also be canceled, by deleting the `VirtualMachineInstanceMigration` object
+A live migration can also be canceled by deleting the VirtualMachineInstanceMigration object:
 
 ```bash
 kubectl delete vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemigration-job --namespace=$USER
 ```
 
-or using `virtctl`
+`virtctl` can also be used:
 
 ```bash
 virtctl migrate-cancel {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemigration --namespace=$USER
 ```
-
 
 A successfully canceled migration will show the following states:
 
@@ -234,24 +234,24 @@ A successfully canceled migration will show the following states:
 * Failed: true
 
 
-## {{% task %}} (optional) perform migrations using the kubevirt command
+## {{% task %}} (Optional) Perform migrations using the `kubevirt` command
 
 Let's use the `kubevirt migrate` to perform an additional migration. Follow the migration with the commands we've used in the lab above.
 Try to cancel a live migration, and verify it in the status section of the VMI manifest.
 
 
-## {{% task %}} (optional) migration policies
+## {{% task %}} (Optional) Migration policies
 
-In addition to the cluster wide configuration of the LiveMigration feature the concept of [Migration Policies](https://kubevirt.io/user-guide/cluster_admin/migration_policies/) was introduced. Migration policies are currently (v1.30) an alpha feature and the API might not be stable.
+In addition to the live migration feature's cluster-wide configuration, the concept of [migration policies](https://kubevirt.io/user-guide/cluster_admin/migration_policies/) has been introduced. Migration policies are currently (v1.30) an alpha feature and the API might not be stable.
 
-Explore the official documentation under <https://kubevirt.io/user-guide/cluster_admin/migration_policies/>
+Explore the official documentation at <https://kubevirt.io/user-guide/cluster_admin/migration_policies/>.
 
 
 ## End of lab
 
-{{% alert title="Cleanup resources" color="warning" %}}  {{% param "end-of-lab-text" %}}
+{{% alert title="Cleanup resources" color="warning" %}} {{% param "end-of-lab-text" %}}
 
-Stop the `VirtualMachineInstance`:
+Stop the VirtualMachineInstance:
 
 ```bash
 virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemigration --namespace=$USER
