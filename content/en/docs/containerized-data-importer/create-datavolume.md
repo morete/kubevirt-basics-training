@@ -92,7 +92,7 @@ The output should be:
 datavolume.cdi.kubevirt.io/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-alpinedisk created
 ```
 
-This will trigger the CDI Operator which will start an importer Pod to provision your PVC. If you are fast enough you may see the Pod with:
+This will trigger the CDI Operator which will start an importer pod to provision your PVC. If you are fast enough you may see the pod with:
 
 ```bash
 kubectl get pods --namespace=$USER
@@ -106,7 +106,7 @@ importer-prime-36720196-c64a-42d8-8db5-af31b75de034   0/1     ContainerCreating 
 $USER-webshell-885dbc579-lwhtd                        2/2     Running             0          1d
 ```
 
-After some time, the Pod will complete and your PVC should be provisioned. Let's check for the existence of the PVC:
+After some time, the pod will complete and your PVC should be provisioned. Let's check for the existence of the PVC:
 
 ```bash
 kubectl get pvc --namespace=$USER
@@ -130,8 +130,8 @@ We have used the Alpine image as it is reasonably small. Would there have been a
 every participant without the need to download the image multiple times?
 
 {{% details title="Task Hint" %}}
-We could have provided a provisioned PVC in a central Namespace and created our DataVolume with a `pvc` source, then let
-the CDI Operator clone the central PVC to a PVC your Namespace.
+We could have provided a provisioned PVC in a central namespace and created our DataVolume with a `pvc` source, then let
+the CDI Operator clone the central PVC to a PVC your namespace.
 {{% /details %}}
 
 [^1]: [Alpine Cloud Image](https://alpinelinux.org/cloud/)

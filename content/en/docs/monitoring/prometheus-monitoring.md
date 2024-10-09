@@ -18,7 +18,7 @@ All KubeVirt components expose Prometheus metrics by default and are therefore e
 
 Prometheus is highly integrated into the Kubernetes ecosystem. It uses a concept called service discovery to discover components within a Kubernetes cluster which expose metrics. All discovered components will then be scraped and the metrics end up in the above mentioned time-series database.
 
-All Kubevirt Pods which expose metrics are labeled with `prometheus.kubevirt.io` and contain a port which is called `metrics`. In addition to that all the Pods are summarized in a Kubernetes Service `kubevirt-prometheus-metrics`.
+All Kubevirt pods which expose metrics are labeled with `prometheus.kubevirt.io` and contain a port which is called `metrics`. In addition to that all the pods are summarized in a Kubernetes Service `kubevirt-prometheus-metrics`.
 
 Execute the following command to display the service.
 
@@ -66,7 +66,7 @@ and use the fist IP address in the Addresses list for the next command:
 curl -k https://<Endpoint IP Address>:8443/metrics
 ```
 
-The result will be a list of KubeVirt Metrics, this specific Pod exposes.
+The result will be a list of KubeVirt Metrics, this specific pod exposes.
 
 
 ## Configure Prometheus to scrape KubeVirt Metrics
@@ -151,7 +151,7 @@ Execute the following queries:
 kubevirt_info
 ```
 
-**How many VMs per Namespace exist?**
+**How many VMs per namespace exist?**
 ```promql
 kubevirt_number_of_vms
 ```

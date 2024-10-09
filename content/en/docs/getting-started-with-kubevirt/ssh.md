@@ -23,7 +23,7 @@ As you see with the following command, creating the VM does not create any Kuber
 kubectl get service --namespace=$USER
 ```
 
-In your Namespace you should only see the service of your webshell:
+In your namespace you should only see the service of your webshell:
 
 ```bash
 NAME             TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
@@ -33,7 +33,7 @@ $USER-webshell   ClusterIP   10.43.248.212   <none>        3000/TCP   1d
 
 ## Exposing the SSH port inside the Kubernetes cluster
 
-To access the SSH port from the Kubernetes default Pod network we have to create a simple Service resource.
+To access the SSH port from the Kubernetes default pod network we have to create a simple Service resource.
 For this, we use a Service of type `ClusterIP`.
 
 Create a file `svc_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm-ssh.yaml` in the `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` directory and write the following Service configuration to it:

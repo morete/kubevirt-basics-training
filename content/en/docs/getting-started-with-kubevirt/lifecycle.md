@@ -408,7 +408,7 @@ VMI {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm wa
 
 ## Involved components
 
-When your VM is in a running state, you may have noticed that there is an additional Pod running. Make sure your VM is
+When your VM is in a running state, you may have noticed that there is an additional pod running. Make sure your VM is
 running and issue the following command:
 
 ```bash
@@ -423,9 +423,9 @@ $USER-webshell-885dbc579-lwhtd      2/2     Running   0          1d
 virt-launcher-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm-mfxrs   3/3     Running   0          90s
 ```
 
-For each running VM there is a `virt-launcher` Pod which is responsible to start the effective VM process in the container and observes the VM state.
+For each running VM there is a `virt-launcher` pod which is responsible to start the effective VM process in the container and observes the VM state.
 
-Beside the existence of the `virt-launcher` Pod, a new custom resource `VirtualMachineInstance` is present. This resource is
+Beside the existence of the `virt-launcher` pod, a new custom resource `VirtualMachineInstance` is present. This resource is
 created under the hood by the `virt-controller` and will only be available as long as the VM is running. It represents a
 single running virtual machine instance.
 
@@ -466,15 +466,15 @@ NAME           AGE     PHASE     IP             NODENAME            READY   LIVE
 {{% /alert %}}
 
 
-## {{% task %}} (Optional) Under the hood: Explore the virt-launcher Pod
+## {{% task %}} (Optional) Under the hood: Explore the virt-launcher pod
 
-In this optional lab we are going to explore the virt-launcher Pod, which we discovered in the previous task.
+In this optional lab we are going to explore the virt-launcher pod, which we discovered in the previous task.
 
-For every `VirtualMachineInstance` or `VMI` (running VM), one virt-launcher Pod is created. The virt-launcher Pod provides boundaries (cgoups, namespaces), the interface to the Kubernetes ecosystem and manages and monitors the lifecycle of the VMI.
+For every `VirtualMachineInstance` or `VMI` (running VM), one virt-launcher pod is created. The virt-launcher pod provides boundaries (cgoups, namespaces), the interface to the Kubernetes ecosystem and manages and monitors the lifecycle of the VMI.
 
-In its core, the virt-launcher Pod runs a `libvirtd` instance, which manages the lifecycle of the VMI process.
+In its core, the virt-launcher pod runs a `libvirtd` instance, which manages the lifecycle of the VMI process.
 
-With the following command, we can have a look at the Pod's manifest (replace the Pod name with the actual Pod's name from `kubectl get pods --namespace=$USER`):
+With the following command, we can have a look at the pod's manifest (replace the pod name with the actual pod's name from `kubectl get pods --namespace=$USER`):
 
 ```bash
 kubectl get pod virt-launcher-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm-<pod> -o yaml --namespace=$USER
@@ -486,7 +486,7 @@ Or simply use the describe command:
 kubectl describe pod virt-launcher-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm-<pod> --namespace=$USER
 ```
 
-Explore the Pod definition or use the describe command:
+Explore the pod definition or use the describe command:
 
 * `labels`
 * `ownerReference`
@@ -500,7 +500,7 @@ Explore the Pod definition or use the describe command:
 * `volumes` and `volumeMounts`
 * `status`
 
-You can even exec into the Pod and list the running processes, where you can find the running libvirt and qemu-kvm processes:
+You can even exec into the pod and list the running processes, where you can find the running libvirt and qemu-kvm processes:
 
 ```bash
 kubectl exec --stdin --tty --namespace=$USER virt-launcher-{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm-<pod> -- /bin/bash
