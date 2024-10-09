@@ -86,6 +86,8 @@ maxlabnumber = 7
 end-of-lab-title = "Cleaning up resources"
 end-of-lab-text = "You have reached the end of this lab. Please stop your running virtual machines to save resources on the Kubernetes cluster."
 
+exampleWebAppImage = "quay.io/acend/example-web-python:latest"
+
 # Cloud-init - Fedora Cloud
 #fedoraCloudCDI = "kubevirt/fedora-cloud-container-disk-demo:latest" # fedora cloud 32
 fedoraCloudCDI = "quay.io/containerdisks/fedora:40"
@@ -97,6 +99,9 @@ ignitionVersion = "3.4.0"
 cirrosCDI = "quay.io/kubevirt/cirros-container-disk-demo"
 cirrosContainerDiskDownload = "https://download.cirros-cloud.net/0.6.2/cirros-0.6.2-x86_64-disk.img"
 alpineContainerDiskDownload = "https://dl-cdn.alpinelinux.org/alpine/v3.20/releases/cloud/nocloud_alpine-3.20.2-x86_64-bios-cloudinit-r0.qcow2"
+
+nodeExporter = "https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-amd64.tar.gz"
+nodeExporterVersion = "1.8.2"
 
 dummypwd = "changeme"
 
