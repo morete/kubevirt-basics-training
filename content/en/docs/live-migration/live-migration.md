@@ -234,7 +234,7 @@ A successfully canceled migration will show the following states:
 * Failed: true
 
 
-## {{% task %}} (Optional) Perform migrations using the `kubevirt` command
+## {{% task %}} (Optional) Perform migrations using the `virtctl` command
 
 Let's use the `kubevirt migrate` to perform an additional migration. Follow the migration with the commands we've used in the lab above.
 Try to cancel a live migration, and verify it in the status section of the VMI manifest.

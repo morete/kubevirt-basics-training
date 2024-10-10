@@ -120,10 +120,11 @@ kind: Service
 metadata:
   name: {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-node-exporter
   labels:
-    node-exporter: true
+    node-exporter: "true"
 spec:
   ports:
-  - port: metrics
+  - name: metrics
+    port: 9100
     protocol: TCP
     targetPort: 9100
   selector:
@@ -176,7 +177,7 @@ spec:
     scheme: http
   selector:
     matchLabels:
-      node-exporter: true
+      node-exporter: "true"
 ```
 
 
@@ -187,7 +188,7 @@ spec:
 Stop the VirtualMachineInstance:
 
 ```bash
-virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-node-exporter   --namespace=$USER
+virtctl stop {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-node-exporter --namespace=$USER
 ```
 
 {{% /alert %}}

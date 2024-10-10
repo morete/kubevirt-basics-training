@@ -437,7 +437,12 @@ As a precondition, the guest agent needs to be installed in the virtual machine 
 {{% /alert %}}
 
 
-## {{% task %}} (Optional) Watchdog example
+## Watchdog example
+
+{{% alert title="Warning" color="warning" %}}
+This lab is not meant to be executed.
+{{% /alert %}}
+
 
 A watchdog offers a more VM-centric approach, meaning the OS monitors itself by sending heartbeats to a `i6300esb` device. When the heartbeat stops, the watchdog device executes an action. In our example the `poweroff` action. Other possible actions are `reset` and `shutdown`.
 

@@ -381,3 +381,28 @@ spec:
           - name: MYSQL_URI
             value: mysql://$(MYSQL_DATABASE_USER):$(MYSQL_DATABASE_PASSWORD)@{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-mariadb/$(MYSQL_DATABASE_NAME)
 ```
+
+
+## End of lab
+
+{{% alert title="Cleanup resources" color="warning" %}}  {{% param "end-of-lab-text" %}}
+
+If you applied the manifests above, delete the resources with:
+
+```bash
+kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-mariadb --namespace=$USER
+kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-mariadb-base --namespace=$USER
+kubectl delete dv {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-mariadb-data --namespace=$USER
+kubectl delete secret {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-mariadb --namespace=$USER
+kubectl delete secret {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit-mariadb-provisioner --namespace=$USER
+kubectl delete secret {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-cloudinit-mariadb --namespace=$USER
+kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-mariadb-provisioner --namespace=$USER
+kubectl delete vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-mariadb --namespace=$USER
+kubectl delete svc {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-mariadb --namespace=$USER
+kubectl delete svc {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webapp --namespace=$USER
+kubectl delete svc {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-node-exporter --namespace=$USER
+kubectl delete ingress {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webapp --namespace=$USER
+kubectl delete deployment {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-webapp --namespace=$USER
+```
+
+{{% /alert %}}

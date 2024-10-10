@@ -76,7 +76,7 @@ The result will be a list of KubeVirt metrics this specific pod exposes.
 To integrate all those KubeVirt components into a running Prometheus stack, the following configuration is required in the `KubeVirt` custom resource:
 
 * monitorAccount: `<prometheus-serviceaccount>`
-* monitorNamespace: `<prometheus-namesapce>`
+* monitorNamespace: `<prometheus-namespace>`
 * serviceMonitorNamespace: `<sm-namespace>`
 
 
