@@ -81,7 +81,7 @@ offlineSearch = true
 projecthome = "/home/project"
 labsfoldername = "labs"
 labsubfolderprefix = "lab"
-maxlabnumber = 7
+maxlabnumber = 9
 
 end-of-lab-title = "Cleaning up resources"
 end-of-lab-text = "You have reached the end of this lab. Please stop your running virtual machines to save resources on the Kubernetes cluster."

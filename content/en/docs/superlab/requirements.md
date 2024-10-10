@@ -25,12 +25,12 @@ Virtual machine:
 
 * Operating System: Fedora Cloud 40
   * Recommended image: `{{% param "fedoraCloudCDI" %}}`
-* MariaDB database
-* Node Exporter
+* Database: MariaDB
+* Metrics Exporter: Node Exporter
 
 Web application:
 
-* Python Example Web Application from acend.
+* Application: Python Example Web Application from acend.
   * Image: `{{% param "exampleWebAppImage" %}}`
 * The webapp will listen on port `5000`
 * The connection to the database can be configured with the environment variable `MYSQL_URI=mysql://user:password@hostname/database-name`
@@ -51,10 +51,10 @@ You should use a secret to store the database details. All components (database 
 
 Database users and password
 
-* database-name: acend_exampledb
-* database-user: acend_user
-* database-password: mysqlpassword
-* database-root-password: mysqlrootpassword
+* database-name: `acend_exampledb`
+* database-user: `acend_user`
+* database-password: `mysqlpassword`
+* database-root-password: `mysqlrootpassword`
 
 
 ## Advanced information
@@ -146,7 +146,7 @@ WantedBy=multi-user.target
   * Set password for fedora user
   * Mount secret with mysql details using virtiofs
   * Mount additional disk for the database data
-  * Enable and start the mariadb and node_exporter service
+  * Enable and start the mariadb and node exporter service
   * Load the database init script
   * Create a kubernetes Service for the node exporter and mariadb
 * The easiest health checks are tcp probes against the mariadb port
