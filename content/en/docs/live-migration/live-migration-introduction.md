@@ -40,6 +40,8 @@ Additionally, the live migration feature can be configured under `spec.configura
 
 * Virtual machines using PVC must have a `RWX` access mode to be live-migrated
 * Additionally, pod network binding of the bridge interface is not allowed
+* Volumes mounted as filesystems prevent virtual machines from being live migrated
+* Directly attached devices
 * Live migration requires ports `49152`, `49153` to be available in the `virt-launcher` pod; if these ports are explicitly specified in the masquarade interface, live migration will not work
 
 {{% /alert %}}
