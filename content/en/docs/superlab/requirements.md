@@ -35,12 +35,16 @@ Web application:
 * The webapp will listen on port `5000`
 * The connection to the database can be configured with the environment variable `MYSQL_URI=mysql://user:password@hostname/database-name`
 
+
 ### Disk provisioning
-To reduce the startup time of the database, we recommend to use a pre provisioned persistent disk. Pre-provision this generic 
+
+To reduce the startup time of the database, we recommend to use a pre provisioned persistent disk. Pre-provision this generic
 database disk with the mariadb package and the setup for the node exporter. Use a provisioning virtual machine with cloud-init
 scripts to prepare the disk.
 
-### Runtime 
+
+### Runtime instances
+
 The virtual machine running the mariadb instance should clone the pre-provisioned vm disk. Additionally, this instance
 should mount another empty `1Gi` disk as data folder of the database. Use cloud-init to create and configure the database
 users, create the database, start the required services and do the basic virtual machine configuration. You are encouraged
@@ -50,7 +54,7 @@ You should use a secret to store the database details. All components (database 
 configured.  
 
 
-### Required details
+## Required details
 
 Database users and password
 
@@ -63,7 +67,7 @@ Database users and password
 ## Advanced information
 
 {{% alert title="Note" color="info" %}}
-Here you'll find more useful information and hints for the setup. If you like you can skip this section and start 
+Here you'll find more useful information and hints for the setup. If you like you can skip this section and start
 implementing on your own.
 {{% /alert %}}
 
