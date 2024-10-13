@@ -32,14 +32,42 @@ The goal of this lab is:
 First, we are going to define our `cloud-init` configuration. Create a file called `cloudinit-node-exporter.yaml` in the folder `{{% param "labsfoldername" %}}/{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}` with the following content:
 
 ```yaml
-#cloud-config
-password: kubevirt
-chpasswd: { expire: False }
-bootcmd:
-  - ["curl", "-o", "/tmp/node_exporter-amd64.tar.gz", "-L", "https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-amd64.tar.gz"]
-  - ["sudo", "tar", "xvfz", "/tmp/node_exporter-amd64.tar.gz", "-C", "/tmp/"]
-  - ["sudo", "/tmp/node_exporter-1.8.2.linux-amd64/node_exporter"]
-
+#cloud-config-archive
+- type: "text/cloud-config"
+  content: |
+    password: kubevirt
+    chpasswd: { expire: False }
+    users:
+      - default
+      - name: node_exporter
+        gecos: Node Exporter User
+        primary_group: node_exporter
+        groups: node_exporter
+        shell: /bin/nologin
+        system: true
+    write_files:
+      - content: |
+          [Unit]
+          Description=Node Exporter
+          After=network.target
+          
+          [Service]
+          User=node_exporter
+          Group=node_exporter
+          # Fallback when environment file does not exist
+          Environment=OPTIONS=
+          EnvironmentFile=-/etc/sysconfig/node_exporter
+          ExecStart=/usr/local/bin/node_exporter $OPTIONS
+          
+          [Install]
+          WantedBy=multi-user.target
+        path: /etc/systemd/system/node_exporter.service
+- type: "text/x-shellscript"    
+  content: |
+    #!/bin/sh
+    # install node_exporter
+    curl -fsSL {{% param "nodeExporter" %}} | sudo tar -zxvf - -C /usr/local/bin --strip-components=1 node_exporter-{{% param "nodeExporterVersion" %}}.linux-amd64/node_exporter && sudo chown node_exporter:node_exporter /usr/local/bin/node_exporter
+    sudo systemctl enable --now node_exporter
 ```
 
 Create a secret using above file's content using:
