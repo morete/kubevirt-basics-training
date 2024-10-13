@@ -6,14 +6,14 @@ description: >
   Requirements for the demo application.
 ---
 
-For this super lab we do not provide a step-by-step guide for the implementation. The goal is that you implement the required
-manifests yourself. However, provide a sample solution in the next chapter.
+For this lab we do not provide a step-by-step guide for the implementation. The goal is that you implement the required
+manifests yourself. However, we provide a sample solution in the next chapter. Your solution may vary from ours.
 
 
 ## Basic Information
 
 The goal of this super lab is to deploy a database and a web application connecting to this database. The database should
-be run within a KubeVirt virtual machine. As the web application you will use a provided application.
+be run within a KubeVirt virtual machine. We do provide the web application as container image.
 
 The setup should fulfill the following requirements:
 
@@ -35,16 +35,19 @@ Web application:
 * The webapp will listen on port `5000`
 * The connection to the database can be configured with the environment variable `MYSQL_URI=mysql://user:password@hostname/database-name`
 
-To reduce the startup time of the database, we recommend to use persistent disk. Pre-provision this generic database vm disk
-with the mariadb package and the setup for the node exporter. Use a provisioning virtual machine using cloud-init scripts
-to prepare the disk.
+### Disk provisioning
+To reduce the startup time of the database, we recommend to use a pre provisioned persistent disk. Pre-provision this generic 
+database disk with the mariadb package and the setup for the node exporter. Use a provisioning virtual machine with cloud-init
+scripts to prepare the disk.
 
+### Runtime 
 The virtual machine running the mariadb instance should clone the pre-provisioned vm disk. Additionally, this instance
-should mount another empty `1Gi` disk for the data folder of the database. Use cloud-init to create and configure the database
-users, create the database, start the required services and do the basic virtual machine configuration. For example for the
-resource usage you are encouraged to define and use VirtualMachineInstanceType and VirtualMachinePreference.
+should mount another empty `1Gi` disk as data folder of the database. Use cloud-init to create and configure the database
+users, create the database, start the required services and do the basic virtual machine configuration. You are encouraged
+to define and use VirtualMachineInstanceType and VirtualMachinePreference to manage resource usage and preferences.
 
-You should use a secret to store the database details. All components (database and webapp) should have health-checks.  
+You should use a secret to store the database details. All components (database vm and webapp) should have health-checks
+configured.  
 
 
 ### Required details
@@ -60,7 +63,8 @@ Database users and password
 ## Advanced information
 
 {{% alert title="Note" color="info" %}}
-Here you'll find more useful information and hints for the setup. If you like you can skip this section and start implementing on your own.
+Here you'll find more useful information and hints for the setup. If you like you can skip this section and start 
+implementing on your own.
 {{% /alert %}}
 
 {{% details title="Show overview graphic" %}}
@@ -135,7 +139,7 @@ WantedBy=multi-user.target
 
 ### Database virtual machine
 
-* Use a DataVolume to clone the vm disk and another DataVolume to create an empty disk.
+* Use a DataVolume to clone the provisioned disk and use another DataVolume to create an empty disk.
   * Use the cloned disk as the root disk for the database virtual machine
   * Mount the additional disk on `/var/lib/mysql`
 * Your virtual machine should use the `runStrategy: RerunOnFailure`
