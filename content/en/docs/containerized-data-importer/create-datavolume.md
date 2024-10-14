@@ -131,7 +131,7 @@ every participant without the need to download the image multiple times?
 
 {{% details title="Task Hint" %}}
 We could have provided a provisioned PVC in a central namespace and created our DataVolume with a `pvc` source, then let
-the CDI Operator clone the central PVC to a PVC your namespace.
+the CDI Operator clone the central PVC to a PVC in your namespace.
 {{% /details %}}
 
 [^1]: [Alpine Cloud Image](https://alpinelinux.org/cloud/)
