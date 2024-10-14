@@ -351,9 +351,9 @@ This only fulfills the machines minimal requirements. In a production environmen
 Deploy two VMs with different instance types:
 
 * Deploy a cirros VM using a `u` class instance type and a matching preference
-  * Write the VM specification in `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros.yaml`
+  * Write the VM specification in `vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-u1-cirros.yaml`
 * Deploy a cirros VM using a `o` class instance type and the same preference
-  * Write the VM specification in `{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros.yaml`
+  * Write the VM specification in `vm_{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-o1-cirros.yaml`
 
 {{% onlyWhen tolerations %}}
 
