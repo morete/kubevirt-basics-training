@@ -360,7 +360,7 @@ virtctl pause vm {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %
 However, if you try to execute above command, it will result in an error:
 
 ```bash
-Error pausing VirtualMachineInstance lab02-firstvm. VirtualMachine lab02-firstvm is not set to run
+Error pausing VirtualMachineInstance {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm. VirtualMachine {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-firstvm is not set to run
 ```
 
 Obviously we can not pause a stopped VM, so start the VM first and then try the pause command again:
