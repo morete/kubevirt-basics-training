@@ -263,7 +263,7 @@ kubectl get vm --namespace=$USER
 ```
 NAME                             AGE     STATUS    READY
 [...]
-lab05-fedora-nginx-provisioner   8m52s   Stopped   False
+{{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-fedora-nginx-provisioner   8m52s   Stopped   False
 ```
 
 After the VM has been shut down, we will see a `fedora-cloud-nginx-base` PVC in our namespace:
