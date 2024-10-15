@@ -72,7 +72,7 @@ However, in some cases, migrations may struggle to converge. This means that by 
 
 ### Post-copy
 
-Post-copy is the default strategy and works like this:
+Post-copy works like this:
 
 1. The target VM is created
 1. The guest is run on the target VM
