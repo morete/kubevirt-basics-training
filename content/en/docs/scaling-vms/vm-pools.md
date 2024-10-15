@@ -312,7 +312,7 @@ loadbalanced way? This is the default behaviour of Kubernetes services.
 ## Unique Secrets and ConfigMaps
 
 We have seen that the VirtualMachinePool created unique disks for our webserver. However, the referenced secret in the
-`cloudInitNoCloud` section is the same and all instances access und use the same secret. If we had used machine specific
+`cloudInitNoCloud` section is the same and all instances access and use the same secret. If we had used machine specific
 settings in this config, this would be a problem.
 
 This is the default behaviour, but it can be changed using `AppendPostfixToSecretReferences` and `AppendPostfixToConfigMapReferences`
