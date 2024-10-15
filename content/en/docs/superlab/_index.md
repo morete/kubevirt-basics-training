@@ -19,5 +19,5 @@ containerized web application which accesses the virtual machine using the defau
   * Instance types and preferences
   * Mounting secrets and additional disks
   * Exposing ports using services
-  * Mixing virtual machine workload and virtual machine workload
+  * Mixing virtual machines workload and containers workload
   * Provide metrics for prometheus monitoring
