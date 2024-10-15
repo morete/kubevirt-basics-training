@@ -102,8 +102,8 @@ VirtualMachineInstanceReplicaSet.
 
 ## Using a VirtualMachineInstanceReplicaSet
 
-We will create a VirtualMachineInstanceReplica set using a cirros container disk from a container registry. As we know
-container disks are ephemeral this fits this use case very well.
+We will create a VirtualMachineInstanceReplicaSet using a cirros container disk from a container registry. As we know,
+container disks are ephemeral, this fits this use case very well.
 
 
 ### {{% task %}} Create a VirtualMachineInstanceReplicaSet
