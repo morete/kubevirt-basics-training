@@ -38,7 +38,7 @@ metadata:
 spec:
   source:
     registry:
-      url: "{{% param "fedoraCloudCDI" %}}"
+      url: "docker://{{% param "fedoraCloudCDI" %}}"
   pvc:
     accessModes:
       - ReadWriteOnce
