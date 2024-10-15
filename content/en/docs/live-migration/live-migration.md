@@ -204,7 +204,7 @@ kubectl get VirtualMachineInstanceMigration {{% param "labsubfolderprefix" %}}{{
 Verify the running webserver by sending a HTTP request using curl:
 
 ```bash
-curl -s {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemigration.$USER.svc.cluster.local
+curl -s {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemigration.$USER.svc.cluster.local:8080
 ```
 
 
