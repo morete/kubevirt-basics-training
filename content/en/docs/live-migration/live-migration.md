@@ -217,7 +217,7 @@ This lab is not meant to be executed.
 A live migration can also be canceled by deleting the VirtualMachineInstanceMigration object:
 
 ```bash
-kubectl delete vmi {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemigration-job --namespace=$USER
+kubectl delete vmim {{% param "labsubfolderprefix" %}}{{% param "labfoldernumber" %}}-livemigration-job --namespace=$USER
 ```
 
 `virtctl` can also be used:
